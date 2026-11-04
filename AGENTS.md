@@ -47,6 +47,23 @@ Rules:
 - Do not tick parent phase acceptance until all required child tasks and the phase acceptance test pass.
 - Preserve historical evidence; do not erase failures to make progress look better.
 
+## Local OpenJarvis project controller
+
+When using the installed OpenJarvis desktop app, the supported Windows session path is the desktop shortcut created by `runtime/Install-JARVIS-ProjectController.ps1`, named **JARVIS Project Session**. It syncs the private repository before launching OpenJarvis and generates the system prompt from the complete current `AGENTS.md` and `MASTER_TODO.md`.
+
+Before implementing a task, use the local status helper when the OpenJarvis agent has shell access:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<repo-root>\runtime\Update-JARVIS-TaskStatus.ps1" -Action Start -TaskText "distinctive exact task wording"
+```
+
+At the end of the task, call the same helper with one of these forms:
+- VERIFIED: `-Status VERIFIED -Evidence "test command and actual passing result"`
+- PARTIAL: `-Status PARTIAL -Done "completed work" -Remaining "unfinished work" -NextAction "next executable step"`
+- BLOCKED: `-Status BLOCKED -Evidence "specific blocker" -NextAction "next executable step"`
+
+The task text must identify exactly one checkbox. The helper updates only `MASTER_TODO.md`, commits only that file, pushes `main`, and verifies the remote read-back. Do not claim success if the helper reports a failure. If shell execution is unavailable, use the connected GitHub/file capability and follow the normal end-of-session protocol; if neither is available, report the blocker rather than pretending the master was updated.
+
 ## During the task
 - Follow the required operating cycle: understand, investigate, plan, execute, verify, correct, deliver and record.
 - Batch repetitive operations where safe; use bounded scripts with visible progress, logs and hard timeouts.
