@@ -873,3 +873,42 @@ Build the broadest practical personal AI operating system possible using existin
 **BUILD → TEST → VERIFY → RECORD → IMPROVE.**
 
 One private repository. One master checklist. Every checkbox earned.
+
+---
+
+## 13. Mandatory AI session startup and task-status protocol
+
+The repository root `AGENTS.md` is the canonical instruction file for compatible coding agents. Tool-specific startup files (such as `CLAUDE.md` and `.github/copilot-instructions.md`) point agents back to it and to this master plan.
+
+At the start of every JARVIS session, the AI must:
+1. Read the complete latest `MASTER_TODO.md`; never rely on old chat memory or a partial excerpt.
+2. Read `AGENTS.md` and any relevant nested instructions.
+3. Identify the current milestone, active task, dependencies and acceptance criteria.
+4. Select one task at a time unless the user explicitly authorises a batch.
+5. Mark the task **WORKING** in this file before implementation.
+6. Briefly report the active task and its verification target.
+
+### Required task-status notation
+
+| Markdown form | Status | Rule |
+|---|---|---|
+| `- [ ] Task` | NOT STARTED | Default for untouched work |
+| `- [ ] **WORKING** — Task` | WORKING | Only one active task by default |
+| `- [ ] **BLOCKED** — Task — reason: ...` | BLOCKED | State blocker and next action |
+| `- [ ] **PARTIAL** — Task — done: ...; remaining: ...` | PARTIAL | Work exists but acceptance is not met |
+| `- [x] **VERIFIED** — Task — evidence: ...` | VERIFIED | Actual test passed; include evidence |
+
+Only mark a checkbox `[x]` when the relevant acceptance criteria have passed. Code generation, package installation, a prepared script or a build alone is not proof of end-to-end capability. If a session ends early, convert WORKING to PARTIAL or BLOCKED and record the next action. Never leave a stale WORKING marker.
+
+At the end of each session, update this master file, phase status, live status and next task; record tests and actual results; add a dated execution-log entry; synchronise to the private GitHub repository where access permits; and read the remote file back to verify the update. Never claim that GitHub was updated without read-back verification.
+
+Do not create another competing project checklist. This file remains authoritative.
+
+## 14. Execution log
+
+Add newest entries at the top. Keep each entry short and evidence-based.
+
+| Date | Task / milestone | Status | Evidence / result | Next action |
+|---|---|---|---|---|
+| 2026-11-04 | Create private JARVIS planning repository and master roadmap | VERIFIED | `eboxont-code/jarvis-os` created as private; `MASTER_TODO.md` committed and read back | Configure automatic AI session instructions |
+
