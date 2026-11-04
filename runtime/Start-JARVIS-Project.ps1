@@ -29,6 +29,8 @@ function Invoke-BoundedProcess {
     $psi.CreateNoWindow = $true
     $psi.RedirectStandardOutput = $true
     $psi.RedirectStandardError = $true
+    $psi.StandardOutputEncoding = [Text.Encoding]::UTF8
+    $psi.StandardErrorEncoding = [Text.Encoding]::UTF8
 
     $process = New-Object System.Diagnostics.Process
     $process.StartInfo = $psi
@@ -176,7 +178,7 @@ $master
 "@
 
     $promptTemp = "$promptPath.tmp"
-    [IO.File]::WriteAllText($promptTemp, $prompt, (New-Object Text.UTF8Encoding($false)))
+    [IO.File]::WriteAllText($promptTemp, $prompt, [System.Text.UTF8Encoding]::new($false))
     Move-Item -LiteralPath $promptTemp -Destination $promptPath -Force
 
     $configText = [IO.File]::ReadAllText($configPath, [Text.Encoding]::UTF8)
@@ -251,7 +253,7 @@ $master
         $backupPath = "$configPath.backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
         Copy-Item -LiteralPath $configPath -Destination $backupPath
         $configTemp = "$configPath.tmp"
-        [IO.File]::WriteAllText($configTemp, $newConfig, (New-Object Text.UTF8Encoding($false)))
+        [IO.File]::WriteAllText($configTemp, $newConfig, [System.Text.UTF8Encoding]::new($false))
         Move-Item -LiteralPath $configTemp -Destination $configPath -Force
         Write-Step "Updated OpenJarvis config. Backup: $backupPath"
     }
@@ -274,6 +276,12 @@ $master
 }
 
 function Start-OpenJarvis {
+    $running = @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match 'OpenJarvis|Jarvis' })
+    if ($running.Count -gt 0) {
+        Write-Warning 'OpenJarvis appears to be running. The controller did not close it or relaunch over it. Close OpenJarvis fully, then run the JARVIS Project Session shortcut again.'
+        return
+    }
+
     if (-not [string]::IsNullOrWhiteSpace($AppPath)) {
         if (-not (Test-Path -LiteralPath $AppPath -PathType Leaf)) {
             throw "The supplied OpenJarvis application path does not exist: $AppPath"
