@@ -99,6 +99,11 @@ try {
         Write-Host 'Refreshing the private master checklist...' -ForegroundColor Cyan
         [void](Invoke-BoundedGit $git @('-C', $repoRoot, 'fetch', '--no-tags', 'origin', 'main'))
         [void](Invoke-BoundedGit $git @('-C', $repoRoot, 'merge', '--ff-only', 'FETCH_HEAD'))
+        $localBase = (Invoke-BoundedGit $git @('-C', $repoRoot, 'rev-parse', 'HEAD')).Trim()
+        $remoteBase = (Invoke-BoundedGit $git @('-C', $repoRoot, 'rev-parse', 'FETCH_HEAD')).Trim()
+        if ($localBase -ne $remoteBase) {
+            throw 'Local main is ahead of or diverged from GitHub. The controller will not push pre-existing local commits.'
+        }
 
         $content = [IO.File]::ReadAllText($masterPath, [Text.Encoding]::UTF8)
         $newline = [Environment]::NewLine
