@@ -40,7 +40,11 @@ try {
     $shell = New-Object -ComObject WScript.Shell
     $shortcut = $shell.CreateShortcut($shortcutPath)
     $shortcut.TargetPath = $powershellExe
-    $shortcut.Arguments = '-NoLogo -NoProfile -ExecutionPolicy Bypass -File "' + $launcher + '"'
+    $shortcutArguments = '-NoLogo -NoProfile -ExecutionPolicy Bypass -File "' + $launcher + '"'
+    if (-not [string]::IsNullOrWhiteSpace($AppPath)) {
+        $shortcutArguments += ' -AppPath "' + $AppPath.Replace('"', '"') + '"'
+    }
+    $shortcut.Arguments = $shortcutArguments
     $shortcut.WorkingDirectory = $repoRoot
     $shortcut.Description = 'Refreshes the private JARVIS master plan and starts an OpenJarvis project session.'
     $shortcut.Save()
@@ -51,9 +55,6 @@ try {
     }
     else {
         & $launcher -SyncOnly -AppPath $AppPath
-    }
-    if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
-        throw "Project bootstrap returned exit code $LASTEXITCODE."
     }
 
     Write-Host '[4/4] Installation completed.' -ForegroundColor Green
