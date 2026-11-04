@@ -364,7 +364,7 @@ Do not delete or modify the original installation as part of backup verification
 ### Continuity
 - [ ] Resume interrupted tasks.
 - [ ] Restore project state after restart.
-- [ ] Implement an OpenJarvis session bootstrap that loads the complete authoritative project instructions and latest MASTER_TODO.md at every project session start.
+- [ ] **WORKING** — Implement an OpenJarvis session bootstrap that loads the complete authoritative project instructions and latest MASTER_TODO.md at every project session start.
 - [ ] Implement task-status updates in the canonical master file (WORKING / PARTIAL / BLOCKED / VERIFIED) with safe local/remote synchronisation and read-back verification.
 - [ ] Provide a fallback bootstrap for AI tools that do not automatically discover AGENTS.md, CLAUDE.md, GEMINI.md or Copilot instructions.
 - [ ] Track decisions and reasons.
@@ -862,7 +862,7 @@ Do not tick a checkbox based on intention, generated code or package installatio
 | Measured self-improvement | NOT STARTED |
 | Final hardening | NOT STARTED |
 | Repository agent instruction files | VERIFIED — created and read back from private GitHub |
-| OpenJarvis runtime auto-bootstrap and automatic master-file writer | NOT STARTED |
+| OpenJarvis runtime auto-bootstrap and automatic master-file writer | WORKING |
 
 ---
 
