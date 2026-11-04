@@ -18,3 +18,10 @@ You are now working on Project JARVIS in the private GitHub repository `eboxont-
 10. Tell me what changed, what was actually tested, what remains and the next task.
 
 If you cannot access the private repository or edit its master file, say so clearly. Do not pretend you read or updated anything.
+
+## Windows OpenJarvis runtime bootstrap
+If working from the installed Windows OpenJarvis app and the local controller is installed, start sessions using the desktop shortcut **JARVIS Project Session**. It refreshes the private repository and supplies the full current AGENTS.md and MASTER_TODO.md through the supported OpenJarvis system-prompt path.
+
+When the local clone is available, use runtime/Update-JARVIS-TaskStatus.ps1 to mark the selected checkbox WORKING before implementation and to record VERIFIED/PARTIAL/BLOCKED with evidence at the end. The helper pushes only MASTER_TODO.md and performs a remote read-back. Follow runtime/README.md for installation and command syntax.
+
+If the OpenJarvis agent has no local shell capability, do not pretend the helper ran. Use a connected GitHub capability where available; otherwise report the blocker and keep the task incomplete.
