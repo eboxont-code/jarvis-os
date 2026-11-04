@@ -6,7 +6,8 @@ param(
     [string]$Evidence,
     [string]$Done,
     [string]$Remaining,
-    [string]$NextAction
+    [string]$NextAction,
+    [string]$StatusRowLabel
 )
 
 Set-StrictMode -Version Latest
@@ -176,6 +177,21 @@ try {
         }
         if ($headerIndex -lt 0 -or $lines[$headerIndex + 1] -notmatch '^\|[- :|]+\|$') {
             throw 'Execution Log table header was not found in the expected format. No file was written.'
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($StatusRowLabel)) {
+            $statusRowIndices = @()
+            $statusRowPattern = '^\|\s*' + [regex]::Escape($StatusRowLabel) + '\s*\|'
+            for ($i = 0; $i -lt $lines.Count; $i++) {
+                if ($lines[$i] -match $statusRowPattern) { $statusRowIndices += $i }
+            }
+            if ($statusRowIndices.Count -ne 1) {
+                throw "Expected one status-table row labelled '$StatusRowLabel'; found $($statusRowIndices.Count). No file was written."
+            }
+            $statusCells = $lines[[int]$statusRowIndices[0]].Split('|')
+            if ($statusCells.Count -lt 4) { throw 'The selected status-table row is malformed.' }
+            $statusCells[2] = ' ' + $logStatus + ' '
+            $lines[[int]$statusRowIndices[0]] = $statusCells -join '|'
         }
 
         $date = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
