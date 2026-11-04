@@ -74,3 +74,7 @@ If GitHub write access is unavailable, prepare the exact change and clearly stat
 A feature is complete only when its acceptance criteria pass with real evidence. Generated code, an installed dependency, a prepared script, a successful build alone or a proposed design is not proof that an end-to-end capability works.
 
 The user expects direct, practical execution, one meaningful job at a time, with minimal repetitive manual work. The final objective is a working JARVIS, not a growing collection of plans.
+
+
+## Fallback for agents without automatic instruction discovery
+If the current AI tool does not automatically load repository instructions, use `JARVIS_BOOT.md` as the portable startup prompt. The agent must still retrieve and read the latest complete `AGENTS.md` and `MASTER_TODO.md` through its connected repository/file tools before work. A generic chat session cannot be assumed to have private GitHub access.
