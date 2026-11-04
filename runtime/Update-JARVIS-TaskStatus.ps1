@@ -26,6 +26,8 @@ function Invoke-BoundedGit {
     $psi.CreateNoWindow = $true
     $psi.RedirectStandardOutput = $true
     $psi.RedirectStandardError = $true
+    $psi.StandardOutputEncoding = [Text.Encoding]::UTF8
+    $psi.StandardErrorEncoding = [Text.Encoding]::UTF8
 
     $p = New-Object System.Diagnostics.Process
     $p.StartInfo = $psi
@@ -187,7 +189,7 @@ try {
 
         if ($newContent -eq $content) { throw 'No effective change was generated.' }
 
-        [IO.File]::WriteAllText($masterPath, $newContent, (New-Object Text.UTF8Encoding($false)))
+        [IO.File]::WriteAllText($masterPath, $newContent, [System.Text.UTF8Encoding]::new($false))
         [void](Invoke-BoundedGit $git @('-C', $repoRoot, 'add', '--', 'MASTER_TODO.md'))
 
         $stagedNames = Invoke-BoundedGit $git @('-C', $repoRoot, 'diff', '--cached', '--name-only', '--', 'MASTER_TODO.md')
