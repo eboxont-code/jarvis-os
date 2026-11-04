@@ -54,13 +54,15 @@ When using the installed OpenJarvis desktop app, the supported Windows session p
 Before implementing a task, use the local status helper when the OpenJarvis agent has shell access:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File "<repo-root>\runtime\Update-JARVIS-TaskStatus.ps1" -Action Start -TaskText "distinctive exact task wording"
+powershell -NoProfile -ExecutionPolicy Bypass -File "<repo-root>\runtime\Update-JARVIS-TaskStatus.ps1" -Action Start -TaskText "distinctive exact task wording" -StatusRowLabel "matching live-status table row label"
 ```
 
 At the end of the task, call the same helper with one of these forms:
 - VERIFIED: `-Status VERIFIED -Evidence "test command and actual passing result"`
 - PARTIAL: `-Status PARTIAL -Done "completed work" -Remaining "unfinished work" -NextAction "next executable step"`
 - BLOCKED: `-Status BLOCKED -Evidence "specific blocker" -NextAction "next executable step"`
+
+Pass `-StatusRowLabel "exact row label"` on both Start and Finish when the master file has a matching live-status table row; the helper updates that row in the same commit. Omit it when no matching row exists.
 
 The task text must identify exactly one checkbox. The helper updates only `MASTER_TODO.md`, commits only that file, pushes `main`, and verifies the remote read-back. Do not claim success if the helper reports a failure. If shell execution is unavailable, use the connected GitHub/file capability and follow the normal end-of-session protocol; if neither is available, report the blocker rather than pretending the master was updated.
 
