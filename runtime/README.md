@@ -57,6 +57,8 @@ For unfinished work, use -Status PARTIAL -Done "what works" -Remaining "what rem
 
 For a blocker, use -Status BLOCKED -Evidence "specific blocker" -NextAction "next executable step".
 
+When a matching live-status summary row exists in MASTER_TODO.md, add -StatusRowLabel "exact row label" to both Start and Finish. The updater changes that row in the same commit.
+
 The updater refuses ambiguous task matches, refuses a second active WORKING checkbox, and refuses VERIFIED without evidence. It only stages/commits MASTER_TODO.md; unrelated working-tree changes are not added. If push or remote read-back fails, it leaves the local state intact and reports the failure.
 
 ## Safety and limitations
