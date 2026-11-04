@@ -364,12 +364,15 @@ Do not delete or modify the original installation as part of backup verification
 ### Continuity
 - [ ] Resume interrupted tasks.
 - [ ] Restore project state after restart.
+- [ ] Implement an OpenJarvis session bootstrap that loads the complete authoritative project instructions and latest MASTER_TODO.md at every project session start.
+- [ ] Implement task-status updates in the canonical master file (WORKING / PARTIAL / BLOCKED / VERIFIED) with safe local/remote synchronisation and read-back verification.
+- [ ] Provide a fallback bootstrap for AI tools that do not automatically discover AGENTS.md, CLAUDE.md, GEMINI.md or Copilot instructions.
 - [ ] Track decisions and reasons.
 - [ ] Link tasks to code changes and test evidence.
 - [ ] Preserve one authoritative project state.
 - [ ] Avoid inventing missing history.
 
-**Acceptance:** JARVIS restarts and accurately resumes an existing project with verified context.
+**Acceptance:** JARVIS restarts, automatically loads the latest master plan, resumes the correct task and updates its status in the private repository with read-back verification.
 
 ## PHASE 6 — Real Windows computer control
 **Status: NOT STARTED — CORE REQUIREMENT**
@@ -795,6 +798,7 @@ Do not tick a checkbox based on intention, generated code or package installatio
 - [ ] Establish isolated JARVIS extension workspace.
 
 ### Milestone C — First useful JARVIS build
+- [ ] Implement OpenJarvis session bootstrap and automatic master TODO read/update/synchronisation.
 - [ ] Stable local chat workflow.
 - [ ] Persistent project memory.
 - [ ] Small set of useful permission-controlled tools.
@@ -857,6 +861,8 @@ Do not tick a checkbox based on intention, generated code or package installatio
 | Automation and monitoring | NOT STARTED |
 | Measured self-improvement | NOT STARTED |
 | Final hardening | NOT STARTED |
+| Repository agent instruction files | VERIFIED — created and read back from private GitHub |
+| OpenJarvis runtime auto-bootstrap and automatic master-file writer | NOT STARTED |
 
 ---
 
@@ -911,4 +917,5 @@ Add newest entries at the top. Keep each entry short and evidence-based.
 | Date | Task / milestone | Status | Evidence / result | Next action |
 |---|---|---|---|---|
 | 2026-11-04 | Create private JARVIS planning repository and master roadmap | VERIFIED | `eboxont-code/jarvis-os` created as private; `MASTER_TODO.md` committed and read back | Configure automatic AI session instructions |
+| 2026-11-04 | Add cross-agent startup and checklist-update rules | VERIFIED (repository files) | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md`, `opencode.json`, `JARVIS_BOOT.md` created; master status protocol added and remote read-back verified | Implement bootstrap inside the OpenJarvis runtime |
 
