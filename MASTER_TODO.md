@@ -364,8 +364,8 @@ Do not delete or modify the original installation as part of backup verification
 ### Continuity
 - [ ] Resume interrupted tasks.
 - [ ] Restore project state after restart.
-- [ ] **WORKING** — Implement an OpenJarvis session bootstrap that loads the complete authoritative project instructions and latest MASTER_TODO.md at every project session start.
-- [ ] Implement task-status updates in the canonical master file (WORKING / PARTIAL / BLOCKED / VERIFIED) with safe local/remote synchronisation and read-back verification.
+- [ ] **PARTIAL** — Implement an OpenJarvis session bootstrap that loads the complete authoritative project instructions and latest MASTER_TODO.md at every project session start — done: Windows launcher, installer and generated system-prompt integration committed; remaining: install on the PC and verify the installed desktop runtime actually loads it.
+- [ ] **PARTIAL** — Implement task-status updates in the canonical master file (WORKING / PARTIAL / BLOCKED / VERIFIED) with safe local/remote synchronisation and read-back verification — done: status helper commits only MASTER_TODO.md and verifies remote read-back; remaining: exercise it from an actual OpenJarvis agent session.
 - [ ] Provide a fallback bootstrap for AI tools that do not automatically discover AGENTS.md, CLAUDE.md, GEMINI.md or Copilot instructions.
 - [ ] Track decisions and reasons.
 - [ ] Link tasks to code changes and test evidence.
@@ -798,7 +798,7 @@ Do not tick a checkbox based on intention, generated code or package installatio
 - [ ] Establish isolated JARVIS extension workspace.
 
 ### Milestone C — First useful JARVIS build
-- [ ] Implement OpenJarvis session bootstrap and automatic master TODO read/update/synchronisation.
+- [ ] **PARTIAL** — Implement OpenJarvis session bootstrap and automatic master TODO read/update/synchronisation — done: controller package committed; remaining: install and verify on Windows (see Phase 5 Continuity).
 - [ ] Stable local chat workflow.
 - [ ] Persistent project memory.
 - [ ] Small set of useful permission-controlled tools.
@@ -862,7 +862,7 @@ Do not tick a checkbox based on intention, generated code or package installatio
 | Measured self-improvement | NOT STARTED |
 | Final hardening | NOT STARTED |
 | Repository agent instruction files | VERIFIED — created and read back from private GitHub |
-| OpenJarvis runtime auto-bootstrap and automatic master-file writer | WORKING |
+| OpenJarvis runtime auto-bootstrap and automatic master-file writer | PARTIAL — controller files committed; Windows runtime test pending |
 
 ---
 
@@ -916,6 +916,7 @@ Add newest entries at the top. Keep each entry short and evidence-based.
 
 | Date | Task / milestone | Status | Evidence / result | Next action |
 |---|---|---|---|---|
+| 2026-11-04 | Build Windows JARVIS Project Controller | PARTIAL | Added session launcher, one-time installer, generated system prompt, and safe task-status updater; runtime scripts and docs committed and read back from private GitHub. No Windows execution or installed-app prompt test has been run. | Clone the private repo on the PC, run the installer, then verify a new OpenJarvis chat loads the current master and can update/read it back. |
 | 2026-11-04 | Create private JARVIS planning repository and master roadmap | VERIFIED | `eboxont-code/jarvis-os` created as private; `MASTER_TODO.md` committed and read back | Configure automatic AI session instructions |
 | 2026-11-04 | Add cross-agent startup and checklist-update rules | VERIFIED (repository files) | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md`, `opencode.json`, `JARVIS_BOOT.md` created; master status protocol added and remote read-back verified | Implement bootstrap inside the OpenJarvis runtime |
 
