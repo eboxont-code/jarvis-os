@@ -25,3 +25,12 @@ If working from the installed Windows OpenJarvis app and the local controller is
 When the local clone is available, use runtime/Update-JARVIS-TaskStatus.ps1 to mark the selected checkbox WORKING before implementation and to record VERIFIED/PARTIAL/BLOCKED with evidence at the end. The helper pushes only MASTER_TODO.md and performs a remote read-back. Follow runtime/README.md for installation and command syntax.
 
 If the OpenJarvis agent has no local shell capability, do not pretend the helper ran. Use a connected GitHub capability where available; otherwise report the blocker and keep the task incomplete.
+
+## ABSOLUTE ZERO-COST RULE — NON-NEGOTIABLE
+
+Project JARVIS must operate with $0 additional expenditure. Never require or purchase paid AI/search/research APIs, ChatGPT/Claude/Grok subscriptions, API credits, paid trials, hosted inference, paid MCP servers, databases, automation platforms, licences, hosting, storage, monitoring, developer tools or subscription integrations. Never enter payment details, start subscriptions, upgrade accounts or cause charges.
+
+Use local-first architecture: local inference by default; keep memory, research databases, project files, task history and execution logs locally. Prefer existing hardware, OpenJarvis, Ollama, llama.cpp, SearXNG, Playwright, Git, SQLite, Python, Node.js, PowerShell and legitimate open-source tools. Use free public research sources lawfully, obey rate limits and terms, and never silently switch to paid access.
+
+Before adding any dependency, verify its licence, pricing, account/API needs, quotas, usage and data limits, hardware/storage requirements, and whether payment is eventually required. Open-source code does not make paid hosting free. Never treat a temporary free allowance as unlimited. If a capability cannot be delivered for $0, do not activate a paid option; document the limitation and test the best free alternative. Only an explicit, specific user authorisation can change this rule.
+
