@@ -33,6 +33,20 @@ At the beginning of every JARVIS work session:
 
 If the repository or master file cannot be accessed, say so and ask for access or the file. Never pretend it was read.
 
+## Full Windows computer control — core requirement
+
+Full visual and programmatic Windows desktop control is a mandatory core capability, not an optional enhancement. Read and follow `docs/WINDOWS_COMPUTER_CONTROL.md` together with Phase 6 of `MASTER_TODO.md` before implementing desktop-control work.
+
+- Filesystem, shell/PowerShell, process execution or Playwright/browser DOM access alone do not count as desktop control.
+- Inspect the exact installed OpenJarvis version and current local source/tool registry before integrating. Current upstream MCP documentation is not proof that the installed desktop build supports identical configuration.
+- Evaluate Microsoft Windows UI Automation, pywinauto UIA/Win32 adapters and FlaUI against the same real application matrix. Select adapters from measured compatibility; do not install redundant frameworks without evidence.
+- Use real screenshots, OCR and only verified local vision models. No paid cloud computer-use, OCR or vision services.
+- Prefer authenticated local MCP stdio if supported by the installed OpenJarvis build; otherwise use a narrowly scoped native tool adapter. HTTP must be loopback-only with authentication and Origin validation.
+- Run the bridge at normal-user privilege in the actual interactive Windows session. Keep it separate from Phase 7 elevation broker. Never bypass UAC, secure desktop, credential prompts or application security boundaries.
+- Every meaningful action must follow observe → target resolve → permission check → act → re-observe → verify. A click/key event being sent is not proof of success.
+- Test actual File Explorer, Notepad, Settings, browser and VS Code interactions in a disposable workspace. Capture real before/after evidence and report application limitations.
+- Never mark desktop control VERIFIED until the OpenJarvis-to-Windows end-to-end tests and security boundaries in Phase 6 and tests T20/T21 pass.
+
 ## Master checklist is authoritative
 - `MASTER_TODO.md` is the single source of truth for scope, priority, status, dependencies, acceptance criteria and next actions.
 - Do not create competing TODO files, private shadow checklists or an alternative project status.
