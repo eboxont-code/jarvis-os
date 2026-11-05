@@ -2,6 +2,21 @@
 
 This repository is the control centre and source of truth for Project JARVIS.
 
+## ABSOLUTE ZERO-COST GUARD — NON-NEGOTIABLE
+
+The full policy is in Section 0 of MASTER_TODO.md. It is binding on every agent, tool, architecture decision, implementation, installation, integration, deployment and maintenance task.
+
+- The total additional expenditure for JARVIS must be $0. Never require paid AI/search/research APIs, ChatGPT/Claude/Grok subscriptions, credits, trials, hosted inference, paid MCP servers, databases, automation, hosting, storage, monitoring, software licences, developer accounts or subscription integrations.
+- Never enter payment details, start a subscription, purchase credits, upgrade an account or cause a charge. Never assume a consumer subscription, free quota or temporary promotion is a permanent project dependency.
+- Local-first is mandatory: local inference by default; store memory, research data, project files, task histories and execution logs locally. Prefer existing hardware, local models, open-source software and self-hosting.
+- Use legitimate free public research sources and free/local fallbacks. Respect rate limits, terms and access restrictions. Never bypass a paywall or silently switch to paid access.
+- Before adding any dependency or service, verify licence, pricing, accounts, API requirements, quotas, usage/data limits, hardware/storage needs and whether payment is eventually required.
+- Open-source software does not make a paid hosted service free. Distinguish software licence from service/hosting costs.
+- If a capability cannot be delivered for $0, stop before activating it, document the limitation and offer the best tested zero-cost alternative. Do not claim it is complete.
+- This rule can only be changed by explicit, specific user authorisation. No agent may infer permission to spend from a feature request, urgency or convenience.
+
+When there is any uncertainty about cost, default to DO NOT INSTALL / DO NOT ACTIVATE until verified. Never optimise for "low cost"; optimise for zero additional cost.
+
 ## Mandatory startup
 Before doing project work, read the **entire** root `MASTER_TODO.md`. Do not rely on a summary, old chat history, cached context or a partial excerpt.
 
