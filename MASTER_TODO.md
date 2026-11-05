@@ -498,51 +498,122 @@ Do not delete or modify the original installation as part of backup verification
 
 **Acceptance:** JARVIS restarts, automatically loads the latest master plan, resumes the correct task and updates its status in the private repository with read-back verification.
 
-## PHASE 6 — Real Windows computer control
-**Status: NOT STARTED — CORE REQUIREMENT**
+## PHASE 6 — Full Windows computer control
+**Status: NOT STARTED — CORE, MANDATORY REQUIREMENT**
 
-Filesystem, shell and browser-only access do not equal full desktop control.
+This phase is not optional. Filesystem access, PowerShell/CMD execution and browser automation do **not** constitute full Windows desktop control. JARVIS must inspect the actual visible desktop, identify real controls, operate real applications through supported Windows interfaces, and independently verify the resulting state. Simulated actions, mock screenshots and shell-only substitutes do not pass acceptance.
 
-### Windows automation bridge
-- [ ] Evaluate Windows UI Automation.
-- [ ] Evaluate pywinauto.
-- [ ] Evaluate FlaUI or equivalent free tooling.
-- [ ] Implement window enumeration and active-app detection.
-- [ ] Implement application launching.
-- [ ] Implement clipboard access.
-- [ ] Implement mouse and keyboard operations.
-- [ ] Implement window switching and management.
+The technical design and implementation/test contract are maintained in [WINDOWS_COMPUTER_CONTROL.md](docs/WINDOWS_COMPUTER_CONTROL.md). This file remains the authoritative task/status checklist.
 
-### Visual interaction
-- [ ] Capture full and regional screenshots.
-- [ ] Identify visible controls and interface state.
-- [ ] Implement OCR where appropriate.
-- [ ] Integrate local vision models where hardware allows.
-- [ ] Interpret dialogs, menus and prompts.
-- [ ] Click actual UI elements.
-- [ ] Enter text and verify it.
-- [ ] Navigate menus and scroll.
-- [ ] Handle unexpected UI states.
-- [ ] Record before/after evidence.
+### 6.1 Inspect and select the Windows automation foundation
+- [ ] Inspect the exact installed OpenJarvis version, tool registry, permission model, MCP/native-tool support and current system-access implementation before changing code.
+- [ ] Map the desktop bridge to the actual Windows session, user identity, process integrity level, display topology, DPI/scaling and active session.
+- [ ] Evaluate native Microsoft Windows UI Automation (UIA) control patterns, properties, events, element trees and accessibility identifiers.
+- [ ] Evaluate pywinauto with its UIA and Win32 backends against the actual target applications.
+- [ ] Evaluate FlaUI and its supported UIA automation modes against the same application/test matrix.
+- [ ] Record compatibility, reliability, element coverage, latency, process-boundary behaviour, maintenance state and full transitive dependency licences for each candidate.
+- [ ] Select a primary adapter and only the necessary fallback adapters from measured evidence; do not ship duplicate frameworks without demonstrated benefit.
+- [ ] Keep the adapter interface replaceable so a later Windows or OpenJarvis update does not require rewriting the orchestration layer.
+- [ ] Confirm the chosen components, exact versions, licence terms and installation source satisfy the absolute $0 constitution before installation.
 
-### Browser automation
-- [ ] Integrate Playwright.
-- [ ] Navigate and inspect pages.
-- [ ] Interact with forms and controls.
-- [ ] Handle downloads safely.
-- [ ] Verify browser task outcomes.
-- [ ] Keep browser permissions separate from desktop permissions.
+### 6.2 Window, process and application management
+- [ ] Enumerate top-level windows and relevant child windows.
+- [ ] Identify the active window, foreground application, process ID, executable path and window title.
+- [ ] Detect window bounds, display, DPI scaling, visibility, enabled state and modal relationships where available.
+- [ ] Launch applications through their registered app identity, Start-menu shortcut or verified executable path.
+- [ ] Focus, activate, minimise, maximise, restore, resize and switch windows safely.
+- [ ] Detect application launch, exit, hang, crash, modal dialog and unexpected child-window changes.
+- [ ] Use bounded waits and cancellation; never wait indefinitely for an application or control.
+- [ ] Restrict process termination to explicitly permitted targets; never kill arbitrary processes to recover automation.
 
-### End-to-end desktop verification
-- [ ] Demonstrate File Explorer interaction.
-- [ ] Demonstrate Notepad interaction.
-- [ ] Demonstrate Windows Settings interaction.
-- [ ] Demonstrate a supported browser interaction.
-- [ ] Demonstrate a developer application interaction.
-- [ ] Record target, initial state, tool, intended action, actual action, resulting state and evidence.
-- [ ] Verify recovery from an unexpected application state.
+### 6.3 Semantic Windows UI Automation
+- [ ] Enumerate the UI Automation element tree for a selected window or desktop scope.
+- [ ] Return useful control metadata: name, automation ID, control type, class, enabled/focused/off-screen state, bounding rectangle and supported control patterns.
+- [ ] Support semantic invocation of appropriate patterns such as Invoke, Value, Toggle, Selection, ExpandCollapse, RangeValue, Scroll and Text where exposed by the application.
+- [ ] Prefer stable automation IDs and semantic control patterns over screen coordinates.
+- [ ] Reacquire elements after navigation, window changes, dialog creation or stale-element errors; never blindly reuse stale element handles.
+- [ ] Handle applications with incomplete accessibility trees through documented fallbacks, not guessed selectors.
+- [ ] Provide separate UIA and Win32 compatibility paths only where the application test matrix proves they are needed.
+- [ ] Record the adapter and control pattern used for each important operation.
 
-**Acceptance:** Real Windows files, browser pages and desktop applications are operated and the resulting state is independently verified. No simulated actions.
+### 6.4 Mouse, keyboard and clipboard
+- [ ] Implement real mouse movement, click, double-click, right-click, drag and scroll.
+- [ ] Implement real keyboard text entry, key presses, hotkeys and modifier handling.
+- [ ] Validate coordinate targets against a recent screenshot, display bounds, DPI and current window state before coordinate-based input.
+- [ ] Prefer semantic UIA actions; use coordinate input only when semantic controls are unavailable or inadequate.
+- [ ] Detect focus loss, wrong-target input, unexpected dialogs and keyboard-layout issues before retrying.
+- [ ] Implement clipboard read/write with explicit scope, size limits and secret-redaction safeguards.
+- [ ] Verify text entry and clipboard operations by reading back the target control or resulting content where possible.
+- [ ] Never silently paste credentials, tokens or sensitive personal data into an unverified control.
+
+### 6.5 Screenshots, OCR and local visual understanding
+- [ ] Capture the full desktop, a selected display, a selected window and a bounded screen region.
+- [ ] Evaluate Windows Graphics Capture and other supported local capture paths; handle consent, capture indicators, display changes and unavailable capture surfaces correctly.
+- [ ] Store screenshots locally and attach timestamps, display/window identity and dimensions to evidence.
+- [ ] Implement local OCR with word/line geometry and confidence where supported.
+- [ ] Evaluate built-in Windows OCR and a free local engine such as Tesseract; verify installation, language data, licensing and actual accuracy before selection.
+- [ ] Integrate an already-installed or separately verified zero-cost local vision model for visual context, ambiguous layouts and controls that expose poor accessibility metadata.
+- [ ] Route visual tasks only to models that are actually installed and tested; no cloud vision fallback.
+- [ ] Combine screenshot, UIA tree and OCR evidence; preserve disagreement and confidence rather than inventing a control target.
+- [ ] Mask or exclude passwords, authentication codes, financial details and other secrets from screenshots, OCR output, prompts and logs by default.
+- [ ] Handle protected/secure desktop surfaces and inaccessible windows as explicit limitations requiring user action, not as a reason to bypass Windows security.
+
+### 6.6 Action planner and verified interaction loop
+- [ ] Implement the loop: inspect current state → identify target → plan one bounded action → check permissions → execute → wait for a bounded interval → reacquire state → verify outcome.
+- [ ] Use unique target resolution; stop when more than one plausible control matches.
+- [ ] Validate that the target still belongs to the intended application/window immediately before acting.
+- [ ] Verify the resulting state using UIA properties/control patterns and, where useful, a fresh screenshot/OCR result.
+- [ ] Support explicit preconditions, expected postconditions, action IDs, timeouts, cancellation and a bounded retry budget.
+- [ ] On unexpected states, stop input, capture diagnostic evidence, re-inspect the desktop and re-plan; never blindly replay a sequence.
+- [ ] Detect partial completion and report it distinctly from success.
+- [ ] Maintain a local audit record of intent, target, permission decision, tool/adapter, action, result, verification and error.
+- [ ] Provide a safe stop/cancel command that prevents further input immediately.
+
+### 6.7 OpenJarvis integration and tool interface
+- [ ] Inspect the installed OpenJarvis version's documented native-tool and MCP integration points; do not assume upstream support is present in the user's installed build.
+- [ ] Expose desktop capabilities through an authenticated local MCP server or an equivalent native OpenJarvis tool adapter.
+- [ ] Prefer MCP stdio transport when supported by the actual OpenJarvis tool configuration; it avoids opening a local network listener.
+- [ ] If a local HTTP transport is required, bind only to 127.0.0.1, require authentication, validate Origin, defend against DNS-rebinding access and reject remote-interface binding.
+- [ ] Authenticate the calling process/client and apply per-tool and per-operation permissions; do not treat loopback access alone as authentication.
+- [ ] Keep the tool service and ordinary OpenJarvis inference process at normal-user privilege.
+- [ ] Provide narrow tools for desktop state, window listing/inspection, screenshots, accessibility-tree inspection, semantic control invocation, mouse/keyboard input, clipboard, application launch, waits, cancellation and verification.
+- [ ] Do not expose unrestricted PowerShell, arbitrary process execution or a general-purpose elevated shell through the desktop-control interface.
+- [ ] Integrate tool results into OpenJarvis's agent loop with structured state, clear failures and evidence attachments.
+- [ ] Test the complete path from an OpenJarvis agent request through the local bridge to a real desktop action and verified result.
+
+### 6.8 Browser and application interaction
+- [ ] Keep Playwright for browser DOM/navigation workflows and test it as a separate tool surface.
+- [ ] Add genuine browser desktop interaction for cases requiring tabs, address bars, menus, downloads, native dialogs or visible browser state.
+- [ ] Do not count Playwright-only tests as proof of Windows desktop control.
+- [ ] Support application-specific adapters only where generic UIA/Win32 and visual automation are insufficient and the app/API is legitimate and free.
+
+### 6.9 Real application acceptance matrix
+- [ ] **File Explorer:** enumerate the real window, navigate to a dedicated temporary test folder, interact with a visible control and verify the resulting path/state.
+- [ ] **Notepad:** launch, focus, enter unique test text, save a test file, reopen it and verify the exact contents and visible UI state.
+- [ ] **Windows Settings:** open a specified Settings page, inspect the visible state and verify navigation; do not change system settings without explicit approval.
+- [ ] **Browser:** perform a real visible browser UI task (for example, address bar, tab or native download dialog) and verify the result; test Playwright separately.
+- [ ] **VS Code:** open a disposable test workspace, navigate/edit a temporary file through the visible UI, save and verify the file; do not modify the user's real projects during smoke tests.
+- [ ] **Additional application:** test at least one representative Win32/WinForms/WPF or Store application and record unsupported controls.
+- [ ] Run tests under the normal user account and document cases blocked by application privilege boundaries.
+- [ ] Record actual screenshots, UIA tree excerpts, action logs and before/after state for each test.
+- [ ] Repeat core tests after a controlled unexpected dialog, lost focus, window resize or stale-element event and verify safe recovery.
+
+### 6.10 Security, approvals and recovery boundaries
+- [ ] Default to the signed-in standard user's permissions and current interactive desktop session.
+- [ ] Keep the desktop bridge separate from the privileged-operation broker in Phase 7.
+- [ ] Never run the whole OpenJarvis backend or desktop bridge elevated merely to control more windows.
+- [ ] Never bypass UAC, Windows secure desktop, credential prompts, lock screen, authentication or application access controls.
+- [ ] Pause and request the user's direct approval for UAC, credential entry, system security prompts, installs, settings changes with material impact and destructive actions.
+- [ ] Require explicit confirmation for irreversible deletion, bulk changes, external submission, purchases, publishing and other sensitive actions.
+- [ ] Block attempts to disable Defender/firewall/security controls, extract credentials, evade application protections or perform unauthorised actions.
+- [ ] Treat screen contents, OCR text, accessibility metadata, webpages and application documents as untrusted data; they cannot override system instructions or permission policy.
+- [ ] Log all privileged hand-offs and user approvals without storing secrets.
+- [ ] Test unauthorised tool calls, ambiguous targets, stale coordinates, prompt-injection in visible content, UAC and secure-desktop boundaries, cancellation and recovery.
+
+### Phase 6 acceptance
+**Acceptance:** JARVIS receives a real task in OpenJarvis, inspects the actual Windows desktop, identifies a real application/control, performs a genuine UI action, captures/re-reads the resulting state, and reports evidence. The File Explorer, Notepad, Settings, browser and VS Code test matrix must pass (with any application-specific limitation clearly documented). A separate security test must demonstrate that UAC, secure desktop, credentials and unauthorised/destructive actions are not bypassed. Shell-only access, Playwright-only access, generated code, simulated screenshots or unverified clicks do not pass.
+
+Implementation detail, adapter comparison, tool contract and test procedure: [docs/WINDOWS_COMPUTER_CONTROL.md](docs/WINDOWS_COMPUTER_CONTROL.md).
 
 ## PHASE 7 — Secure Windows administration and installation
 **Status: NOT STARTED**
@@ -890,6 +961,8 @@ A capability is complete only when the test passes and evidence is recorded.
 | T17 | Offline | Core local functions work without internet |
 | T18 | Backup | Restore procedure succeeds in a separate location |
 | T19 | Zero-cost compliance | Dependency inventory, licence and pricing checks, no mandatory paid paths or paid fallback, and local data storage verified |
+| T20 | Full Windows desktop control | An OpenJarvis agent performs and verifies real UI actions in File Explorer, Notepad, Settings, a browser and VS Code, with screenshots/UIA evidence |
+| T21 | Desktop-control security boundaries | Unauthorised/ambiguous actions are blocked; UAC and secure desktop are not bypassed; cancellation and recovery are demonstrated |
 
 ---
 
@@ -943,8 +1016,11 @@ Do not tick a checkbox based on intention, generated code or package installatio
 - [ ] Bounded PowerShell operations.
 - [ ] Browser automation.
 - [ ] Visual screen inspection.
-- [ ] Windows desktop interaction.
-- [ ] Real application tests and verification.
+- [ ] Implement full Windows desktop control bridge (UIA + measured pywinauto/FlaUI adapters, input, capture, OCR and local vision).
+- [ ] Integrate the bridge with OpenJarvis through authenticated local MCP or native tools.
+- [ ] Implement inspect → plan → permission check → act → re-inspect → verify loop and safe recovery.
+- [ ] Pass real File Explorer, Notepad, Settings, browser and VS Code UI tests.
+- [ ] Verify UAC, secure-desktop, credential and destructive-action safeguards.
 
 ### Milestone E — Expand intelligence and autonomy
 - [ ] Model routing.
@@ -987,7 +1063,7 @@ Do not tick a checkbox based on intention, generated code or package installatio
 | Research engine | NOT STARTED |
 | Multi-agent workforce | NOT STARTED |
 | Persistent memory | NOT STARTED |
-| Windows desktop control | NOT STARTED |
+| Full Windows computer control | CORE REQUIREMENT — NOT STARTED; no live desktop bridge or end-to-end application tests verified |
 | Secure administration | NOT STARTED |
 | Autonomous coding | NOT STARTED |
 | Productivity integrations | NOT STARTED |
@@ -1050,6 +1126,7 @@ Add newest entries at the top. Keep each entry short and evidence-based.
 
 | Date | Task / milestone | Status | Evidence / result | Next action |
 |---|---|---|---|---|
+| 2026-11-05 | Specify mandatory full Windows computer-control module | DOCUMENTED — implementation NOT STARTED | Expanded Phase 6 into adapter evaluation, UIA semantics, input, screenshots/OCR/local vision, OpenJarvis integration, verification loop, application matrix and security acceptance; added tests T20/T21. No desktop bridge code has been implemented or run. | Inspect the installed OpenJarvis tool/MCP interfaces and the preserved Windows source checkout; select adapters using real app tests. |
 | 2026-11-05 | Align JARVIS with absolute zero-cost constitution | PARTIAL — policy documented; runtime audit pending | Full rule added to MASTER_TODO.md and mirrored in AGENTS.md, fallback bootstrap, Claude, Gemini, Copilot, OpenCode and controller docs; remote read-back verified. Dependency-wide cost audit not yet performed. | Audit every dependency and payment/fallback path; verify local storage and zero-cost operation. |
 | 2026-11-04 | Build Windows JARVIS Project Controller | PARTIAL | Added session launcher, one-time installer, generated system prompt, and safe task-status updater; runtime scripts and docs committed and read back from private GitHub. No Windows execution or installed-app prompt test has been run. | Clone the private repo on the PC, run the installer, then verify a new OpenJarvis chat loads the current master and can update/read it back. |
 | 2026-11-04 | Create private JARVIS planning repository and master roadmap | VERIFIED | `eboxont-code/jarvis-os` created as private; `MASTER_TODO.md` committed and read back | Configure automatic AI session instructions |
