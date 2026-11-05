@@ -25,6 +25,130 @@
 - [ ] Never automatically fall back to a paid provider.
 - [ ] If a capability cannot genuinely be delivered for $0, document the limitation and implement the best practical free alternative.
 
+### ABSOLUTE ZERO-COST REQUIREMENT — NON-NEGOTIABLE
+
+The entire JARVIS project must operate without additional financial expenditure. This is a strict requirement, not a preference. It applies to design, development, runtime, research, deployment, integrations, maintenance, agents and future upgrades.
+
+#### 1. Completely prohibited
+
+Never require or purchase:
+- Paid AI API access.
+- ChatGPT, Claude or Grok subscriptions as project dependencies.
+- Paid search API subscriptions.
+- Paid research services.
+- Paid cloud inference.
+- Paid automation platforms.
+- Paid MCP servers.
+- Paid databases.
+- Paid software licences.
+- Paid hosting.
+- Paid storage.
+- Paid monitoring services.
+- Paid developer tools.
+- Subscription-based integrations.
+- Free trials that eventually require payment.
+- API credits that require purchasing more credits.
+- Any service that unexpectedly incurs charges.
+
+Never enter payment details, start subscriptions, purchase credits or upgrade an account for JARVIS. Never make essential functionality dependent on a personal subscription or a paid account. Do not silently assume a currently accessible consumer account, free quota or promotional entitlement will remain available.
+
+#### 2. Mandatory local-first architecture
+
+Use local software and the computer's existing resources wherever possible.
+
+Preferred technologies include:
+- OpenJarvis.
+- Ollama.
+- llama.cpp.
+- OpenCode.
+- SearXNG.
+- Playwright.
+- Git.
+- SQLite.
+- Open-source MCP servers.
+- Python.
+- Node.js.
+- PowerShell.
+- Local image, audio, video and vision models.
+- Open-source document and data processing libraries.
+
+All AI inference must run locally by default. Remote inference is not an essential dependency and must never silently replace local inference.
+
+All memory, research databases, project files, task histories and execution logs must be stored locally. Remote repositories or synchronisation may be used as optional mirrors where genuinely free, but a paid cloud service must never be mandatory. Design core workflows to retain useful local operation when a remote service is unavailable.
+
+#### 3. Completely free internet research
+
+Implement research using legitimate free access methods, including:
+- Self-hosted SearXNG.
+- Public search engines.
+- Publicly accessible websites.
+- Official documentation.
+- Public GitHub repositories.
+- Public package registries.
+- RSS feeds.
+- Public government datasets.
+- Public academic resources.
+- Free and unauthenticated APIs where available.
+
+Use multiple sources and fallback mechanisms. Respect search-engine rate limits, website terms and access restrictions. Do not treat a temporary free allowance as unlimited access. Do not switch to a paid API automatically when a free provider becomes unavailable. If a source blocks access, use another legitimate free source or report the limitation.
+
+#### 4. Free capability alternatives
+
+Whenever a capability usually requires payment:
+1. Investigate an open-source alternative.
+2. Check whether it can run locally.
+3. Check whether it can operate without registration or payment.
+4. Check its licence.
+5. Check hardware requirements.
+6. Test its actual functionality.
+7. Implement the best working zero-cost option.
+
+If no suitable zero-cost implementation exists, document the limitation instead of purchasing a service.
+
+#### 5. No hidden costs — mandatory dependency gate
+
+Before installing any dependency, integration, model, hosted tool or service, verify:
+- Licence.
+- Pricing model.
+- Required accounts.
+- API requirements.
+- Usage restrictions.
+- Data limits.
+- Whether payment is eventually required.
+- Whether the free option is sufficient for the intended workload.
+- Whether a local or self-hosted alternative exists.
+- Hardware and storage requirements.
+
+Reject dependencies that introduce mandatory payments or undisclosed/uncertain costs. Open-source software is not automatically a free service: distinguish free software from paid hosted infrastructure. Recheck pricing and licence when versions, providers or deployment models change.
+
+#### 6. Deployment policy
+
+Prefer:
+- Local hosting.
+- Self-hosting on the existing Windows computer.
+- Free open-source deployment tooling.
+- Free hosting tiers only as optional, replaceable conveniences.
+
+Never make a paid hosting provider essential. Do not purchase domains, developer memberships or publishing accounts. For Android, prioritise locally generated APK files and direct installation. For iOS, develop and prepare the application without paid services, but clearly identify any Apple signing, hardware or distribution restrictions that prevent a genuinely free release.
+
+#### 7. Hardware efficiency
+
+Optimise local AI workloads for available CPU, GPU, RAM and storage. Select appropriately quantised models. Avoid downloading unnecessarily large models. Use model routing to minimise resource consumption. Prefer reusable downloaded models, local caching and efficient inference. The system must work with the user's actual available hardware rather than assuming access to expensive GPUs or external servers.
+
+#### 8. Mandatory failure behaviour
+
+If a feature requires payment:
+- Do not activate it.
+- Do not create a paid account.
+- Do not purchase credits.
+- Do not silently substitute a paid provider.
+- Search for a legitimate free alternative.
+- Explain any remaining limitation.
+
+#### FINAL RULE
+
+The objective is maximum practical AI capability for $0 in additional software and service expenditure. Never sacrifice the zero-cost requirement without explicit user authorisation. A feature that is unavailable for free must be honestly identified as unavailable, not disguised as completed functionality.
+
 ### Preserve the existing installation
 - [ ] Preserve the existing OpenJarvis repository, customisations, application and user data.
 - [ ] Do not reinstall or replace working components without a demonstrated technical reason.
@@ -505,7 +629,7 @@ Filesystem, shell and browser-only access do not equal full desktop control.
 - [ ] Evaluate monetisation models.
 - [ ] Track revenue and operating metrics.
 - [ ] Separate potential revenue from actual earnings.
-- [ ] Prefer free tools and low-cost operating models.
+- [ ] Prefer free tools and zero-additional-cost operating models. Never use a low-cost, paid or subscription-based option as a substitute.
 
 ### Integrations
 - [ ] Discover existing local applications and interfaces.
