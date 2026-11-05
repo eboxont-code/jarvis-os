@@ -629,7 +629,7 @@ Filesystem, shell and browser-only access do not equal full desktop control.
 - [ ] Evaluate monetisation models.
 - [ ] Track revenue and operating metrics.
 - [ ] Separate potential revenue from actual earnings.
-- [ ] Prefer free tools and zero-additional-cost operating models. Never use a low-cost, paid or subscription-based option as a substitute.
+- [ ] Prefer only free tools and zero-additional-cost operating models. Reject paid and subscription-based options.
 
 ### Integrations
 - [ ] Discover existing local applications and interfaces.
@@ -967,7 +967,7 @@ Do not tick a checkbox based on intention, generated code or package installatio
 
 ## 11. Live status — last verified evidence
 
-**Last recorded evidence date:** 4 November 2026.
+**Last recorded evidence date:** 5 November 2026.
 
 | Milestone | Status |
 |---|---|
