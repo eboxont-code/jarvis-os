@@ -722,6 +722,14 @@ Filesystem, shell and browser-only access do not equal full desktop control.
 ## PHASE 13 — Final hardening and release
 **Status: NOT STARTED**
 
+### Zero-cost compliance audit
+- [ ] Inventory all dependencies, APIs, models, MCP servers, integrations and hosted services with licence and pricing evidence.
+- [ ] Verify no required workflow depends on paid access, credits, trials or subscriptions.
+- [ ] Audit all code/configuration fallback paths for paid-provider calls or billing triggers.
+- [ ] Verify local-first inference and local storage of memory, research data, project files, task history and logs.
+- [ ] Test that unavailable free providers fail safely without paid fallback.
+- [ ] Document capabilities that cannot be delivered for $0 and keep them marked unavailable.
+
 - [ ] Full security review.
 - [ ] Permissions and exposure audit.
 - [ ] Integration and regression testing.
@@ -881,6 +889,7 @@ A capability is complete only when the test passes and evidence is recorded.
 | T16 | Security | Unauthorised operation is blocked |
 | T17 | Offline | Core local functions work without internet |
 | T18 | Backup | Restore procedure succeeds in a separate location |
+| T19 | Zero-cost compliance | Dependency inventory, licence and pricing checks, no mandatory paid paths or paid fallback, and local data storage verified |
 
 ---
 
@@ -963,6 +972,7 @@ Do not tick a checkbox based on intention, generated code or package installatio
 | Milestone | Status |
 |---|---|
 | Master specification | Defined |
+| Absolute zero-cost constitution | DOCUMENTED in master and agent instructions; full dependency/runtime audit NOT VERIFIED |
 | Initial Windows/hardware audit | VERIFIED |
 | Ollama and four Qwen models inventoried | VERIFIED (inventory only) |
 | OpenJarvis repository identified | VERIFIED |
@@ -1040,6 +1050,7 @@ Add newest entries at the top. Keep each entry short and evidence-based.
 
 | Date | Task / milestone | Status | Evidence / result | Next action |
 |---|---|---|---|---|
+| 2026-11-05 | Align JARVIS with absolute zero-cost constitution | PARTIAL — policy documented; runtime audit pending | Full rule added to MASTER_TODO.md and mirrored in AGENTS.md, fallback bootstrap, Claude, Gemini, Copilot, OpenCode and controller docs; remote read-back verified. Dependency-wide cost audit not yet performed. | Audit every dependency and payment/fallback path; verify local storage and zero-cost operation. |
 | 2026-11-04 | Build Windows JARVIS Project Controller | PARTIAL | Added session launcher, one-time installer, generated system prompt, and safe task-status updater; runtime scripts and docs committed and read back from private GitHub. No Windows execution or installed-app prompt test has been run. | Clone the private repo on the PC, run the installer, then verify a new OpenJarvis chat loads the current master and can update/read it back. |
 | 2026-11-04 | Create private JARVIS planning repository and master roadmap | VERIFIED | `eboxont-code/jarvis-os` created as private; `MASTER_TODO.md` committed and read back | Configure automatic AI session instructions |
 | 2026-11-04 | Add cross-agent startup and checklist-update rules | VERIFIED (repository files) | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md`, `opencode.json`, `JARVIS_BOOT.md` created; master status protocol added and remote read-back verified | Implement bootstrap inside the OpenJarvis runtime |
