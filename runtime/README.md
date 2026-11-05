@@ -61,6 +61,12 @@ When a matching live-status summary row exists in MASTER_TODO.md, add -StatusRow
 
 The updater refuses ambiguous task matches, refuses a second active WORKING checkbox, and refuses VERIFIED without evidence. It only stages/commits MASTER_TODO.md; unrelated working-tree changes are not added. If push or remote read-back fails, it leaves the local state intact and reports the failure.
 
+## Absolute zero-cost rule
+
+This controller and the wider JARVIS project must not create additional expenditure. Do not add paid APIs, subscriptions, credits, paid trials, hosted inference, paid GitHub features, paid MCP servers, hosting, storage, databases, monitoring, licences or other paid dependencies. Do not enter payment details or upgrade accounts. Use the existing local clone, installed Git and the current private repository connection; do not add a paid GitHub plan, paid Actions minutes, paid runner, paid storage or third-party sync service.
+
+The controller itself uses local PowerShell and Git plus the existing GitHub remote for synchronisation. It does not call an AI API, purchase credits or require a paid integration. Its current startup and status-sync operations require internet access and authenticated access to the private GitHub repository; no offline sync mode is currently implemented. Do not represent that remote sync is offline-capable. The local repository remains on disk, but GitHub sync must fail clearly rather than falling back to a paid service.
+
 ## Safety and limitations
 
 - No paid service, API, subscription, token purchase or cloud inference is used.
