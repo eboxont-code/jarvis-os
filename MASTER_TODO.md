@@ -1000,7 +1000,7 @@ Do not tick a checkbox based on intention, generated code or package installatio
 - [ ] Test restoration into a separate location.
 - [ ] Preserve dirty Git working tree and customisations.
 - [ ] Establish safe checkpoint and rollback method.
-- [ ] Identify exact installed desktop app and backend runtime.
+- [ ] **WORKING** — Identify exact installed desktop app and backend runtime.
 - [ ] Establish isolated JARVIS extension workspace.
 
 ### Milestone C — First useful JARVIS build
@@ -1073,6 +1073,7 @@ Do not tick a checkbox based on intention, generated code or package installatio
 | Final hardening | NOT STARTED |
 | Repository agent instruction files | VERIFIED — created and read back from private GitHub |
 | OpenJarvis runtime auto-bootstrap and automatic master-file writer | PARTIAL — controller files committed; Windows runtime test pending |
+| Desktop EXE launch recovery | WORKING — screenshot confirms access denied creating `C:\\Program Files\\OpenJarvis\\src\\.venv`; user confirms `C:\\Users\\Boxont\\OpenJarvis` contains the project and an existing `.venv`; PowerShell inventory and root override remain unverified |
 
 ---
 
@@ -1126,6 +1127,7 @@ Add newest entries at the top. Keep each entry short and evidence-based.
 
 | Date | Task / milestone | Status | Evidence / result | Next action |
 |---|---|---|---|---|
+| 2026-11-07 | Diagnose OpenJarvis desktop EXE launch failure and possible source-checkout overlap | WORKING — diagnosis only; no recovery changes made | User screenshot shows the installed desktop app attempting to create `C:\\Program Files\\OpenJarvis\\src\\.venv` and failing with Windows `Access is denied (os error 5)`. User confirms a separate `C:\\Users\\Boxont\\OpenJarvis` checkout exists, contains `pyproject.toml`, and already has a `.venv`; user reports extensive terminal customisations. Upstream `desktop-v1.0.2` source documents `OPENJARVIS_ROOT` as a project-root override and shows the desktop app runs `uv sync` and then `uv run jarvis serve` from the selected checkout. This is a plausible path/permissions conflict, not yet proven to be the installed EXE version or the sole failure. The user has not yet returned the requested read-only PowerShell inventory; Git status, actual custom changes, active config, `uv` resolution/version, process/port state and environment-variable values remain unverified. No environment variable was changed; no files, `.venv`, processes or installations were modified. | Run the read-only PowerShell inventory on both folders; verify `OPENJARVIS_ROOT` scope/value, `git status` and remotes, `.venv` Python/uv availability, exact EXE version and backend/port state. Then choose a reversible user-level root override only if it points to the preserved customised checkout; verify startup and retain rollback. |
 | 2026-11-05 | Specify mandatory full Windows computer-control module | DOCUMENTED — implementation NOT STARTED | Expanded Phase 6 and added docs/WINDOWS_COMPUTER_CONTROL.md with UIA/pywinauto/FlaUI evaluation, input, capture/OCR/local vision, authenticated OpenJarvis MCP/native-tool boundary, verified action loop, application matrix and security tests T20/T21. Phase 6 remains NOT STARTED; no bridge code or live UI interaction has been implemented or run. | Inspect installed OpenJarvis 1.0.2 tool/MCP interfaces and preserved Windows source checkout; then implement the smallest adapter set that passes the real app matrix. |
 | 2026-11-05 | Align JARVIS with absolute zero-cost constitution | PARTIAL — policy documented; runtime audit pending | Full rule added to MASTER_TODO.md and mirrored in AGENTS.md, fallback bootstrap, Claude, Gemini, Copilot, OpenCode and controller docs; remote read-back verified. Dependency-wide cost audit not yet performed. | Audit every dependency and payment/fallback path; verify local storage and zero-cost operation. |
 | 2026-11-04 | Build Windows JARVIS Project Controller | PARTIAL | Added session launcher, one-time installer, generated system prompt, and safe task-status updater; runtime scripts and docs committed and read back from private GitHub. No Windows execution or installed-app prompt test has been run. | Clone the private repo on the PC, run the installer, then verify a new OpenJarvis chat loads the current master and can update/read it back. |
