@@ -7,7 +7,7 @@
 **Mobile priority:** Android first; iOS later  
 **Budget:** $0 additional expenditure — non-negotiable  
 **Master status:** IN PROGRESS  
-**Current milestone:** Prove local inference, preserve the existing installation, and establish a safe extension architecture.
+**Current milestone:** Safely integrate the installed Ollama, OpenJarvis, OpenClaw and OpenCode applications into one tested, local-first workflow.
 
 > This is the single source of truth for project scope, implementation order, status and acceptance evidence. Update this file after every meaningful milestone. A checkbox is completed only after the capability has been executed and verified.
 
@@ -190,9 +190,244 @@ The objective is maximum practical AI capability for $0 in additional software a
 
 ---
 
+## 0A. Integrated application architecture and delivery plan — CURRENT STRATEGY
+
+### Naming and scope — important distinction
+
+**JARVIS OS is the name of this project, its private repository and its master plan. It is not an installed application, executable, daemon, service, AI agent or runtime coordinator.** Do not design or describe it as though it already runs.
+
+The actual installed applications being integrated are:
+1. **Ollama** — shared local model runtime.
+2. **OpenJarvis** — existing desktop AI application and agent/tool environment.
+3. **OpenClaw** — target runtime coordinator through its Gateway and agent system, pending successful local setup and verification.
+4. **OpenCode** — specialist software-development agent/harness.
+
+The target is to make these four real applications cooperate. JARVIS OS records the architecture, rules, implementation tasks and evidence in this repository.
+
+### Current known starting point
+
+This is the starting information supplied by the user and previous recorded checks. It is not a substitute for a fresh inventory before configuration.
+
+| Component | Known state | Next verification |
+|---|---|---|
+| Ollama | Installed. Last recorded version: 0.40.14. | Read the actual installed version, identify the active server process and endpoint, and refresh the model list. |
+| OpenJarvis | Installed and previously recovered; the user confirmed its customised desktop and a real chat reply. Last recorded app version: 1.0.2. | Read the exact running EXE/build version, config path, backend ownership, model and MCP capabilities. Preserve the working installation and data. |
+| OpenClaw | Installed by the user, not configured. | Identify exact version, installation type, CLI availability, Gateway state and configuration location. |
+| OpenCode | Installed by the user, not configured. | Identify exact version, CLI availability, configuration location and local Ollama provider discovery. |
+| Local models | Previously recorded as qwen3.8:27b, qwen3.5:9b, qwen3.5:4b, qwen3.5:2b, and qwen3.5:0.8b. | Reconfirm the exact tags and test context length, tool calling, latency and resource use. Do not pull or replace models during initial integration. |
+
+### Target responsibility model
+
+| Application | One clear responsibility | It must not become |
+|---|---|---|
+| Ollama | The shared local inference service that loads and serves the selected models. | A task manager, memory authority or multi-agent coordinator. |
+| OpenClaw Gateway | The runtime coordinator: accepts delegated work, plans bounded tasks, manages agent sessions, routes tool calls and tracks execution. | The JARVIS OS project itself, a replacement for OpenJarvis, or an uncontrolled administrator. |
+| OpenJarvis | The existing desktop AI workspace for direct interaction, local inference and its verified built-in tools. It may expose a small, approved set of tools to OpenClaw through MCP if the installed build supports it. | A second competing global scheduler or a second writer of the master task plan. |
+| OpenCode | The specialist coding environment. It receives scoped software tasks, inspects repositories, edits approved files, runs tests and reports evidence. | A general-purpose Windows administrator or an independent project-status authority. |
+| JARVIS OS repository | The project name, architecture, policies, roadmap and single authoritative master checklist. | Any running runtime component or agent. |
+
+**Coordinator decision:** OpenClaw Gateway is the chosen target coordinator because its documented integration paths include MCP clients and ACP coding-agent sessions. This is a design decision to validate, not a claim that OpenClaw is already configured or running.
+
+### Target connection map
+
+**Ollama — one local endpoint**
+- Serves OpenJarvis inference.
+- Serves OpenClaw's local model provider.
+- Serves OpenCode's local model provider.
+
+**OpenClaw Gateway**
+- Coordinates work and owns the agent/task execution flow.
+- Launches and supervises OpenCode sessions through ACP.
+- Connects to explicitly allow-listed OpenJarvis MCP tools, if the installed OpenJarvis build exposes them successfully.
+- Reads the same project rules and task instructions as the other applications.
+
+**OpenJarvis desktop**
+- Remains independently usable by the user.
+- Uses the same Ollama service where its installed runtime supports attaching to an existing endpoint.
+- Exposes only selected, verified capabilities to OpenClaw. Start with read-only tools; add narrowly scoped write tools only after the read-only integration passes.
+
+**OpenCode**
+- Is started by OpenClaw for coding work through ACP after standalone Ollama operation is proven.
+- Uses the same local Ollama service and only the repository/workspace explicitly assigned to that task.
+- Returns changed-file summaries, test results, failures and output locations to OpenClaw.
+
+**Do not create circular delegation.** OpenClaw is the coordinator. OpenCode and OpenJarvis provide specialist work/capabilities. Do not initially configure OpenJarvis to send tasks back to OpenClaw while OpenClaw is calling OpenJarvis; add a reverse connection only if a concrete tested need appears.
+
+### Shared model and process policy
+
+- Use one stable Ollama API endpoint on loopback, expected to be http://127.0.0.1:11434, after live verification.
+- Ensure only one process owns the Ollama server lifecycle at a time. The owner may be the existing Ollama desktop/service or an OpenJarvis-managed process, depending on what the installed OpenJarvis build can safely attach to. Decide from process and endpoint tests; do not run competing servers deliberately.
+- Configure each application to use the verified endpoint. Do not assume that setting a model name alone proves the application is using that server.
+- OpenClaw's Ollama integration should use Ollama's native endpoint, without appending /v1; current OpenClaw documentation warns that using its OpenAI-compatible /v1 endpoint can break tool calling.
+- OpenCode should use its documented built-in Ollama provider/discovery for the installed version. Do not blindly copy a custom OpenAI-compatible provider example into a different provider format.
+- OpenJarvis should use its supported inference configuration and attach to the verified service where supported. Preserve the existing working config and never trigger an unnecessary model download.
+- Use only exact model tags returned by the live Ollama model inventory. No automatic pulls, cloud models, remote inference or paid fallbacks.
+- Benchmark local model tool calling and context before assigning it as an autonomous agent default. A model's presence in the Ollama list does not prove that it can reliably use tools.
+- Run heavy agent jobs sequentially at first. Increase concurrency only after resource use and failure recovery are measured on the actual computer.
+
+### Shared project context and task hand-off
+
+- MASTER_TODO.md remains the only authoritative project checklist.
+- AGENTS.md remains the mandatory repository policy source.
+- OpenClaw, OpenJarvis and OpenCode must receive the relevant project instructions before working on a repository.
+- Use the actual project repository and an explicitly approved working directory. Do not create shadow copies or competing TODO files.
+- Every delegated task must state: task goal, repository/workspace, allowed read/write scope, prohibited actions, dependencies, acceptance tests, required evidence and approval gates.
+- The coding agent must report changed files, commands/tests run, actual test results, unresolved errors and next steps.
+- Only the coordinator consolidates results into the canonical master plan. One task may have one active writer at a time.
+- Keep durable task/project data local. GitHub is the existing private source-control mirror, not a mandatory runtime dependency; local work should remain possible when disconnected.
+- Never place API keys, passwords, access tokens or private credentials in prompts, task packets, Git history or execution logs.
+
+### Integration phases and completion gates
+
+#### INTEGRATION PHASE A — Inventory and protect the current installation
+**Status: NOT STARTED**
+
+- [ ] Record the installed versions, executable paths, installation types and CLI availability for Ollama, OpenJarvis, OpenClaw and OpenCode.
+- [ ] Identify all running processes, listeners and existing API endpoints without stopping or changing them.
+- [ ] Record the exact current Ollama model IDs and metadata; do not download models.
+- [ ] Identify OpenJarvis's actual runtime config, model setting, backend lifecycle and MCP support in the installed build.
+- [ ] Identify OpenClaw's Gateway/config location and installed MCP/ACP capabilities.
+- [ ] Identify OpenCode's config location, Ollama provider discovery and ACP-compatible launch path.
+- [ ] Back up the relevant configuration files before changing them; exclude/redact credentials from reports.
+- [ ] Capture a baseline health test and current OpenJarvis chat/model state.
+- [ ] Record a rollback method for each configuration change.
+
+**Acceptance:** A verified inventory exists, all existing data/configuration is preserved, and no installation or runtime has been changed merely to gather information.
+
+#### INTEGRATION PHASE B — Establish one shared Ollama service
+**Status: NOT STARTED**
+
+- [ ] Choose one Ollama process/service to own the local endpoint based on the Phase A findings.
+- [ ] Confirm the expected loopback endpoint responds to /api/tags and /api/ps.
+- [ ] Confirm each recorded model tag is actually present; do not assume the older inventory is current.
+- [ ] Run a direct prompt against one existing model and record the exact model, response, duration and resource use.
+- [ ] Run a real tool-call/completion compatibility test against candidate models where supported.
+- [ ] Configure or verify OpenJarvis against this same service without triggering an unrelated first-run model download.
+- [ ] Restart OpenJarvis and the chosen Ollama owner separately; prove there is no port conflict or unwanted duplicate server.
+- [ ] Document the single owner, endpoint, model defaults and clean shutdown behaviour.
+
+**Acceptance:** One stable local endpoint serves a real model response, OpenJarvis uses the intended endpoint/model, and restart/close behaviour is predictable. No model pull is required for this acceptance.
+
+#### INTEGRATION PHASE C — Configure OpenCode independently
+**Status: NOT STARTED**
+
+- [ ] Configure OpenCode's built-in Ollama provider against the verified local service.
+- [ ] Discover and select only an installed model with verified completion and tool-use support.
+- [ ] Verify OpenCode can complete a normal prompt using the local model with no cloud provider configured or selected.
+- [ ] Use a disposable test repository first; inspect files without modification, then complete one small controlled code-change task.
+- [ ] Run the relevant tests and capture changed-file and test evidence.
+- [ ] Configure explicit permissions for reads, edits, shell commands, external network access and destructive operations.
+- [ ] Verify cancellation and that OpenCode does not modify a path outside the assigned workspace.
+
+**Acceptance:** OpenCode completes and verifies a small coding task with Ollama, within a disposable workspace and without paid/cloud inference.
+
+#### INTEGRATION PHASE D — Configure OpenClaw as the runtime coordinator
+**Status: NOT STARTED**
+
+- [ ] Run the installed OpenClaw version's supported first-run setup and record its version/config paths.
+- [ ] Configure Ollama as a local-only provider at the verified native endpoint.
+- [ ] Set a model only after verifying its context capacity and tool-calling behaviour; do not allow a cloud fallback.
+- [ ] Start the Gateway and verify its local Control UI is reachable on loopback only.
+- [ ] Configure the default agent's tool policy, workspace boundaries, timeouts, logging and cancellation.
+- [ ] Disable or leave unconfigured external messaging channels until the local workflow is secure and stable.
+- [ ] Verify one real local model response and one harmless tool call.
+- [ ] Verify Gateway shutdown and restart without losing its intended config.
+
+**Acceptance:** OpenClaw operates as a local-only coordinator, can use its model and permitted tools, and exposes no unintended network or account access.
+
+#### INTEGRATION PHASE E — Connect OpenClaw to OpenCode through ACP
+**Status: NOT STARTED**
+
+- [ ] Verify the installed OpenClaw release supports ACP and the current OpenCode harness.
+- [ ] Install/enable the official ACP backend plugin only after its licence, dependencies and zero-cost status are checked.
+- [ ] Register OpenCode as an ACP coding harness using the documented launch method for the installed versions.
+- [ ] Verify an OpenClaw task creates an OpenCode session with the correct workspace and scoped permissions.
+- [ ] Verify OpenClaw receives the actual session result, changed-file summary, test output and failure state.
+- [ ] Verify stop/cancel, timeout and clean session termination.
+- [ ] Verify no recursive delegation or second competing task manager is created.
+
+**Acceptance:** OpenClaw successfully delegates a real disposable coding task to OpenCode through ACP and receives independently checkable evidence.
+
+#### INTEGRATION PHASE F — Connect OpenJarvis tools to OpenClaw through MCP
+**Status: NOT STARTED**
+
+- [ ] Inspect the installed OpenJarvis build's actual MCP server command, supported transport, tool registry and permission controls.
+- [ ] Confirm the MCP server can expose a narrow set of OpenJarvis capabilities without requiring a replacement desktop build or an unsupported upstream-only feature.
+- [ ] Prefer local stdio transport where supported by both installed applications; otherwise use authenticated loopback-only transport.
+- [ ] Connect OpenClaw as the MCP client to the verified OpenJarvis MCP server.
+- [ ] Start with a whitelist of read-only tools and verify discovery plus real tool responses.
+- [ ] Add narrowly scoped write tools only after their permission checks, audit trail and rollback behaviour are tested.
+- [ ] Keep unrestricted shell, arbitrary process execution, credential access and elevated operations out of the initial MCP surface.
+- [ ] Verify a failing or stopped MCP server does not break ordinary OpenJarvis chat or OpenClaw's other tools.
+- [ ] Confirm there is no circular OpenClaw ↔ OpenJarvis agent delegation.
+
+**Acceptance:** OpenClaw can call specifically approved OpenJarvis tools through MCP; tool availability, permissions, failures and logs are independently verified.
+
+#### INTEGRATION PHASE G — Shared task workflow and controlled autonomy
+**Status: NOT STARTED**
+
+- [ ] Define one task hand-off format used by OpenClaw and OpenCode, with OpenJarvis context/tools supplied only when needed.
+- [ ] Make OpenClaw the only runtime coordinator for delegated multi-step jobs.
+- [ ] Make one agent/task the writer for any given project file at a time; avoid simultaneous edits.
+- [ ] Provide the correct AGENTS.md and relevant MASTER_TODO.md context to each coding session.
+- [ ] Capture task ID, owner, status, allowed scope, approvals, outputs, tests, evidence and recovery point.
+- [ ] Enable autonomous research, read-only inspection and reversible edits only within explicitly approved workspaces.
+- [ ] Require user approval for installs, elevated actions, destructive changes, external submissions, publishing, payments and credential use.
+- [ ] Add bounded retries, timeouts, cancellation, duplicate-task prevention and checkpoint recovery.
+- [ ] Resume a harmless interrupted task after a controlled restart without duplicating completed work.
+- [ ] Keep all background tasks visible in OpenClaw's task/session status and report completion in plain English.
+
+**Acceptance:** A multi-step task is delegated across the applications, completed within approved boundaries, verified, recorded once in the authoritative project plan and recoverable after interruption.
+
+#### INTEGRATION PHASE H — End-to-end integrated acceptance
+**Status: NOT STARTED**
+
+- [ ] Run the complete integration test on a disposable local project.
+- [ ] Ask OpenClaw to inspect and plan the task.
+- [ ] Confirm OpenClaw uses the local Ollama endpoint.
+- [ ] Confirm OpenClaw invokes the approved OpenJarvis MCP tool(s).
+- [ ] Confirm OpenClaw starts OpenCode through ACP.
+- [ ] Confirm OpenCode changes only the disposable project and runs its tests.
+- [ ] Confirm OpenClaw verifies the output and records the result.
+- [ ] Confirm OpenJarvis remains usable independently.
+- [ ] Restart the applications and prove the connection settings and task history recover.
+- [ ] Audit all network traffic/configuration paths for local-only inference and absence of paid providers.
+- [ ] Record performance, limitations, failure recovery and final evidence.
+
+**Acceptance:** One complete, real task passes from coordinator to local model, approved OpenJarvis tools and OpenCode coding session, then returns with verified evidence. Each application remains independently usable. No paid service is required.
+
+### Required integration tests
+
+| ID | Acceptance test | Required evidence |
+|---|---|---|
+| T22 | One shared Ollama runtime | Process/port ownership, /api/tags, real response and clean restart; no competing listener |
+| T23 | OpenJarvis uses shared Ollama | Actual OpenJarvis chat response, exact model/endpoint and no unnecessary model download |
+| T24 | OpenClaw uses local Ollama | Local-only provider, real response and a verified harmless tool call |
+| T25 | OpenCode uses local Ollama | Model discovery, real coding task and local test evidence |
+| T26 | OpenClaw → OpenCode ACP | Session creation, scoped workspace, result, cancellation and test output |
+| T27 | OpenClaw → OpenJarvis MCP | Whitelisted tool discovery/call, permission enforcement and failure handling |
+| T28 | Shared task context | Correct instructions and task scope reach each participating application |
+| T29 | Integrated end-to-end task | OpenClaw coordinates OpenJarvis tool use and OpenCode work; output independently verified |
+| T30 | Autonomy and safety | Allowed tasks proceed; forbidden/approval-gated tasks stop; audit records are produced |
+| T31 | Restart and recovery | Gateway, desktop, Ollama owner and ACP sessions recover without duplicate execution or port conflicts |
+
+### Official integration references checked
+
+Use current official documentation as implementation guidance, but always validate the installed versions before copying commands or configuration:
+
+- OpenClaw + Ollama: https://docs.openclaw.ai/providers/ollama/setup
+- OpenClaw MCP client: https://docs.openclaw.ai/tools/mcp
+- OpenClaw ACP agents: https://docs.openclaw.ai/tools/acp-agents
+- OpenClaw ACP setup: https://docs.openclaw.ai/tools/acp-agents-setup
+- OpenCode models and local Ollama provider: https://opencode.ai/docs/models/
+- OpenJarvis external MCP servers: https://open-jarvis.github.io/OpenJarvis/user-guide/mcp-external-servers/
+- OpenJarvis MCP server API: https://open-jarvis.github.io/OpenJarvis/api-reference/openjarvis/mcp/server/
+
+---
+
 ## 1. Vision and operating cycle
 
-JARVIS is intended to become a universal personal AI operating system and digital assistant. It should combine the practical capabilities of conversational AI, complex reasoning, live research, specialist agents, software engineering, browser and Windows computer use, system administration, persistent memory, productivity, data analysis, creative work, integrations, automation and measured self-improvement.
+The JARVIS OS project aims to deliver a universal personal AI operating environment by integrating and extending the actual installed applications—Ollama, OpenJarvis, OpenClaw and OpenCode. JARVIS OS itself is the project name and master plan, not a running application. The integrated applications should provide conversational AI, complex reasoning, live research, specialist agents, software engineering, browser and Windows computer use, system administration, persistent memory, productivity, data analysis, creative work, integrations, automation and measured self-improvement.
 
 These are capability goals, not a requirement to reproduce proprietary models or paid services.
 
@@ -821,28 +1056,20 @@ Implementation detail, adapter comparison, tool contract and test procedure: [do
 
 ---
 
-## 4. Central JARVIS interface
+## 4. User-facing experience across the installed applications
 
-**Status: NOT STARTED**
+**Status: NOT STARTED — integration and division of responsibility must be verified**
 
-Required areas:
-- [ ] Main chat.
-- [ ] Voice interaction.
-- [ ] Research workspace.
-- [ ] Project manager.
-- [ ] Task manager.
-- [ ] Agent workforce.
-- [ ] Computer operations.
-- [ ] Files and documents.
-- [ ] Integrations.
-- [ ] Memory.
-- [ ] Monitoring.
-- [ ] Automation.
-- [ ] System health.
-- [ ] Permissions.
-- [ ] Activity and audit history.
+No separate JARVIS OS desktop application is assumed or planned as part of this integration milestone.
 
-The interface must display actual task state, assigned agent, tools used, commands executed, files modified, research sources, progress, approvals, errors, verification status and deliverables. Do not simulate progress or display capabilities as active when they are unavailable.
+- [ ] Keep OpenJarvis as the existing direct desktop AI workspace.
+- [ ] Use the OpenClaw Control UI as the initial view of coordinated agent tasks and sessions, if its local setup and security checks pass.
+- [ ] Use OpenCode's own interface/session for software-development work when direct developer interaction is needed.
+- [ ] Make task progress, agent ownership, tool use, changed files, research sources, approvals, errors, verification status and deliverables visible in the relevant application.
+- [ ] Avoid building a replacement dashboard until the native interfaces and hand-offs have been proven.
+- [ ] Consider a unified front end only after the four applications work reliably together and there is a demonstrated user need.
+
+Do not simulate progress or display capabilities as active when they are unavailable.
 
 ---
 
@@ -963,6 +1190,16 @@ A capability is complete only when the test passes and evidence is recorded.
 | T19 | Zero-cost compliance | Dependency inventory, licence and pricing checks, no mandatory paid paths or paid fallback, and local data storage verified |
 | T20 | Full Windows desktop control | An OpenJarvis agent performs and verifies real UI actions in File Explorer, Notepad, Settings, a browser and VS Code, with screenshots/UIA evidence |
 | T21 | Desktop-control security boundaries | Unauthorised/ambiguous actions are blocked; UAC and secure desktop are not bypassed; cancellation and recovery are demonstrated |
+| T22 | One shared Ollama runtime | Process/port ownership, /api/tags, real response and clean restart; no competing listener |
+| T23 | OpenJarvis uses shared Ollama | Actual OpenJarvis chat response, exact model/endpoint and no unnecessary model download |
+| T24 | OpenClaw uses local Ollama | Local-only provider, real response and a verified harmless tool call |
+| T25 | OpenCode uses local Ollama | Model discovery, real coding task and local test evidence |
+| T26 | OpenClaw → OpenCode ACP | Session creation, scoped workspace, result, cancellation and test output |
+| T27 | OpenClaw → OpenJarvis MCP | Whitelisted tool discovery/call, permission enforcement and failure handling |
+| T28 | Shared task context | Correct instructions and task scope reach each participating application |
+| T29 | Integrated end-to-end task | OpenClaw coordinates OpenJarvis tool use and OpenCode work; output independently verified |
+| T30 | Autonomy and safety | Allowed tasks proceed; forbidden/approval-gated tasks stop; audit records are produced |
+| T31 | Restart and recovery | Gateway, desktop, Ollama owner and ACP sessions recover without duplicate execution or port conflicts |
 
 ---
 
@@ -986,59 +1223,66 @@ Do not tick a checkbox based on intention, generated code or package installatio
 
 ## 10. Immediate execution queue
 
-### Milestone A — Prove local AI foundation (CURRENT)
-- [ ] Run JARVIS_Phase2_Local_Inference_v1.zip.
-- [ ] Verify direct Ollama response.
-- [ ] Verify OpenJarvis uses the local model through its actual runtime.
-- [ ] Record model identifier, latency, resource use and errors.
-- [ ] Select first known-good configuration.
+The immediate priority is integration of the four already-installed applications. Do not start by installing more tools, downloading more models or replacing OpenJarvis.
 
-### Milestone B — Stabilise development foundation
-- [ ] Verify main repository backup contents.
-- [ ] Review the .pytest_cache access-denied entries.
-- [ ] Verify .openjarvis user-data copy.
-- [ ] Test restoration into a separate location.
-- [ ] Preserve dirty Git working tree and customisations.
-- [ ] Establish safe checkpoint and rollback method.
-- [x] **VERIFIED** — Identify and recover the existing desktop app and backend runtime — evidence: restored the custom dashboard and confirmed chat works; `/health` returned `{"status":"ok"}` and `/v1/models` returned all five existing Qwen models; managed restart test v2 passed two launches with a clean backend-process and port-8000 shutdown between launches (2026-11-08).
-- [x] **VERIFIED** — Verify full Windows restart recovery — evidence: after the 8 November 2026 Windows restart, the existing desktop launched as PID 2688; backend `/health` returned `ok`; all five models were available; user confirmed the customised dashboard and a real chat reply; normal desktop close stopped backend PID 10252 and released port 8000; a second launch as PID 22172 again passed health and all five model checks with backend PID 19716, and the app was left running. Report: `C:\Users\Boxont\Desktop\OpenJarvis-Windows-Restart-Check-20261108-173443-408-20508-bb737624.txt`.
-- [ ] Establish isolated JARVIS extension workspace.
+### Milestone A — Inventory and protect the four applications (CURRENT)
+- [ ] Record exact Ollama, OpenJarvis, OpenClaw and OpenCode versions, executable paths and config locations.
+- [ ] Record running processes and local endpoints without changing or stopping services.
+- [ ] Refresh the Ollama model inventory; do not pull models.
+- [ ] Inspect installed OpenJarvis inference and MCP capabilities.
+- [ ] Inspect installed OpenClaw Gateway, Ollama provider, MCP client and ACP support.
+- [ ] Inspect installed OpenCode Ollama provider and ACP launch support.
+- [ ] Back up relevant configuration safely, excluding credentials from reports.
+- [ ] Record rollback instructions and a baseline OpenJarvis chat/health check.
 
-### Milestone C — First useful JARVIS build
-- [ ] **PARTIAL** — Implement OpenJarvis session bootstrap and automatic master TODO read/update/synchronisation — done: controller package committed; remaining: install and verify on Windows (see Phase 5 Continuity).
-- [ ] Stable local chat workflow.
-- [ ] Persistent project memory.
-- [ ] Small set of useful permission-controlled tools.
-- [ ] Task tracking and execution logs.
-- [ ] Repeatable test and verification loop.
+### Milestone B — One shared Ollama service
+- [ ] Select one process to own the Ollama service after inspecting current startup behaviour.
+- [ ] Verify the local endpoint, available model tags and real completion.
+- [ ] Test candidate models for context and tool-calling capability.
+- [ ] Connect/verify OpenJarvis without triggering another model download.
+- [ ] Prove there is no duplicate server, port conflict or broken restart/close behaviour.
 
-### Milestone D — Give JARVIS hands
-- [ ] Real filesystem operations.
-- [ ] Bounded PowerShell operations.
-- [ ] Browser automation.
-- [ ] Visual screen inspection.
-- [ ] Implement full Windows desktop control bridge (UIA + measured pywinauto/FlaUI adapters, input, capture, OCR and local vision).
-- [ ] Integrate the bridge with OpenJarvis through authenticated local MCP or native tools.
-- [ ] Implement inspect → plan → permission check → act → re-inspect → verify loop and safe recovery.
-- [ ] Pass real File Explorer, Notepad, Settings, browser and VS Code UI tests.
-- [ ] Verify UAC, secure-desktop, credential and destructive-action safeguards.
+### Milestone C — OpenCode standalone
+- [ ] Configure the built-in local Ollama provider.
+- [ ] Confirm an installed model appears and completes a prompt.
+- [ ] Complete one small coding task in a disposable repository.
+- [ ] Verify test results, changed-file scope, cancellation and permissions.
 
-### Milestone E — Expand intelligence and autonomy
-- [ ] Model routing.
-- [ ] Live research and source verification.
-- [ ] Specialist agents.
-- [ ] Autonomous coding workflow.
-- [ ] Automation and monitoring.
-- [ ] Controlled, benchmarked improvement.
+### Milestone D — OpenClaw standalone
+- [ ] Configure local-only Ollama access.
+- [ ] Verify the Gateway and local Control UI.
+- [ ] Verify a real local response and harmless tool call.
+- [ ] Set bounded permissions, logs, timeout and cancellation policies.
+- [ ] Leave external messaging channels unconfigured until local integration passes.
 
-### Milestone F — Complete the personal AI operating system
-- [ ] Productivity and business integrations.
-- [ ] Creative and multimodal capabilities.
-- [ ] Unified interface.
-- [ ] Android companion.
-- [ ] iOS feasibility within zero-cost constraints.
-- [ ] End-to-end acceptance suite.
-- [ ] Final documentation and limitations.
+### Milestone E — Join the applications
+- [ ] Connect OpenClaw to OpenCode using the supported ACP integration.
+- [ ] Prove delegation, scoped work, result return and cancellation.
+- [ ] Expose a limited OpenJarvis MCP tool set, if supported by the installed build.
+- [ ] Connect OpenClaw to OpenJarvis using local stdio MCP where supported, otherwise authenticated loopback MCP.
+- [ ] Verify tool whitelisting, actual responses and failure isolation.
+
+### Milestone F — Shared context and safe autonomy
+- [ ] Provide one consistent project instruction set and task hand-off format.
+- [ ] Keep MASTER_TODO.md as the sole authoritative project checklist.
+- [ ] Make OpenClaw the single runtime coordinator for multi-step tasks.
+- [ ] Add bounded retries, timeouts, cancellation, checkpoints and restart recovery.
+- [ ] Allow autonomous low-risk work only in explicitly approved workspaces.
+- [ ] Require approval for installs, elevation, deletion, publishing, external messages, payments and credential use.
+
+### Milestone G — End-to-end proof
+- [ ] Complete one disposable-project task that uses Ollama, OpenClaw, OpenJarvis MCP and OpenCode ACP together.
+- [ ] Verify the resulting files and tests independently.
+- [ ] Verify all four applications remain independently usable.
+- [ ] Verify local-only inference, no additional spending and clean restart/recovery.
+- [ ] Record evidence for T22–T31 and update the live status.
+
+### Existing foundation work — continue without losing it
+- [ ] Verify repository and .openjarvis backup contents; review recorded access-denied entries.
+- [ ] Test recovery into a separate location.
+- [ ] Preserve the local OpenJarvis custom source, build and data; never overwrite them without a verified backup.
+- [ ] Establish an isolated extension/workspace strategy only after the four-application baseline is recorded.
+- [ ] Continue the longer-term research, memory, Windows desktop control, administration, productivity, creative, Android and hardening roadmap only in dependency order.
 
 ---
 
@@ -1073,6 +1317,10 @@ Do not tick a checkbox based on intention, generated code or package installatio
 | Automation and monitoring | NOT STARTED |
 | Measured self-improvement | NOT STARTED |
 | Final hardening | NOT STARTED |
+| Integrated four-application architecture | DOCUMENTED — target roles, MCP/ACP hand-offs, phases and acceptance tests recorded in Section 0A; implementation NOT STARTED | Version inventory and live compatibility checks remain. |
+| Ollama / OpenJarvis / OpenClaw / OpenCode shared runtime | NOT STARTED — no integrated configuration or end-to-end acceptance has been performed | Begin with Milestone A inventory; preserve current OpenJarvis. |
+| OpenClaw → OpenCode ACP | NOT STARTED — current official connection path documented; installed-version compatibility not yet checked | Verify exact OpenClaw/OpenCode versions, then test standalone OpenCode before ACP. |
+| OpenClaw → OpenJarvis MCP | NOT STARTED — current OpenJarvis/OpenClaw MCP documentation reviewed; installed-build support and transport not yet tested | Inspect installed OpenJarvis MCP server and permissions. |
 | Repository agent instruction files | VERIFIED — created and read back from private GitHub |
 | OpenJarvis runtime auto-bootstrap and automatic master-file writer | PARTIAL — controller files committed; Windows runtime test pending |
 | Existing OpenJarvis desktop recovery and managed restart | VERIFIED — custom dashboard is restored; chat works; managed restart test v2 passed two consecutive launches. Backend `/health` returned `ok`; `/v1/models` returned `qwen3.5:9b`, `qwen3.8:27b`, `qwen3.5:2b`, `qwen3.5:0.8b`, `qwen3.5:4b`. After each desktop close, the registered backend process was gone, port 8000 had zero listeners and `/health` did not respond; the second launch was healthy. New local EXE SHA-256: `085244CCEFF72B00AC05F50515036481C58B5640A03C04340C0BCF0DB6AF2D0C`. Managed-shutdown source changes are in `C:\Users\Boxont\OpenJarvis\frontend\src-tauri\src\lib.rs`; the source checkout and EXE changes remain local and have **not** been committed/pushed as OpenJarvis source code. No new installer was created. |
@@ -1130,6 +1378,7 @@ Add newest entries at the top. Keep each entry short and evidence-based.
 
 | Date | Task / milestone | Status | Evidence / result | Next action |
 |---|---|---|---|---|
+| 2026-11-08 | Rebuild the master plan around the four installed applications | DOCUMENTED — architecture and phased integration plan updated; no application configuration changed | Clarified that JARVIS OS is only the project/repository/plan. Defined Ollama as the shared local model service; OpenClaw Gateway as the target runtime coordinator; OpenCode as the coding harness; and OpenJarvis as the existing desktop AI workspace and potential MCP tool provider. Added inventory, shared-Ollama, standalone OpenCode, standalone OpenClaw, ACP, MCP, shared-context, autonomy and end-to-end phases plus tests T22–T31. Checked current official OpenClaw Ollama/MCP/ACP, OpenCode Ollama and OpenJarvis MCP documentation. Installed versions and live compatibility remain unverified. | Execute Milestone A inventory before changing any settings, installing plugins or downloading models. |
 | 2026-11-08 | Verify full Windows restart recovery | VERIFIED — post-restart launch, desktop, chat, model availability and clean shutdown passed; second launch passed | User supplied the successful report `C:\Users\Boxont\Desktop\OpenJarvis-Windows-Restart-Check-20261108-173443-408-20508-bb737624.txt` (run began 17:34:43). First launch started existing desktop PID 2688; `/health` returned `status=ok`; all five models were available (`qwen3.5:9b`, `qwen3.8:27b`, `qwen3.5:2b`, `qwen3.5:0.8b`, `qwen3.5:4b`); registered backend PID 10252 was running; user confirmed the customised dashboard was visible and a real chat reply was received. On normal close, desktop exited, backend stopped, port 8000 was free and stale registered PID 10252 was not running. Second launch started desktop PID 22172; `/health` returned `ok`; all five models were available again; backend PID 19716 was registered and running; final result was PASS and OpenJarvis was left running. The report filename is the timestamped 17:34:43 file, not one of the earlier failed-attempt reports. No source-code changes were made in this documentation update. | Continue Milestone A: run the direct Ollama test and prove a real local-model response through the actual OpenJarvis runtime; then continue backup verification and safe checkpoint work. |
 | 2026-11-08 | Repair full Windows restart recovery check | PARTIAL — replacement package prepared; Windows run pending | The earlier full-restart tester did not run because Windows PowerShell rejected its script text. The user then ran the ASCII-only replacement, but its report writer encountered a Windows file-lock error while logging the first desktop-launch message. That error occurred before the `Start-Process` launch command, so this attempt did not launch OpenJarvis or complete launch/shutdown checks. Prepared `OpenJarvis-Full-Windows-Restart-Test-REPAIRED.zip`: it buffers report messages in memory, writes the report once at completion to a unique filename, and falls back to the Windows temporary folder if Desktop writing fails. Local package checks passed: script is ASCII-only, no `Add-Content` remains, delimiters are balanced and ZIP integrity passed. This script has not been executed in Windows PowerShell here; Windows runtime parsing and the full post-restart check remain unverified. No OpenJarvis source, EXE, configuration, models or user data changed. | Resolved by the later successful full-restart run recorded immediately above; retain this entry as the troubleshooting history. |
 | 2026-11-08 | Restore customised OpenJarvis desktop and verify managed restart | VERIFIED — two consecutive managed launches and clean shutdowns passed | User confirmed the custom dashboard is visible again and chat works. The rebuilt local desktop EXE is `C:\Users\Boxont\OpenJarvis\frontend\src-tauri\target\release\openjarvis-desktop.exe`, SHA-256 `085244CCEFF72B00AC05F50515036481C58B5640A03C04340C0BCF0DB6AF2D0C`. The local Tauri source change in `frontend\src-tauri\src\lib.rs` makes the exit handler await backend cleanup and terminates the managed Windows child process tree. User's managed restart test v2 report (`C:\Users\Boxont\Desktop\OpenJarvis-Restart-Test-v2-20261108-170734.txt`) shows: first launch healthy with all five models; after close, registered backend PID 14524 was gone, listener count on port 8000 was 0 and health was unavailable; second launch healthy with all five models; final state left OpenJarvis running. Stale PID registration after the managed child has exited is expected and was safely replaced on the next launch. Recovery backups retained on Desktop: `OpenJarvis-Dashboard-Backup-20261108-162836`, `OpenJarvis-ServiceWorker-Backup-20261108-163211`, `OpenJarvis-Stale-Server-Backup-20261108-164419`, and `OpenJarvis-Shutdown-Fix-Backup-20261108-170237`. This commit updates the JARVIS planning record only: the OpenJarvis source/EXE modifications remain in the local checkout and are not represented as a source-code commit here. | Continue Milestone A by running the direct Ollama and actual OpenJarvis local-inference tests, then resume backup verification and safe checkpoint work. |
