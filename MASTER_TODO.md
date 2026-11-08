@@ -216,6 +216,114 @@ This is the starting information supplied by the user and previous recorded chec
 | OpenCode | Installed by the user, not configured. | Identify exact version, CLI availability, configuration location and local Ollama provider discovery. |
 | Local models | Previously recorded as qwen3.8:27b, qwen3.5:9b, qwen3.5:4b, qwen3.5:2b, and qwen3.5:0.8b. | Reconfirm the exact tags and test context length, tool calling, latency and resource use. Do not pull or replace models during initial integration. |
 
+### The architecture I recommend
+
+Use the four applications as one coordinated toolchain, with one clear responsibility for each:
+
+- **Ollama supplies the local models.** It is the shared inference engine used by the other applications.
+- **OpenJarvis is the main desktop AI workspace.** Keep it working independently for direct chat and its existing capabilities. Where the installed build supports it, make approved OpenJarvis tools/context available to OpenClaw through MCP.
+- **OpenClaw is the runtime coordinator.** It receives the overall task, reads the project instructions, plans the work, calls approved tools and delegates coding to OpenCode. This is the target arrangement; it is not configured or verified yet.
+- **OpenCode is the specialist software developer.** It inspects the assigned project, makes scoped changes, runs tests and returns evidence to OpenClaw.
+- **JARVIS OS is the project and master plan only.** The repository contains the architecture, rules, memory files, task checklist and evidence. It does not run as another assistant or coordinator.
+
+The applications should work together while remaining independently usable. The purpose is not to replace one with another or to keep four disconnected chat windows open.
+
+### How the applications should work together
+
+1. **You give OpenClaw an overall task.**
+2. **OpenClaw reads the JARVIS OS project rules and the relevant project's instructions** from the authoritative repository/workspace.
+3. **OpenClaw plans the work and identifies what it needs.** It can use its own local model through Ollama and, where supported and approved, call OpenJarvis tools/context through MCP.
+4. **OpenClaw delegates software work to OpenCode through ACP.** The task includes the exact repository, permitted folders, requested outcome, acceptance tests and prohibited actions.
+5. **OpenCode investigates, implements and tests** only within the approved workspace, then returns changed files, commands, test outcomes and unresolved problems.
+6. **OpenClaw checks the returned evidence.** For important work, use a separate review step rather than trusting the coding agent's claim that it succeeded.
+7. **OpenClaw updates the one authoritative project checklist and execution record** after evidence is available. If the runtime cannot safely write to the repository, it prepares the update instead of inventing success.
+8. **You receive a normal-English completion report** explaining what was actually added, improved or fixed, what was tested and what remains.
+
+OpenJarvis must remain usable on its own. Do not create circular delegation where OpenClaw calls OpenJarvis and OpenJarvis sends the same task straight back to OpenClaw.
+
+### Permissions and autonomy strategy
+
+Autonomy should be enabled by capability and workspace, not by giving every application unrestricted access.
+
+- Research, read-only inspection, planning and status reporting can become automatic after baseline tests.
+- Reversible edits can become automatic only inside explicitly approved project workspaces, with checkpoints and file-scope enforcement.
+- OpenCode must have explicit per-tool permissions. Do not rely on its default profile: configure read, edit, shell, external-directory and network permissions intentionally. Start with read-only inspection, then enable controlled edits and tests.
+- OpenClaw must have explicit tool allow/deny policies and per-agent workspace boundaries. Its sandbox is off by default in current documentation; explicitly enable and test a suitable sandbox before exposing autonomous shell/file tools. Keep agent sandbox scope isolated and do not enable elevated execution for ordinary work.
+- MCP tools exposed from OpenJarvis must be a whitelist. Start read-only; only add write-capable tools after permission, logging and rollback tests pass.
+- Installs, administrative changes, destructive deletion, external messages, publishing, purchases and credential use require direct user approval.
+- A model response, tool call or process exit is not proof of completion. Re-open/read the result and run the relevant acceptance test.
+
+### Model strategy
+
+Use the five already-recorded models as candidates. These assignments are **provisional roles for testing**, not verified performance rankings or instructions to download anything.
+
+| Existing model tag | Initial task to evaluate | Important checks |
+|---|---|---|
+| `qwen3.8:27b` | Complex reasoning and demanding coding/review tasks | Tool calling, context support, memory use and latency on the actual PC |
+| `qwen3.5:9b` | General assistant and agent tasks | Reliable instruction following, tool calling and useful response speed |
+| `qwen3.5:4b` | Lighter general tasks | Tool compatibility and quality on bounded tasks |
+| `qwen3.5:2b` | Small, quick operations | Whether it can follow structured requests reliably |
+| `qwen3.5:0.8b` | Very lightweight operations | Only use for simple tasks it demonstrably handles correctly |
+
+Do not assume the largest model is automatically best for every job. Compare actual model behaviour, context, latency, CPU/GPU/RAM use and reliability. A model being installed does not prove that it supports the tool-calling behaviour needed by an autonomous agent.
+
+For OpenClaw specifically, current official Ollama setup documentation checks loaded models for tool support and at least 16K context during automatic discovery. Some curated local-model examples use a 64K context, but the usable context depends on the actual model metadata, runtime settings and available memory. Treat 64K as a test target where the model and hardware support it—not a blanket guarantee or an automatic setting. Verify the selected model with a real tool call before making it the default.
+
+**No additional model downloads until the existing five have been inventoried and evaluated. No cloud model or paid fallback.**
+
+### Shared JARVIS project memory
+
+The aim is to stop the applications from holding conflicting versions of project instructions, decisions and task status.
+
+The shared source of truth is the **JARVIS OS project repository and approved local project workspace**, not a new JARVIS OS application or a new runtime database.
+
+| Shared information | Authoritative location / rule |
+|---|---|
+| Master tasks and status | `MASTER_TODO.md` — the only master checklist |
+| Mandatory operating rules | `AGENTS.md` and applicable repository-specific instructions |
+| Architecture and integration decisions | This master plan and its documented decision records |
+| Project context and technical notes | Files inside the relevant approved project workspace |
+| Execution history | Dated, evidence-based entries in the master execution log and relevant local logs |
+| Code and deliverables | The real project repository; use Git history/checkpoints to preserve changes |
+| Secrets and credentials | Application-managed secure stores only; never copy into shared prompts, Markdown or logs |
+
+Initially share durable context through normal files and scoped task packets so it works even if one application's database format is incompatible with another. OpenJarvis, OpenClaw and OpenCode may keep their own internal session histories, but none may create a competing master plan or overwrite another application's private memory. A shared database or memory service is a later optional enhancement only if a real need is demonstrated and the chosen solution is local, free and recoverable.
+
+### What we still need to establish
+
+- **OpenJarvis:** The last recorded desktop build was version 1.0.2 and its customised desktop/chat had been recovered. We must inspect the actual installed build's model configuration, running backend and MCP server/tool exposure. Current upstream documentation does not prove the installed Windows build has every current MCP feature.
+- **OpenClaw:** Installed but not configured, based on the user's report. We need its exact version, Gateway setup, local-only Ollama provider, MCP client and ACP support. Do not connect messaging accounts during the initial local test.
+- **OpenCode:** Installed but not configured, based on the user's report. We need its exact version, local Ollama discovery, permission settings and ACP launch compatibility.
+- **Ollama:** Installed and previously reported serving five models. We need a fresh model inventory, process owner and endpoint check. Earlier tests found two different Ollama processes, so one stable server owner must be chosen without breaking OpenJarvis.
+- **Hardware/model fit:** The recorded PC has an RTX 4070 12 GB and 64 GB RAM, but concurrent workloads and context lengths still need actual measurement.
+
+Do not update, replace or reinstall OpenJarvis, pull new models, or overwrite existing configuration as part of this initial discovery.
+
+### What success will look like
+
+Example request:
+
+> Build a new feature for my website. Inspect the existing project, research the best approach, implement it, test it, fix any failures, update the project documentation and tell me what is finished.
+
+Target sequence:
+
+- OpenClaw receives the request and reads the project's instructions.
+- OpenClaw uses its local Ollama model to plan the task.
+- OpenJarvis supplies approved tools or relevant project context through MCP, where that connection has been verified.
+- OpenClaw delegates the implementation to OpenCode through ACP.
+- OpenCode changes only the approved project, runs tests and returns evidence.
+- OpenClaw or a separate review pass checks the changes and test results.
+- The authoritative master plan and execution record are updated from verified evidence.
+- You receive a plain-English report describing what was added or fixed, what tests passed, and what remains.
+
+This is the end goal: one coordinated workflow across four real applications, not four independent assistants and not a fictional fifth application.
+
+### The first practical step
+
+Before changing any configuration, inventory the installed versions and actual state of **all four** applications: Ollama, OpenJarvis, OpenClaw and OpenCode. Identify executable paths, config locations, running processes, local endpoints, existing models and supported MCP/ACP interfaces. Back up relevant configuration without exposing credentials. Then test each application independently against the same existing Ollama service.
+
+Only after that baseline is recorded should we configure OpenCode, configure OpenClaw, connect ACP and MCP, and enable controlled autonomy in stages.
+
 ### Target responsibility model
 
 | Application | One clear responsibility | It must not become |
@@ -416,12 +524,18 @@ This is the starting information supplied by the user and previous recorded chec
 Use current official documentation as implementation guidance, but always validate the installed versions before copying commands or configuration:
 
 - OpenClaw + Ollama: https://docs.openclaw.ai/providers/ollama/setup
+- OpenClaw Ollama configuration and native endpoint notes: https://docs.openclaw.ai/providers/ollama/configuration
 - OpenClaw MCP client: https://docs.openclaw.ai/tools/mcp
 - OpenClaw ACP agents: https://docs.openclaw.ai/tools/acp-agents
 - OpenClaw ACP setup: https://docs.openclaw.ai/tools/acp-agents-setup
+- OpenClaw permissions: https://docs.openclaw.ai/gateway/security/tool-permissions
+- OpenClaw sandboxing: https://docs.openclaw.ai/sandboxing
 - OpenCode models and local Ollama provider: https://opencode.ai/docs/models/
+- OpenCode permissions: https://opencode.ai/docs/permissions/
 - OpenJarvis external MCP servers: https://open-jarvis.github.io/OpenJarvis/user-guide/mcp-external-servers/
 - OpenJarvis MCP server API: https://open-jarvis.github.io/OpenJarvis/api-reference/openjarvis/mcp/server/
+
+
 
 ---
 
@@ -1378,6 +1492,7 @@ Add newest entries at the top. Keep each entry short and evidence-based.
 
 | Date | Task / milestone | Status | Evidence / result | Next action |
 |---|---|---|---|---|
+| 2026-11-08 | Clarify the integrated workflow, shared memory, model strategy and autonomy model | DOCUMENTED — explanatory architecture added; no software configuration changed | Expanded the master plan with an end-to-end explanation: OpenClaw receives and coordinates tasks; OpenJarvis provides its existing desktop workflow and only verified MCP tools/context; OpenCode performs scoped coding through ACP; Ollama serves local models; JARVIS OS remains the repository and plan name only. Added provisional roles for the five existing Qwen tags, model/tool/context benchmarks, shared repository-based project memory, version uncertainties, permission boundaries and a concrete website-feature workflow. Current official documentation was checked for OpenClaw Ollama setup, ACP, MCP, sandboxing, OpenCode permissions and OpenJarvis MCP. The OpenClaw sandbox is off by default and OpenCode defaults require explicit review; both facts are recorded as setup requirements. | Begin with a read-only inventory of the four installed applications; do not change configs or download models until baseline and backups are recorded. |
 | 2026-11-08 | Rebuild the master plan around the four installed applications | DOCUMENTED — architecture and phased integration plan updated; no application configuration changed | Clarified that JARVIS OS is only the project/repository/plan. Defined Ollama as the shared local model service; OpenClaw Gateway as the target runtime coordinator; OpenCode as the coding harness; and OpenJarvis as the existing desktop AI workspace and potential MCP tool provider. Added inventory, shared-Ollama, standalone OpenCode, standalone OpenClaw, ACP, MCP, shared-context, autonomy and end-to-end phases plus tests T22–T31. Checked current official OpenClaw Ollama/MCP/ACP, OpenCode Ollama and OpenJarvis MCP documentation. Installed versions and live compatibility remain unverified. | Execute Milestone A inventory before changing any settings, installing plugins or downloading models. |
 | 2026-11-08 | Verify full Windows restart recovery | VERIFIED — post-restart launch, desktop, chat, model availability and clean shutdown passed; second launch passed | User supplied the successful report `C:\Users\Boxont\Desktop\OpenJarvis-Windows-Restart-Check-20261108-173443-408-20508-bb737624.txt` (run began 17:34:43). First launch started existing desktop PID 2688; `/health` returned `status=ok`; all five models were available (`qwen3.5:9b`, `qwen3.8:27b`, `qwen3.5:2b`, `qwen3.5:0.8b`, `qwen3.5:4b`); registered backend PID 10252 was running; user confirmed the customised dashboard was visible and a real chat reply was received. On normal close, desktop exited, backend stopped, port 8000 was free and stale registered PID 10252 was not running. Second launch started desktop PID 22172; `/health` returned `ok`; all five models were available again; backend PID 19716 was registered and running; final result was PASS and OpenJarvis was left running. The report filename is the timestamped 17:34:43 file, not one of the earlier failed-attempt reports. No source-code changes were made in this documentation update. | Continue Milestone A: run the direct Ollama test and prove a real local-model response through the actual OpenJarvis runtime; then continue backup verification and safe checkpoint work. |
 | 2026-11-08 | Repair full Windows restart recovery check | PARTIAL — replacement package prepared; Windows run pending | The earlier full-restart tester did not run because Windows PowerShell rejected its script text. The user then ran the ASCII-only replacement, but its report writer encountered a Windows file-lock error while logging the first desktop-launch message. That error occurred before the `Start-Process` launch command, so this attempt did not launch OpenJarvis or complete launch/shutdown checks. Prepared `OpenJarvis-Full-Windows-Restart-Test-REPAIRED.zip`: it buffers report messages in memory, writes the report once at completion to a unique filename, and falls back to the Windows temporary folder if Desktop writing fails. Local package checks passed: script is ASCII-only, no `Add-Content` remains, delimiters are balanced and ZIP integrity passed. This script has not been executed in Windows PowerShell here; Windows runtime parsing and the full post-restart check remain unverified. No OpenJarvis source, EXE, configuration, models or user data changed. | Resolved by the later successful full-restart run recorded immediately above; retain this entry as the troubleshooting history. |
