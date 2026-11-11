@@ -210,11 +210,13 @@ This is the starting information supplied by the user and previous recorded chec
 
 | Component | Known state | Next verification |
 |---|---|---|
-| Ollama | Installed. Last recorded version: 0.40.14. | Read the actual installed version, identify the active server process and endpoint, and refresh the model list. |
-| OpenJarvis | Installed and previously recovered; the user confirmed its customised desktop and a real chat reply. Last recorded app version: 1.0.2. | Read the exact running EXE/build version, config path, backend ownership, model and MCP capabilities. Preserve the working installation and data. |
-| OpenClaw | Installed by the user, not configured. | Identify exact version, installation type, CLI availability, Gateway state and configuration location. |
-| OpenCode | Desktop and CLI 2.2.6 are installed. A real Build-agent response was returned with model `qwen3.8:27b` and provider `ollama`; CLI config/permissions still need verification. | Verify the effective local provider configuration, then complete a controlled coding task in a disposable workspace. |
-| Local models | Previously recorded as qwen3.8:27b, qwen3.5:9b, qwen3.5:4b, qwen3.5:2b, and qwen3.5:0.8b. | Reconfirm the exact tags and test context length, tool calling, latency and resource use. Do not pull or replace models during initial integration. |
+| Ollama | Installed; version 0.40.15 was last observed in local logs. The T3-P2 runtime reached `127.0.0.1:11434` and listed `qwen3.5:0.8b`, `qwen3.5:2b`, `qwen3.5:4b` and `qwen3.8:27b`. Qwen 27B was observed loaded with context 65,536. An earlier Boxont inventory also listed qwen3.5:9b; reconcile the account/runtime inventory. | Reconfirm the one active Ollama server owner, exact current tags and version; test actual tool calls and clean restart. Do not pull or replace models. |
+| OpenJarvis | Installed and previously recovered; the user confirmed its customised desktop and a real chat reply. Last recorded app version: 1.0.2. | Preserve the current installation and data; inspect the installed build's MCP/tool capabilities and verify its actual shared-Ollama endpoint. |
+| OpenClaw | Gateway 2026.11.1 in MSIX package 2026.11.100.0; Gateway running loopback on port 50368. Active Companion App info showed v2026.11.1 (unpackaged/developer), while Windows installed-apps listing separately showed 2026.9.8-1. Local Ollama model qwen3.8:27b is selected with 65,536 context. Browser Control UI and simple ACPX response work; native Companion Node credential/ownership handoff remains blocked. | Identify the active Companion executable and reconcile the unpackaged v2026.11.1 app with the older installed-apps entry; resolve the Node handoff without resetting credentials or pairing. |
+| OpenCode | Version 2.2.7 in T3-P2. Its global `opencode.jsonc` loads local Ollama, selects `ollama/qwen3.8:27b`, uses `ollama/qwen3.5:4b` as the small model and allows only the Ollama provider. Direct CLI and direct ACP tests returned READY. | Keep the local-only provider configuration; complete a real coding task through the OpenClaw ACPX session and verify tests, scope and cancellation. |
+| Local models | Current T3-P2 API listing returned qwen3.5:0.8b, qwen3.5:2b, qwen3.5:4b and qwen3.8:27b. A previous Boxont inventory also listed qwen3.5:9b; that difference has not been reconciled. | Refresh tags in the selected shared-server context and test context, tool calling, latency and resource use. Do not pull or replace models. |
+
+**Current integration handoff:** [OpenClaw / OpenCode / Ollama handoff — 12 November 2026](docs/OPENCLAW_OPENCODE_OLLAMA_HANDOFF_2026-11-12.md). This records successful local/browser paths and the separate unresolved native Companion Node failure.
 
 ### The architecture I recommend
 
@@ -388,29 +390,29 @@ Only after that baseline is recorded should we configure OpenCode, configure Ope
 ### Integration phases and completion gates
 
 #### INTEGRATION PHASE A — Inventory and protect the current installation
-**Status: PARTIAL — first read-only inventory received; exact app/Gateway discovery, capability checks and baseline tests remain**
+**Status: PARTIAL — current Ollama/OpenClaw/OpenCode versions, loopback endpoints, local model configuration and browser ACP path recorded; active Companion install identity, native Node handoff and OpenJarvis runtime/MCP baseline remain.**
 
-- [ ] **PARTIAL** — Record the installed versions, executable paths, installation types and CLI availability for Ollama, OpenJarvis, OpenClaw and OpenCode — done: Ollama 0.40.15 path and OpenJarvis 1.0.1 desktop path recorded; OpenClaw tray and OpenCode bundled CLI processes observed; remaining: exact OpenClaw/OpenCode app versions, install types and reliable CLI paths.
-- [ ] **PARTIAL** — Identify all running processes, listeners and existing API endpoints without stopping or changing them — done: Ollama desktop/server, OpenClaw tray and OpenCode CLI observed; OpenJarvis was not running; port 11434 responded, ports 8000 and 18789 did not; remaining: identify process parents, listener ownership and any app-managed Gateway.
-- [ ] **PARTIAL** — Record the exact current Ollama model IDs and metadata; do not download models — done: qwen3.5:2b, qwen3.5:0.8b, qwen3.5:4b and qwen3.8:27b plus reported disk sizes; remaining: inspect any further model metadata needed for compatibility.
-- [ ] **PARTIAL** — Identify OpenJarvis's actual runtime config, model setting, backend lifecycle and MCP support in the installed build — done: inference.json exists and reports Ollama / qwen3.8:27b / confirmed; installed EXE is 1.0.1 and port 8000 was inactive; remaining: inspect the actual installed build's MCP/tool support and capture a live chat baseline.
-- [ ] **PARTIAL** — Identify OpenClaw's Gateway/config location and installed MCP/ACP capabilities — done: .openclaw\openclaw.json exists and tray process is running; CLI was not found on PATH and port 18789 was inactive; remaining: locate app-managed CLI/Gateway, determine setup state and inspect supported MCP/ACP features.
-- [ ] **PARTIAL** — Identify OpenCode's config location, Ollama provider discovery and ACP-compatible launch path — done: opencode-cli.exe process observed under the desktop app's 2.2.6-x64 folder; checked standard config candidates were absent; remaining: locate its active config and verify local Ollama and ACP support.
-- [ ] Back up the relevant configuration files before changing them; exclude/redact credentials from reports.
+- [ ] **PARTIAL** — Record the installed versions, executable paths, installation types and CLI availability for Ollama, OpenJarvis, OpenClaw and OpenCode — done: Ollama 0.40.15 last observed; OpenJarvis 1.0.2 is the last known app version; Gateway 2026.11.1 / MSIX 2026.11.100.0; active Companion App info showed v2026.11.1 unpackaged/developer while installed-apps listing showed 2026.9.8-1; OpenCode 2.2.7 in T3-P2; remaining: identify the active Companion executable path and reconcile the two Companion install records.
+- [ ] **PARTIAL** — Identify all running processes, listeners and existing API endpoints without stopping or changing them — done: Gateway Node PID 25904 listened on 127.0.0.1:50368; one listener and ownership evidence reported; T3-P2 reached Ollama on 127.0.0.1:11434; browser proxy 50370 was not listening in the diagnostics bundle; remaining: reconcile Companion's active process/package identity and complete the OpenJarvis process/endpoint baseline.
+- [ ] **PARTIAL** — Record the exact current Ollama model IDs and metadata; do not download models — done: T3-P2 /api/tags listed qwen3.5:0.8b, qwen3.5:2b, qwen3.5:4b and qwen3.8:27b; qwen3.8:27b was observed loaded at context 65,536; remaining: reconcile qwen3.5:9b from the earlier Boxont inventory and benchmark tool use/resource behaviour.
+- [ ] **PARTIAL** — Identify OpenJarvis's actual runtime config, model setting, backend lifecycle and MCP support in the installed build — done: earlier master records preserve a working customised desktop and chat; remaining: inspect the currently installed build's MCP/tool support and capture a fresh shared-Ollama baseline.
+- [ ] **PARTIAL** — Identify OpenClaw's Gateway/config location and installed MCP/ACP capabilities — done: Gateway 2026.11.1 running on loopback 50368; status/ownership and companion preparation checks pass; ACPX is registered/enabled and the browser path returned READY; remaining: resolve the native Companion Node ownership/credential-handoff failure and finish policy/recovery tests.
+- [ ] **PARTIAL** — Identify OpenCode's config location, Ollama provider discovery and ACP-compatible launch path — done: T3-P2 OpenCode 2.2.7 loads the local Ollama config, lists four installed models, and direct CLI/ACP prompts returned READY; remaining: complete a delegated disposable coding task through OpenClaw ACPX and verify full permission/return behaviour.
+- [ ] **PARTIAL** — Back up the relevant configuration files before changing them — done: OpenCode JSONC backup created before its local-provider configuration; OpenClaw config backup was created before the 65,536 context update; remaining: verify recovery copies and inventory the Companion configuration without exporting secrets.
 - [ ] Capture a baseline health test and current OpenJarvis chat/model state.
 - [ ] Record a rollback method for each configuration change.
 
 **Acceptance:** A verified inventory exists, all existing data/configuration is preserved, and no installation or runtime has been changed merely to gather information.
 
 #### INTEGRATION PHASE B — Establish one shared Ollama service
-**Status: NOT STARTED**
+**Status: PARTIAL — the T3-P2 runtime reaches the existing local endpoint, lists four Qwen tags and completed a Qwen 27B response at 65,536 context; single-server ownership, OpenJarvis attachment, tool-call benchmarking and controlled restart remain unverified.**
 
 - [ ] Choose one Ollama process/service to own the local endpoint based on the Phase A findings.
 - [ ] Confirm the expected loopback endpoint responds to /api/tags and /api/ps.
 - [ ] Confirm each recorded model tag is actually present; do not assume the older inventory is current.
 - [ ] Run a direct prompt against one existing model and record the exact model, response, duration and resource use.
 - [ ] Run a real tool-call/completion compatibility test against candidate models where supported.
-- [ ] Configure or verify OpenJarvis against this same service without triggering an unrelated first-run model download.
+- [ ] **PARTIAL** — Configure or verify OpenJarvis against this same service without triggering an unrelated first-run model download — done: the project history records a working OpenJarvis/Ollama baseline; remaining: re-test the active installed build against the same identified Ollama process and endpoint.
 - [ ] Restart OpenJarvis and the chosen Ollama owner separately; prove there is no port conflict or unwanted duplicate server.
 - [ ] Document the single owner, endpoint, model defaults and clean shutdown behaviour.
 
@@ -419,7 +421,7 @@ Only after that baseline is recorded should we configure OpenCode, configure Ope
 #### INTEGRATION PHASE C — Configure OpenCode independently
 **Status: PARTIAL — local Ollama response, Build coding task, tests, shell approval, `.env` read approval, `.env` edit denial, external-directory hard-deny and cancellation verified; provider fallback audit remains**
 
-- [ ] **PARTIAL** — Configure OpenCode's built-in Ollama provider against the verified local service — done: OpenCode returned a real response and the session API confirms `providerID=ollama`, model `qwen3.8:27b`; remaining: inspect effective provider configuration and confirm no automatic cloud fallback.
+- [ ] **PARTIAL** — Configure OpenCode's built-in Ollama provider against the verified local service — done: T3-P2 OpenCode v2.2.7 debug config confirms `providerID=ollama`, primary `qwen3.8:27b`, small `qwen3.5:4b`, provider allowlist `ollama` only, and base URL `127.0.0.1:11434/v1`; direct CLI and direct ACP prompts returned READY; remaining: audit all effective provider/fallback settings and complete a real coding task through the OpenClaw ACPX session.
 - [x] **VERIFIED** — Discover and select only an installed model with verified completion and tool-use support — evidence: `qwen3.8:27b` is present locally; OpenCode session API confirms Build agent, `providerID=ollama` and successful outcome; disposable coding task created three files and passed four tests; approved shell command returned Node.js `v26.12.0`. General tool-use reliability remains a separate ongoing evaluation.
 - [ ] **PARTIAL** — Verify OpenCode can complete a normal prompt using the local model with no cloud provider configured or selected — done: OpenCode displayed `Provider: ollama`, `Model: qwen3.8:27b` and returned the requested structure summary; remaining: verify the effective provider configuration and absence of cloud fallback.
 - [x] **VERIFIED** — Use a disposable test repository first; inspect files without modification, then complete one small controlled code-change task — evidence: OpenCode Build created `src/math.js`, `test/math.test.js` and `package.json` only in `%TEMP%\OpenCode-Integration-Test-20261109-001524`; the uploaded ZIP contains exactly those three files. The user reports no package installation, internet use or changes outside that workspace.
@@ -431,31 +433,33 @@ Only after that baseline is recorded should we configure OpenCode, configure Ope
 **Acceptance:** OpenCode completes and verifies a small coding task with Ollama, within a disposable workspace and without paid/cloud inference.
 
 #### INTEGRATION PHASE D — Configure OpenClaw as the runtime coordinator
-**Status: NOT STARTED**
+**Status: PARTIAL — Gateway 2026.11.1 and local Qwen 27B configuration are active; browser Control UI/ACP request returned READY; native Windows Companion Node handoff is blocked by ownership inspection and remains unresolved.**
 
-- [ ] Run the installed OpenClaw version's supported first-run setup and record its version/config paths.
-- [ ] Configure Ollama as a local-only provider at the verified native endpoint.
-- [ ] Set a model only after verifying its context capacity and tool-calling behaviour; do not allow a cloud fallback.
-- [ ] Start the Gateway and verify its local Control UI is reachable on loopback only.
+- [ ] **PARTIAL** — Run the installed OpenClaw version's supported first-run setup and record its version/config paths — done: Gateway runtime 2026.11.1 and MSIX 2026.11.100.0; isolated T3-P2 config and local Gateway status are identified; remaining: record the active Companion executable/install path and reconcile the older installed-apps entry.
+- [ ] **PARTIAL** — Configure Ollama as a local-only provider at the verified native endpoint — done: OpenClaw primary model is `ollama/qwen3.8:27b`; T3-P2 reaches `127.0.0.1:11434`; remaining: audit all effective providers and ensure no hosted fallback is available.
+- [ ] **PARTIAL** — Set a model only after verifying its context capacity and tool-calling behaviour; do not allow a cloud fallback — done: Qwen 27B has `contextTokens=65536`, `num_ctx=65536`, and `ollama ps` reported context 65536; remaining: benchmark real tool calls under the chosen local model and complete provider fallback audit.
+- [ ] **PARTIAL** — Start the Gateway and verify its local Control UI is reachable on loopback only — done: Gateway service/status report running at `127.0.0.1:50368`; browser Control UI authenticated and spawned an ACP session; remaining: fix native Companion Node handoff and separately investigate browser proxy port 50370.
 - [ ] Configure the default agent's tool policy, workspace boundaries, timeouts, logging and cancellation.
-- [ ] Disable or leave unconfigured external messaging channels until the local workflow is secure and stable.
-- [ ] Verify one real local model response and one harmless tool call.
+- [ ] **PARTIAL** — Disable or leave unconfigured external messaging channels until the local workflow is secure and stable — done: current diagnostics reported zero channels; remaining: maintain this state until security review.
+- [ ] **PARTIAL** — Verify one real local model response and one harmless tool call — done: browser ACPX delegated a simple prompt and received READY using local Qwen; remaining: test a harmless tool call and an actual bounded coding task.
 - [ ] Verify Gateway shutdown and restart without losing its intended config.
+- [ ] **BLOCKED** — Verify native Windows Companion Node registration and credential handoff — reason: Gateway and Operator connect, but Companion reports `Gateway ownership inspection failed` / previously `installed Gateway MSIX does not expose Companion's isolated-session contract`; credentials were not sent and Node remains 0/1 online. Next: identify the active Companion executable/install identity, capture a fresh Connection event timeline and Recent log, and compare the native handoff against the installed package before updating or resetting anything.
 
-**Acceptance:** OpenClaw operates as a local-only coordinator, can use its model and permitted tools, and exposes no unintended network or account access.
+**Acceptance:** OpenClaw operates as a local-only coordinator, can use its model and permitted tools, and exposes no unintended network or account access. Native Companion Node remains a separate required acceptance item.
 
 #### INTEGRATION PHASE E — Connect OpenClaw to OpenCode through ACP
-**Status: NOT STARTED**
+**Status: PARTIAL — ACPX is registered/enabled, its OpenCode executable and `["acp"]` args are explicitly configured, and a fresh browser Control UI session returned READY from local Qwen; a disposable coding task, test evidence, cancellation through ACPX and full native desktop path remain.**
 
-- [ ] Verify the installed OpenClaw release supports ACP and the current OpenCode harness.
-- [ ] Install/enable the official ACP backend plugin only after its licence, dependencies and zero-cost status are checked.
-- [ ] Register OpenCode as an ACP coding harness using the documented launch method for the installed versions.
-- [ ] Verify an OpenClaw task creates an OpenCode session with the correct workspace and scoped permissions.
-- [ ] Verify OpenClaw receives the actual session result, changed-file summary, test output and failure state.
-- [ ] Verify stop/cancel, timeout and clean session termination.
+- [x] **VERIFIED** — Verify the installed OpenClaw release supports ACP and the current OpenCode harness — evidence: ACP doctor reported the acpx backend registered and embedded runtime ready; direct OpenCode ACP initialization/session creation succeeded on OpenCode 2.2.7.
+- [x] **VERIFIED** — Install/enable the official ACP backend plugin only after its licence, dependencies and zero-cost status are checked — evidence: ACPX plugin installed/enabled; doctor healthy; no paid service or model download used.
+- [x] **VERIFIED** — Register OpenCode as an ACP coding harness using the documented launch method for the installed versions — evidence: OpenClaw config points to the OpenCode 2.2.7 executable in the managed T3-P2 Node installation with args `["acp"]`; structured patch dry-run passed and was applied.
+- [ ] **PARTIAL** — Verify an OpenClaw task creates an OpenCode session with the correct workspace and scoped permissions — done: fresh browser OpenClaw chat spawned an ACPX OpenCode session and the bound prompt returned READY; remaining: verify a real disposable coding task and explicit workspace/permission boundary.
+- [ ] **PARTIAL** — Verify OpenClaw receives the actual session result, changed-file summary, test output and failure state — done: the simple READY result returned through the browser ACPX path; remaining: delegate a bounded coding task and collect its changed-file/test evidence.
+- [ ] Verify stop/cancel, timeout and clean session termination through the OpenClaw ACPX path. Direct OpenCode ACP session cancellation was tested separately.
 - [ ] Verify no recursive delegation or second competing task manager is created.
+- [ ] **BLOCKED** — Verify the same ACP workflow from the native Windows Companion app — reason: Companion's Node connection is offline due to Gateway ownership/credential-handoff error. Browser success does not prove the native desktop Node is working. Next: resolve the native Node handoff before calling the desktop app integration complete.
 
-**Acceptance:** OpenClaw successfully delegates a real disposable coding task to OpenCode through ACP and receives independently checkable evidence.
+**Acceptance:** OpenClaw successfully delegates a real disposable coding task to OpenCode through ACP and receives independently checkable evidence. Browser simple-prompt success is only a partial milestone.
 
 #### INTEGRATION PHASE F — Connect OpenJarvis tools to OpenClaw through MCP
 **Status: NOT STARTED**
@@ -1341,14 +1345,17 @@ Do not tick a checkbox based on intention, generated code or package installatio
 The immediate priority is integration of the four already-installed applications. Do not start by installing more tools, downloading more models or replacing OpenJarvis.
 
 ### Milestone A — Inventory and protect the four applications (CURRENT)
-- [ ] Record exact Ollama, OpenJarvis, OpenClaw and OpenCode versions, executable paths and config locations.
-- [ ] Record running processes and local endpoints without changing or stopping services.
-- [ ] Refresh the Ollama model inventory; do not pull models.
+- [ ] **PARTIAL** — Record exact Ollama, OpenJarvis, OpenClaw and OpenCode versions, executable paths and config locations — done: Gateway 2026.11.1/MSIX 2026.11.100.0; active Companion App info v2026.11.1 unpackaged; older installed-apps entry 2026.9.8-1; OpenCode 2.2.7 in T3-P2; remaining: map the active Companion executable to its package registration and finish OpenJarvis inventory.
+- [ ] **PARTIAL** — Record running processes and local endpoints without changing or stopping services — done: Gateway PID 25904 owns loopback 50368; Ollama responds on 11434; Companion prepare check returns port 50368; remaining: verify active Companion executable identity and OpenJarvis service/process state.
+- [ ] **PARTIAL** — Refresh the Ollama model inventory; do not pull models — done: T3-P2 reports qwen3.5:0.8b, qwen3.5:2b, qwen3.5:4b, qwen3.8:27b; qwen3.8:27b loaded at context 65536; remaining: reconcile qwen3.5:9b from the earlier Boxont inventory.
 - [ ] Inspect installed OpenJarvis inference and MCP capabilities.
-- [ ] Inspect installed OpenClaw Gateway, Ollama provider, MCP client and ACP support.
-- [ ] Inspect installed OpenCode Ollama provider and ACP launch support.
-- [ ] Back up relevant configuration safely, excluding credentials from reports.
+- [ ] **PARTIAL** — Inspect installed OpenClaw Gateway, Ollama provider, MCP client and ACP support — done: Gateway local model config and ACPX/ACPX doctor verified; remaining: native Companion Node handoff and tool-policy audit.
+- [ ] **PARTIAL** — Inspect installed OpenCode Ollama provider and ACP launch support — done: T3-P2 OpenCode 2.2.7 lists local models, direct CLI/ACP returned READY and ACPX command/args are configured; remaining: scoped coding-task acceptance and fallback audit.
+- [ ] **PARTIAL** — Back up relevant configuration safely, excluding credentials from reports — done: OpenCode JSONC backup created; OpenClaw config backup created before 65,536 context setting; remaining: verify restore copies and inventory Companion settings without exporting secrets.
 - [ ] Record rollback instructions and a baseline OpenJarvis chat/health check.
+- [ ] **BLOCKED** — Resolve the native Companion Node ownership/credential-handoff error — reason: Gateway/Operator are reachable but Node credentials are explicitly withheld after ownership inspection fails; next: identify active Companion executable/install record and collect a fresh Connection event timeline/Recent log before selecting an official fix.
+
+**Detailed evidence and exact resume sequence:** [OpenClaw / OpenCode / Ollama handoff — 12 November 2026](docs/OPENCLAW_OPENCODE_OLLAMA_HANDOFF_2026-11-12.md).
 
 ### Milestone B — One shared Ollama service
 - [ ] Select one process to own the Ollama service after inspecting current startup behaviour.
@@ -1364,18 +1371,19 @@ The immediate priority is integration of the four already-installed applications
 - [ ] Verify test results, changed-file scope, cancellation and permissions.
 
 ### Milestone D — OpenClaw standalone
-- [ ] Configure local-only Ollama access.
-- [ ] Verify the Gateway and local Control UI.
-- [ ] Verify a real local response and harmless tool call.
+- [ ] **PARTIAL** — Configure local-only Ollama access — done: primary `ollama/qwen3.8:27b` and local endpoint `127.0.0.1:11434`; remaining: audit effective provider/fallback configuration.
+- [ ] **PARTIAL** — Verify the Gateway and local Control UI — done: Gateway running on loopback 50368 and browser Control UI authenticated; remaining: resolve the separate native Companion Node handoff and browser proxy status.
+- [ ] **PARTIAL** — Verify a real local response and harmless tool call — done: browser ACPX prompt returned READY from local Qwen; remaining: test a harmless tool call and disposable coding task.
 - [ ] Set bounded permissions, logs, timeout and cancellation policies.
-- [ ] Leave external messaging channels unconfigured until local integration passes.
+- [x] **VERIFIED** — Leave external messaging channels unconfigured until local integration passes — evidence: diagnostics bundle reported zero channels; retain this state until the security review.
 
 ### Milestone E — Join the applications
-- [ ] Connect OpenClaw to OpenCode using the supported ACP integration.
-- [ ] Prove delegation, scoped work, result return and cancellation.
+- [ ] **PARTIAL** — Connect OpenClaw to OpenCode using the supported ACP integration — done: ACPX registered/enabled; explicit OpenCode 2.2.7 executable and `["acp"]` args applied; browser ACP session returned READY; remaining: complete a disposable coding task with workspace/permission evidence.
+- [ ] **PARTIAL** — Prove delegation, scoped work, result return and cancellation — done: simple prompt result returned through browser ACPX; remaining: verify changed files, tests, ACPX cancellation/timeout and full result reporting.
 - [ ] Expose a limited OpenJarvis MCP tool set, if supported by the installed build.
 - [ ] Connect OpenClaw to OpenJarvis using local stdio MCP where supported, otherwise authenticated loopback MCP.
 - [ ] Verify tool whitelisting, actual responses and failure isolation.
+- [ ] **BLOCKED** — Verify the native Windows Companion desktop route — reason: native Companion Node remains offline after the Gateway ownership/credential-handoff check; browser ACP success is a separate path.
 
 ### Milestone F — Shared context and safe autonomy
 - [ ] Provide one consistent project instruction set and task hand-off format.
@@ -1403,7 +1411,7 @@ The immediate priority is integration of the four already-installed applications
 
 ## 11. Live status — last verified evidence
 
-**Last recorded evidence date:** 8 November 2026.
+**Last recorded evidence date:** 12 November 2026.
 
 | Milestone | Status |
 |---|---|
@@ -1433,8 +1441,10 @@ The immediate priority is integration of the four already-installed applications
 | Measured self-improvement | NOT STARTED |
 | Final hardening | NOT STARTED |
 | Integrated four-application architecture | DOCUMENTED — target roles, MCP/ACP hand-offs, phases and acceptance tests recorded in Section 0A; implementation NOT STARTED | Version inventory and live compatibility checks remain. |
-| Ollama / OpenJarvis / OpenClaw / OpenCode shared runtime | PARTIAL — first read-only inventory supplied; no integrated configuration or end-to-end acceptance has been performed | Resolve OpenClaw Gateway/OpenCode app paths, inspect capabilities, then continue Milestone A; preserve current OpenJarvis. |
-| OpenClaw → OpenCode ACP | NOT STARTED — OpenCode local response test PARTIAL; ACP connection not configured or tested | Complete the standalone OpenCode disposable coding task, then verify installed-version ACP compatibility. |
+| Ollama / OpenJarvis / OpenClaw / OpenCode shared runtime | PARTIAL — current T3-P2 Ollama/OpenCode configuration, local Qwen inference, OpenClaw Gateway status and browser ACPX path are recorded; no complete four-application end-to-end task has passed | Resolve native Companion Node handoff, verify OpenJarvis MCP support and complete one disposable integration task. Preserve the existing OpenJarvis installation. |
+| OpenClaw Gateway and native Windows Companion | PARTIAL / BLOCKED — Gateway 2026.11.1/MSIX 2026.11.100.0 is running on 50368; service and companion preparation checks pass; Operator connects; native Node remains offline with ownership-inspection/credential-handoff error. Active Companion App info showed unpackaged v2026.11.1 while installed-apps listing showed 2026.9.8-1. | Identify the active Companion executable and installation record; inspect a fresh Connection event timeline/Recent log; select an official compatible package fix only after confirming which app is running. |
+| OpenCode local Ollama provider | PARTIAL — T3-P2 OpenCode 2.2.7 lists four local Qwen tags, its effective config selects Ollama, and direct CLI/ACP prompts returned READY | Audit effective no-cloud fallback and finish a scoped disposable coding task through ACPX. |
+| OpenClaw → OpenCode ACP | PARTIAL — ACPX is enabled, explicitly launches OpenCode 2.2.7 with `acp`, and a fresh browser Control UI session returned READY via local Qwen; native Companion app path and full coding-task acceptance remain incomplete | Complete a disposable coding task with tests and verify the native desktop route after Node handoff is fixed. |
 | OpenClaw → OpenJarvis MCP | NOT STARTED — current OpenJarvis/OpenClaw MCP documentation reviewed; installed-build support and transport not yet tested | Inspect installed OpenJarvis MCP server and permissions. |
 | Repository agent instruction files | VERIFIED — created and read back from private GitHub |
 | OpenJarvis runtime auto-bootstrap and automatic master-file writer | PARTIAL — controller files committed; Windows runtime test pending |
@@ -1491,6 +1501,7 @@ Do not create another competing project checklist. This file remains authoritati
 
 Add newest entries at the top. Keep each entry short and evidence-based.
 
+| 2026-11-12 | Record the current OpenClaw / OpenCode / Ollama integration checkpoint and native Companion blocker | PARTIAL — local model and browser ACP path work; native desktop Node handoff remains blocked | Added [the detailed handoff note](docs/OPENCLAW_OPENCODE_OLLAMA_HANDOFF_2026-11-12.md). T3-P2 OpenCode 2.2.7 loads four local Qwen tags; direct CLI and direct ACP prompts returned READY. OpenClaw Gateway 2026.11.1 / MSIX 2026.11.100.0 is running on loopback 50368; status and Companion preparation checks pass. OpenClaw Qwen 27B context is 65,536 and `ollama ps` confirmed that context. A fresh browser ACPX session spawned OpenCode with explicit `acp` args and returned READY. Native Companion App info showed unpackaged v2026.11.1 while installed-apps listing showed 2026.9.8-1; Gateway/Operator connect but Node credential handoff is blocked with ownership-inspection error, credentials not sent. Browser proxy 50370 was not listening in the support bundle. No model downloads, paid services, token resets, pairing resets or package reinstalls were performed; secrets and device identifiers omitted. | Identify the active Companion executable/install record; capture a fresh Connection event timeline and Recent log; resolve native Node handoff with a confirmed official package fix; then run a disposable ACP coding task and continue OpenJarvis MCP verification. |
 | Date | Task / milestone | Status | Evidence / result | Next action |
 | 2026-11-09 | Verify OpenCode cancellation | VERIFIED — Esc stopped generation | User completed the disposable long-generation cancellation test and confirmed pressing Esc stopped generation and returned control to the user. The task did not require tools, create files or modify project content. | Audit OpenCode's effective provider configuration and confirm it cannot silently fall back to a cloud provider. |
 | 2026-11-09 | Test OpenCode `.env` read approval | VERIFIED — user approved the read before the dummy value was revealed | User clarified that OpenCode displayed an approval prompt for reading the disposable `.env` file and they approved it before the agent returned `DUMMY_KEY=not-a-real-secret`. The initial transcript only showed the post-approval read, which was misinterpreted as an unprompted read. This confirms the `read:*.env ask` rule behaves as intended for this test. No shell command or edit was used; the file contained only dummy data. The separate `.env` edit-deny test passed, and external-directory deny separately blocked reads/writes outside workspace. | Read approval is verified; cancellation has also been completed. Audit the effective provider configuration and confirm no cloud fallback before proceeding to OpenClaw Gateway setup. |
