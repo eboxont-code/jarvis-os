@@ -1,0 +1,200 @@
+# OpenClaw / OpenCode / Ollama integration handoff — 12 November 2026
+
+**Project:** JARVIS OS  
+**Repository:** `eboxont-code/jarvis-os`  
+**Purpose:** Preserve the verified Windows integration state and the exact unresolved blocker so a later session can resume without repeating the discovery work.  
+**Status:** PARTIAL — browser ACP path works; native Windows Companion Node handoff remains blocked.
+
+> This is a technical handoff note, not a second task checklist. `MASTER_TODO.md` remains the sole source of truth for milestone and task status.
+
+## 1. Executive summary
+
+The local model path and the browser-based OpenClaw-to-OpenCode ACP path have been demonstrated with a real `READY` response. The Windows Companion's separate native Node connection is still failing. Do not describe the entire four-application integration as complete.
+
+The current split is:
+
+| Component / path | Observed state |
+|---|---|
+| Ollama local endpoint | Reachable at `127.0.0.1:11434` from the isolated T3-P2 runtime |
+| Qwen 27B local inference | Passed a direct OpenCode prompt and returned `READY` |
+| OpenCode ACP server | Initialization and `session/new` succeeded; the model selector advertised all four local tags |
+| OpenClaw browser Control UI → ACPX → OpenCode → Ollama | Fresh browser chat ACP session returned `READY` |
+| Native Windows Companion Gateway / Operator | Gateway and Operator displayed connected in the app |
+| Native Windows Companion Node | Error; credential handoff blocked before Node credentials were sent |
+| OpenClaw → OpenJarvis MCP | Not configured or verified |
+| Full disposable coding task through OpenClaw ACP | Not yet completed in this integration session |
+
+## 2. Environment and installed versions
+
+### Windows and local Gateway
+
+- OS: Windows 11 Pro, build `26300`, 64-bit. A later registry check reported UBR `9711`.
+- OpenClaw Gateway runtime: `2026.11.1`.
+- Installed Gateway MSIX package version: `2026.11.100.0`.
+- Gateway endpoint: `ws://127.0.0.1:50368/`.
+- Gateway process: Node.js, observed PID `25904` during the latest status checks.
+- Gateway service state: `running`; port `50368`; recovery `configured`.
+- Gateway contract fields: `isolated-session` version `1`; ownership present; sandbox identity present; Windows account identity present; one owned listener; listener port matches `50368`; process ID present; start time parses; sequence number present.
+- A live Windows TCP snapshot showed one listener at `127.0.0.1:50368` owned by PID `25904`.
+- `clawctl status --json` and `clawctl gateway-service status --json` both reported the Gateway running on port `50368` with ownership present.
+- `clawctl companion prepare --check --json` returned schema `1`, `ok=true`, integration `isolated-session v1`, port `50368`, and a configured token. Only the boolean presence was recorded; the token value was not copied.
+
+### Companion package identity discrepancy
+
+The running desktop app's **App info** screen showed:
+
+- App name: OpenClaw Windows Companion
+- Version: `v2026.11.1`
+- Build date: 7 November 2026
+- Runtime: .NET 10.0.14 / WinUI 3 / Windows App SDK 2.6.4
+- Architecture: x64
+- Update channel: stable
+- Install type: `Unpackaged (developer)`
+
+The Windows installed-apps listing separately showed an entry named OpenClaw Companion version `2026.9.8-1`.
+
+These observations suggest an older registered install entry may coexist with the newer unpackaged/developer app that was running, but the active executable path has **not** yet been matched to the registered uninstall entry. Do not uninstall either copy until the running process path and package identity are confirmed.
+
+### OpenCode in the isolated T3-P2 runtime
+
+- OpenCode CLI version: `2.2.7`.
+- Global config file: `%USERPROFILE%\.config\opencode\opencode.jsonc`.
+- Configured primary model: `ollama/qwen3.8:27b`.
+- Configured small model: `ollama/qwen3.5:4b`.
+- Enabled provider allowlist: `ollama` only.
+- Ollama base URL in OpenCode: `http://127.0.0.1:11434/v1`.
+- OpenCode's model listing in this account showed:
+  - `ollama/qwen3.5:0.8b`
+  - `ollama/qwen3.5:2b`
+  - `ollama/qwen3.5:4b`
+  - `ollama/qwen3.8:27b`
+- `opencode debug config` from the OpenClaw workspace loaded the same global config file and the same model/provider settings; the workspace did not reveal a conflicting project config.
+- Direct command `opencode run --model ollama/qwen3.8:27b ...` returned `READY`.
+- Direct ACP `initialize` succeeded. `session/new` succeeded and advertised all four models, with `ollama/qwen3.8:27b` selected by default.
+- A diagnostic prompt initially encountered an already-active ACP prompt; the diagnostic session was explicitly cancelled, and a subsequent prompt completed with `READY`.
+
+### OpenClaw model and ACPX configuration
+
+- Default OpenClaw model: `ollama/qwen3.8:27b`.
+- Qwen 27B model configuration was updated to `contextTokens=65536` and `params.num_ctx=65536`.
+- A subsequent `ollama ps` showed `qwen3.8:27b` loaded with context `65536`, runner `llamacpp`, and a reported size of approximately 21 GB. No new model was downloaded.
+- ACPX was installed/enabled; the ACP doctor reported the backend registered and the embedded ACP runtime ready.
+- ACPX's OpenCode agent command was explicitly set to the OpenCode executable under the Gateway MSIX-managed Node installation, with arguments `["acp"]`. The command setting succeeded; the args array was validated with a dry run and applied through `openclaw config patch`.
+- After closing the previous ACP session and spawning a new one from the browser Control UI, the prompt `Reply with exactly READY. Do not use tools.` returned `READY`. This verifies a simple browser-based OpenClaw → ACPX → OpenCode → local Ollama path.
+
+## 3. Native Companion Node failure — unresolved
+
+The desktop Companion's Connection page showed:
+
+- Native Gateway `ws://127.0.0.1:50368/`: Connected.
+- Operator: Connected.
+- Node mode: enabled.
+- Windows Node: Error / offline; diagnostics reported `0/1` nodes online.
+- Approved/effective Node capabilities included browser, camera, canvas, device, local inference, screen and system; the capability/permission UI showed the configured capabilities rather than a disabled Node toggle.
+
+Two error wordings were observed at different points:
+
+1. `The installed Gateway MSIX does not expose Companion's isolated-session contract. Update the Gateway MSIX, then retry setup. Credentials were not sent.`
+2. `Gateway ownership inspection failed. Check the installed Gateway package and retry. Credentials were not sent.`
+
+The diagnostics bundle generated at `2026-11-12 00:43 +10:00` reported:
+
+- Companion control connection: Connected.
+- Gateway version: `2026.11.1`, update status current.
+- Gateway URL/port: `50368`.
+- Gateway runtime: Node process on port `50368`.
+- Node inventory: Windows Node offline, approval state approved.
+- Browser proxy host: port `50370` not listening.
+- Connection timeline: Operator authentication reached `hello-ok`; the separate Node connection received a `connect.challenge`; the credential handoff was then blocked by the isolated-session/ownership inspection check. The Node credentials were not sent.
+
+The app's technical-details panel also showed approved/effective commands and permissions; this is not evidence that the Node connection completed. The browser Dashboard and native desktop Companion must be treated as separate interface paths.
+
+### Checks that already passed
+
+- Gateway service status: running on port `50368`.
+- Overall `clawctl status`: running on port `50368`.
+- Gateway status JSON: `isolated-session v1`, ownership present, one listener.
+- Detailed ownership summary: sandbox identity and agent SID present; listener port matches; PID present; timestamp parse valid; sequence present.
+- Companion preparation check: `ok=true`, port `50368`, token present.
+- Windows build `26300` is above the process-identity API minimum discussed during investigation (`26100.4770`).
+- Live TCP listener: one listener at `127.0.0.1:50368`, PID `25904`.
+
+An attempted Windows process-owner/start-time comparison was inconclusive: the CIM owner query returned no owner, and one process-time conversion failed. Those outputs must **not** be recorded as proof of an account/SID mismatch. Later checks confirmed the Gateway-reported PID existed and that the listener used the expected port.
+
+### Important interpretation
+
+The Gateway's TCP listener, status fields and Companion preparation response are present and valid in the checks above. The remaining failure is later in the native Companion Node authorization/ownership-inspection handoff. The current evidence does not establish that reinstalling the same Gateway MSIX, changing ports, regenerating credentials, changing permissions or re-pairing the Node will fix it.
+
+## 4. OpenClaw automations observed
+
+The browser Automations page showed two active automations; neither was changed:
+
+- `Heartbeat (main)`: every 30 minutes.
+- `Memory Dreaming Promotion`: cron `0 3 * * *`.
+
+Keep these existing schedules unchanged while troubleshooting the Companion connection.
+
+## 5. Configuration changes made during this session
+
+These are the changes that were actually applied, not merely proposed:
+
+1. In the T3-P2 OpenCode profile, created/updated `opencode.jsonc` with local Ollama primary model `ollama/qwen3.8:27b`, small model `ollama/qwen3.5:4b`, provider allowlist `["ollama"]`, and local Ollama base URL `http://127.0.0.1:11434/v1`. A backup named `opencode.jsonc.backup-20261111-205320` was created first.
+2. In OpenClaw's model registry, set Qwen 27B `contextTokens` and Ollama `num_ctx` to `65536`. A backup copy of `openclaw.json` named `openclaw.json.before-context-65536-20261111.bak` was requested before these settings were changed.
+3. In OpenClaw ACPX config, set the OpenCode command to the verified OpenCode executable path and applied args `["acp"]` using a structured config patch. The dry-run validation succeeded before the patch was applied.
+4. Closed the old failed ACP session and created fresh sessions for testing. The latest browser ACP session returned `READY`.
+
+No Gateway MSIX or Companion package was installed, upgraded, downgraded or removed during this troubleshooting sequence. No Ollama models were pulled or deleted. No pairing/token reset was performed. No credentials, tokens, device IDs, private SIDs, raw settings files or unredacted diagnostic payloads are included in this handoff.
+
+## 6. What is verified vs. what is still incomplete
+
+### Verified
+
+- OpenCode 2.2.7 in T3-P2 discovers the local Ollama models.
+- Direct OpenCode CLI local inference with Qwen 27B returned `READY`.
+- Direct OpenCode ACP initialization and session creation exposed the local model catalogue.
+- OpenClaw's browser Control UI successfully spawned OpenCode via ACPX and received `READY` from the local model.
+- OpenClaw Gateway and Operator control connection are reachable on port `50368`.
+- Qwen 27B is configured and has been observed loaded with 65,536 context.
+- No additional spending or model downloads were needed.
+
+### Not verified / blocked
+
+- Native Windows Companion Node connection (currently offline; credential handoff blocked).
+- Whether the active unpackaged Companion `2026.11.1` and the older installed-apps entry `2026.9.8-1` are two separate active installations.
+- Why the native Companion reports ownership-inspection failure despite the CLI contract/status fields passing.
+- Whether browser proxy port `50370` is required for any specific Dashboard feature or is a separate optional capability.
+- A real OpenClaw-delegated coding task through ACPX with changed files, tests and returned evidence.
+- OpenJarvis MCP connectivity to OpenClaw.
+- Full four-application end-to-end acceptance and restart/recovery acceptance.
+
+## 7. Exact next actions
+
+1. **Resolve Companion executable/install identity first.** From normal Windows PowerShell, inspect only the running OpenClaw Companion process name, PID and executable path. Compare that executable path with the registered `OpenClaw Companion 2026.9.8-1` uninstall entry and the App info screen showing active `v2026.11.1` / `Unpackaged (developer)`. Do not uninstall either copy until the active process and registered package are unambiguously mapped.
+2. **Capture fresh native Companion diagnostics after one controlled Node reconnect attempt.** Use Diagnostics → Connection event timeline and Recent log. Preserve the precise ownership-inspection rejection and its preceding status/handshake events. Do not share tokens or raw settings.
+3. **Compare the running package and Gateway contract against the official Windows packaging release/issue tracker.** Only apply an official package update if a newer compatible package or explicit upstream fix is confirmed. Do not reinstall the same package speculatively.
+4. **Retest the native desktop path.** Require Gateway connected, Operator connected, Node `1/1` online and a safe Node operation to succeed from the desktop app. The browser ACP `READY` result does not substitute for this.
+5. **Complete one disposable coding task through ACPX.** Verify workspace scope, changed files, test output, result return, cancellation and no cloud/paid fallback.
+6. Continue to inspect the installed OpenJarvis MCP surface and complete the separate OpenClaw → OpenJarvis MCP test only after its installed-build support is confirmed.
+
+## 8. Resume commands and shell context
+
+The two Windows shells are different and must not be confused:
+
+- Normal host shell: `PS C:\Users\<user>>` — `clawctl` commands run here.
+- Isolated OpenClaw shell: `[openclaw T3-P2] ...>` — `openclaw`, `node`, `npm` and the T3-P2 OpenCode installation run here; `clawctl` is not on its PATH.
+
+Useful read-only checks already proven:
+
+- Normal host shell: `clawctl status`
+- Normal host shell: `clawctl gateway-service status --json`
+- Normal host shell: `clawctl companion prepare --check --json`
+- Isolated shell: `opencode --version`
+- Isolated shell: `opencode models`
+- Isolated shell: `opencode debug config`
+- Isolated shell: `ollama ps`
+
+Keep commands as single-line PowerShell commands for this user. Do not print or paste gateway auth tokens, device tokens, API keys, SIDs or raw credential stores into the repository or chat.
+
+---
+
+**Handoff outcome:** The local model path and browser ACP proof are preserved. The immediate blocker for the native Windows app is the Companion's separate Node ownership/credential-handoff check, not the working browser ACP path. Resume at **Exact next action 1** above.
