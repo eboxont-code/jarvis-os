@@ -400,3 +400,39 @@ Do not update/reinstall Gateway or Companion now: installed versions already mat
 If another local result is needed, request only a safe summary of the current `clawctl gateway-service status --json` response. Print the integration kind/version, gateway state, whether gateway.port exists, whether ownership/sandboxId/agentUserSid exist, listener count, and whether each listener contains port/processId/processStartTimeUtc/sequenceNumber. Do not print any token, SID, sandbox ID value, URL, raw JSON, or credential. This distinguishes a missing producer response field from a later failure in Companion's own Windows listener/process snapshot. The previous manual presence summary was not timestamp-aligned with the latest Companion inspection, so a single fresh summary would close that gap.
 
 No further full diagnostics export is needed. Preserve the current Node token and pairing. Keep native Node BLOCKED until 1/1 online and a harmless permitted native action succeeds.
+
+## 14. Fresh Gateway contract shape passes — next isolate Companion's local Windows ownership proof (12 Nov 2026)
+
+User ran the targeted, read-only `clawctl gateway-service status --json` shape check. It returned:
+
+- `Ok=True`
+- `Integration=isolated-session`
+- `IntegrationVersion=1`
+- `State=running`
+- `PortPresent=True`
+- `OwnershipPresent=True`
+- `SandboxIdPresent=True`
+- `AgentSidPresent=True`
+- `ListenerCount=1`
+- `ListenerFieldsComplete=True`
+
+The command printed only booleans/counts, not token, SID value, sandbox ID value, or raw JSON. This is strong evidence that the current Gateway package response contains the required producer-side fields and that the current invocation is not losing its port due to the multiple-observed-port selector. It does not prove the Companion's independent Windows process/listener proof passes.
+
+### Exact remaining Companion check in current source
+
+`NativeGatewayPackageClient.StatusAsync` accepts the package shape above when the ownership object contains the process identities. `IsolatedGatewayRuntime.InspectSnapshot` then independently:
+
+1. Calls `WindowsTcpListenerSnapshot.Capture()` and requires complete IPv4 and IPv6 listener tables.
+2. Finds the live TCP listener(s) for the selected Gateway port and requires at least one.
+3. Requires the package-attested Agent SID.
+4. Calls `WindowsProcessSequenceSnapshot.Capture()` and requires a sequence number for every live listener PID.
+5. Requires each listener to be loopback and the `(port, processId, sequenceNumber)` tuple to match a package-attested listener.
+6. Captures the listener table and process sequences a second time and requires it to remain unchanged during verification.
+
+The current UI's generic `Gateway ownership inspection failed` is emitted if an exception from this inspection escapes into `InspectAsync`; normal failed comparisons return more specific internal details, but the current catch hides exceptions such as `Win32Exception` and `COMException` behind generic UI text. Earlier CIM GetOwner / start-time calculations in the user's diagnostics were invalid/inconclusive; do not treat them as a proven SID mismatch or repeat those same calculations.
+
+### Next one-command check
+
+Compare package-attested listener `processId` with live `Get-NetTCPConnection -State Listen -LocalPort 50368` `OwningProcess`, and test whether `Get-Process` can read start time for the actual listener PID. Print booleans and PIDs only, not SID, sandbox ID, tokens, sequence values, raw JSON or private paths. If PID and start-time access match, the next lead is Companion's `WindowsProcessSequenceSnapshot.Capture()` / second-snapshot verification rather than package response shape.
+
+No further diagnostics export, Gateway restart, reinstall, token reset, pairing reset, or config changes are justified. Keep native Node blocked until UI reports 1/1 online and a harmless permitted native action succeeds.
