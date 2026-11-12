@@ -431,8 +431,32 @@ The command printed only booleans/counts, not token, SID value, sandbox ID value
 
 The current UI's generic `Gateway ownership inspection failed` is emitted if an exception from this inspection escapes into `InspectAsync`; normal failed comparisons return more specific internal details, but the current catch hides exceptions such as `Win32Exception` and `COMException` behind generic UI text. Earlier CIM GetOwner / start-time calculations in the user's diagnostics were invalid/inconclusive; do not treat them as a proven SID mismatch or repeat those same calculations.
 
-### Next one-command check
+## 15. Listener PID matches; validate the Windows process-sequence API (12 November 2026)
 
-Compare package-attested listener `processId` with live `Get-NetTCPConnection -State Listen -LocalPort 50368` `OwningProcess`, and test whether `Get-Process` can read start time for the actual listener PID. Print booleans and PIDs only, not SID, sandbox ID, tokens, sequence values, raw JSON or private paths. If PID and start-time access match, the next lead is Companion's `WindowsProcessSequenceSnapshot.Capture()` / second-snapshot verification rather than package response shape.
+User ran the targeted, read-only package-vs-Windows listener comparison for Gateway port 50368. It returned:
 
-No further diagnostics export, Gateway restart, reinstall, token reset, pairing reset, or config changes are justified. Keep native Node blocked until UI reports 1/1 online and a harmless permitted native action succeeds.
+- Package-attested listener PID: 16208
+- Windows TCP listener PID: 16208
+- `PIDMatch=True`
+- `WindowsListenerCount=1`
+- `ProcessVisible=True`
+- `StartTimeReadable=False`
+- `StartTimeDifferenceSeconds=null`
+
+This confirms the package-reported PID corresponds to the one live Windows listening socket. The result does not indicate a stale or mismatched PID. The PowerShell process start-time read was denied/unavailable, so no timestamp comparison can be made.
+
+### Why the unreadable start time is not itself a failure
+
+Current Companion source `WindowsProcessSequenceSnapshot.cs` explicitly says its SystemBasicProcessInformation approach provides a PID-reuse-proof identity without opening the isolated agent's process handle, because that handle's DACL denies access to Companion. The implementation calls `NtQuerySystemInformation` with information class 252, retries a bounded buffer on `STATUS_INFO_LENGTH_MISMATCH`, and reports unsupported Windows when the API returns `STATUS_INVALID_INFO_CLASS`. It parses the process table and obtains the process sequence number; it does not rely on `Get-Process.StartTime`.
+
+Source: https://github.com/openclaw/openclaw-windows-node/blob/main/src/OpenClaw.Connection/NativeGateway/WindowsProcessSequenceSnapshot.cs
+
+Microsoft documents `SystemBasicProcessInformation` as available starting with Windows 11 version 26100.4770; its sequence number is intended to detect PID reuse. The installed Windows build previously reported as 26300 is newer by base build number, but the exact API outcome still needs a live check rather than assumption.
+
+Source: https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntquerysysteminformation
+
+### Next narrow, read-only check
+
+Test whether `NtQuerySystemInformation(252)` succeeds in the user's 64-bit PowerShell process and whether the returned process table contains PID 16208 with a non-zero sequence number. Print only API status, table-validity, PID-present and sequence-nonzero booleans; do not print the sequence value, SID, sandbox ID, token, raw JSON or private paths. This will directly test the same OS primitive used by Companion.
+
+No diagnostics export, Gateway restart, reinstall, token reset, pairing reset, config change, ACL change or permission workaround is justified. Keep native Node BLOCKED until the desktop app reports Node 1/1 online and a harmless permitted native action succeeds.
