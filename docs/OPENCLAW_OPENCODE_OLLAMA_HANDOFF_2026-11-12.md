@@ -231,7 +231,7 @@ These records concern the existing local `C:\Users\Boxont\OpenJarvis` checkout a
 
 ### Updated exact next actions
 
-1. From normal Windows PowerShell, identify the **running Companion process only** (process name, PID and executable path). Compare the executable path with the registered `OpenClaw Companion 2026.9.8-1` uninstall entry and the App Info screen showing unpackaged/developer `v2026.11.1`. Do not remove either copy.
+1. From normal Windows PowerShell, identify the **running Companion process only** (process name, PID and executable path). Use this single-line read-only command: `Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'OpenClaw' } | Select-Object ProcessId,Name,ExecutablePath`. Compare the executable path with the registered `OpenClaw Companion 2026.9.8-1` uninstall entry and the App Info screen showing unpackaged/developer `v2026.11.1`. Do not remove either copy.
 2. Capture one fresh Companion Connection event timeline and Recent log after a controlled Node reconnect attempt. Keep tokens, device credentials, SIDs and raw settings redacted.
 3. Compare the active executable/package identity with the official Windows Node/Companion and Gateway MSIX release channels. Do not install a prerelease or reinstall the same Gateway package speculatively.
 4. Retest native desktop registration: Gateway connected, Operator connected, Node online `1/1`, and one harmless permitted Node operation verified from the desktop app.
