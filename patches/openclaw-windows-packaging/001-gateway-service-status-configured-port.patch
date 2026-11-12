@@ -1,0 +1,43 @@
+From 7185d5ea504643e0799f3ae665f64180261d5da5 Mon Sep 17 00:00:00 2001
+Subject: [PATCH] fix: preserve configured Gateway port in multi-listener status
+
+Base: openclaw/openclaw-windows-packaging
+Commit: 7185d5ea504643e0799f3ae665f64180261d5da5
+File: src/OpenClaw.Launcher/Program.cs
+
+This is a minimal candidate patch, not an upstream-applied change.
+It deliberately changes only the gateway-service status port selection.
+The dashboard environment selector is not included.
+
+--- a/src/OpenClaw.Launcher/Program.cs
++++ b/src/OpenClaw.Launcher/Program.cs
+@@ -1092,9 +1092,7 @@
+                                         log,
+                                         cancellationToken).ConfigureAwait(false);
+ 
+-                            int? port = result.Record?.ObservedPorts is { Count: 1 }
+-                                ? result.Record.ObservedPorts[0]
+-                                : null;
++                            int? port = Gateway.GatewayAddress.ResolvePort(result.Record);
+                             return new GatewayCommandResult(
+                                 "status",
+                                 result.State,
+                                 result.Message,
+                                 result.Detail,
+                                 (result.State is Gateway.GatewayState.Running or Gateway.GatewayState.Starting or
+                                     Gateway.GatewayState.NotStarted) &&
+                                     configReadiness?.ProbeFailed != true && stateTransfer?.Pending != true &&
+                                     stateTransfer?.Error is null ? 0 : 1,
+                                     port,
+                                     Readiness: configReadiness,
+                                     SandboxId: result.SandboxId,
+                                     AgentUserSid: result.AgentUserSid,
+                                     OwnedListeners: result.OwnedListeners,
+                                     SessionAvailability: result.State == Gateway.GatewayState.Running
+                                         ? null
+                                         : session.Availability,
+                                     StateTransfer: stateTransfer,
+                                     Launch: result.Record?.AttemptId is string attemptId
+                                         ? new Gateway.GatewayLaunchReceipt(attemptId)
+                                         : null);
+ 
