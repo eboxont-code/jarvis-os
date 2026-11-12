@@ -578,3 +578,57 @@ A further read-only upstream check was completed after the PR #2114 CI review:
 ### Decision and next narrow action
 
 No official stable package repair is available. The local status/PID/sequence checks already passed and should not be repeated. Do not restart, reinstall, reset tokens/pairing, modify ACLs, or bypass the ownership check. The only remaining useful local observation is the existing Companion **Show technical details** expansion for the current Node ownership-inspection failure: it may expose a more specific reason than the summary UI. This is a read-only UI inspection, not another Gateway test or lifecycle action. If it still reports only the generic message, stop local probing and keep Node BLOCKED pending upstream producer and Companion fixes.
+
+## 21. Confirmed upstream multi-listener Gateway status defect and exact repair candidate (12 November 2026)
+
+A fresh read of Companion issue [#1691](https://github.com/openclaw/openclaw-windows-node/issues/1691), including its detailed reproduction and later matching-version report, materially strengthens the packaging diagnosis.
+
+### Reproduction documented upstream
+
+The issue discussion records a reproducible sequence on the official Windows Gateway package:
+
+1. Start the isolated Gateway with a configured loopback port. `clawctl gateway-service status --json` initially reports the port and ownership.
+2. Run packaged `openclaw browser status --json`. Even while the managed browser is stopped, this initializes an additional loopback listener in the same Gateway Node process.
+3. A subsequent `clawctl gateway-service status --json` reports `gateway.state=running` but omits both `gateway.port` and `gateway.ownership`.
+4. Companion's running-Gateway parser requires the port, so it reports the generic missing isolated-session contract error and withholds credentials.
+
+The issue contains a later report with Gateway MSIX `2026.11.100.0`, payload `2026.11.1`, and Companion `2026.11.1`, matching the installed version pair recorded in this handoff. That reporter also found that the package could prepare the known configured port while the running-status JSON omitted its port and ownership. This is strong evidence that the defect can affect the current release pair; it is not, by itself, proof that the user's exact failing Companion inspection sampled the same multi-listener state.
+
+**Important:** do not run `openclaw browser status --json` as a diagnostic on the user's installation. The upstream reproduction says that this command itself can create the auxiliary listener and trigger the broken status response. Do not use Gateway restart as a workaround: the report says it only clears the extra listener temporarily and the problem returns when browser functionality initializes it again.
+
+### Exact source mismatch
+
+Current packaging main is `7185d5ea504643e0799f3ae665f64180261d5da5`.
+
+- `src/OpenClaw.Launcher/Program.cs`, GatewayStatus callback, current line 1095, uses the count-only selector:
+  ```csharp
+  int? port = result.Record?.ObservedPorts is { Count: 1 }
+      ? result.Record.ObservedPorts[0]
+      : null;
+  ```
+- The same Program.cs already uses `GatewayAddress.ResolvePort(result.Gateway.Record)` for the top-level `clawctl status` path.
+- The existing `GatewayAddress.ResolvePort` helper implements the documented safe policy: use a configured port if it is present in the fresh observed listeners; if no observed listeners exist, retain the configured port; otherwise use a sole observed listener; if multiple listeners remain unclassified, return null rather than guessing.
+- Existing `GatewayAddressTests` already prove both the configured-port-among-multiple-listeners case and the ambiguous-unconfigured-multiple-listener case.
+- `ClawCtlJson.FromOwnership` emits the ownership object only when a positive selected port is present and the required ownership/listener identity fields validate. Therefore dropping the port also drops the ownership block required by Companion.
+
+### Smallest candidate packaging patch
+
+In the GatewayStatus callback only, replace the duplicate `ObservedPorts.Count == 1` selection with:
+
+```csharp
+int? port = Gateway.GatewayAddress.ResolvePort(result.Record);
+```
+
+Add a command-level regression in `tests/OpenClaw.Launcher.Tests/ProgramTests.cs` proving that `gateway-service status --json` retains the configured port and ownership when that configured port is among multiple observed listeners. Retain a control asserting that multiple unclassified listeners with no configured port still emit no port/ownership. The existing helper tests alone do not cover the GatewayStatus callback wiring.
+
+Do not automatically change the separate count-only selector in Program.cs used by dashboard environment setup; review its distinct call path and required semantics before bundling any additional behavior change.
+
+### Status and boundaries
+
+- Companion issue #1691 now has a source-backed multi-listener reproduction and a report of a local development-package repair. The reporter says the patched package preserved configured-port attribution with browser listeners active and Companion reconnect/chat succeeded. That package was a local development build, not an official stable Store release.
+- A separate issue comment reports the same current Gateway/Companion version pair as this PC and missing `gateway.port` / ownership in both status outputs. Reports in the issue also describe other possible causes (for example stale saved endpoint/token/pairing), so this finding does not explain every instance of the generic message.
+- The user's latest supplied local status-shape and process-sequence checks passed with one listener. The Windows TCP listener count is not necessarily identical to the isolated-session `GatewayRecord.ObservedPorts` count sampled by the package. The exact failing invocation has not yet been captured with a multi-listener response, so keep this as a high-confidence upstream defect and plausible local cause, not a proven local reproduction.
+- Companion diagnostic PR [#2114](https://github.com/openclaw/openclaw-windows-node/pull/2114) remains a separate diagnostic-classification change, not the producer repair. It is still open/unmerged, has a P2 localization finding, and its required Build and Test CI gate is red because WSL E2E jobs could not resolve the Ubuntu 24.04 download host.
+- Attempting to create a packaging branch through the linked GitHub integration returned HTTP 403 (write access denied). No upstream branch or PR was created. No local Windows process, Gateway package, Companion install, configuration, data, token or pairing state was changed.
+
+**Next safe local action:** expand Companion's existing **Show technical details** section and capture that screen. Do not trigger browser status, restart the Gateway, reinstall packages, reset pairing/tokens, change ACLs or bypass ownership validation. Keep Node BLOCKED until the native app shows 1/1 online and a harmless permitted Node action succeeds.
