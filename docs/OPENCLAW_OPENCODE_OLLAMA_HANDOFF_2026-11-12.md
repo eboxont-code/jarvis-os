@@ -460,3 +460,39 @@ Source: https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl
 Test whether `NtQuerySystemInformation(252)` succeeds in the user's 64-bit PowerShell process and whether the returned process table contains PID 16208 with a non-zero sequence number. Print only API status, table-validity, PID-present and sequence-nonzero booleans; do not print the sequence value, SID, sandbox ID, token, raw JSON or private paths. This will directly test the same OS primitive used by Companion.
 
 No diagnostics export, Gateway restart, reinstall, token reset, pairing reset, config change, ACL change or permission workaround is justified. Keep native Node BLOCKED until the desktop app reports Node 1/1 online and a harmless permitted native action succeeds.
+
+
+## 16. Windows process-sequence API succeeds; compare package and OS identity (12 November 2026)
+
+User ran the targeted single-line read-only process table probe. Result:
+
+`ListenerPID=16208; API=OK; TableValid=True; GatewayPIDPresent=True; SequenceNonZero=True`
+
+This proves the user's 64-bit PowerShell process can call `NtQuerySystemInformation(252)`, parse a valid process table, find the live Gateway listener PID 16208 and read a non-zero process sequence number. The OS API is supported and functioning for the relevant PID. Combined with the previous `PIDMatch=True` result, the listener PID is consistent across the package attestation, Windows TCP ownership and Windows process table.
+
+### Remaining identity comparison in current Companion source
+
+Current `IsolatedGatewayRuntime.InspectSnapshot` checks every listener on the selected port for all of the following:
+
+1. Both IPv4 and IPv6 TCP listener snapshots must be complete.
+2. At least one listener must exist on the selected port.
+3. Package status must attest a non-empty Agent SID.
+4. Each live listener must be loopback.
+5. The Windows process-sequence table must contain that listener PID.
+6. The tuple `(port, processId, sequenceNumber)` must match an entry in the package-attested listener list.
+7. A second TCP-listener and process-sequence snapshot must be complete, preserve the listener count/address/PID set, and preserve every PID's process sequence number.
+
+The previous probe only verified that the OS sequence exists and is non-zero. It did not compare the actual sequence value with the package's `sequenceNumber`. Do not expose either sequence value to the user; the next targeted command should return only match booleans and listener counts.
+
+Source: https://github.com/openclaw/openclaw-windows-node/blob/main/src/OpenClaw.Connection/NativeGateway/IsolatedGatewayRuntime.cs
+
+### Current evidence state
+
+- Gateway contract shape: passed (all required fields, one complete listener).
+- Package PID vs Windows listener PID: passed (16208 == 16208; one listener).
+- Windows sequence API: passed (valid table, PID present, non-zero sequence).
+- Package sequence vs Windows sequence equality: not yet checked.
+- IPv4/IPv6 listener table completeness and repeated-snapshot stability: not yet checked by a same-method local test.
+- Companion Node remains BLOCKED until its UI reports 1/1 online and a harmless permitted native action succeeds.
+
+No restart, reinstall, credential/token change, pairing reset, ACL change, elevation or broad diagnostics export is justified. The next user action is only the non-secret equality check described above.
