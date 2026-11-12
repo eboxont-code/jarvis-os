@@ -496,3 +496,36 @@ Source: https://github.com/openclaw/openclaw-windows-node/blob/main/src/OpenClaw
 - Companion Node remains BLOCKED until its UI reports 1/1 online and a harmless permitted native action succeeds.
 
 No restart, reinstall, credential/token change, pairing reset, ACL change, elevation or broad diagnostics export is justified. The next user action is only the non-secret equality check described above.
+
+
+## 17. Package and Windows process identity tuple matches (12 November 2026)
+
+User ran the one-line, read-only sequence comparison against the current `clawctl gateway-service status --json` response and the Windows `NtQuerySystemInformation(252)` process table. It returned:
+
+`PIDMatch=True; API=OK; TableValid=True; GatewayPIDPresent=True; SequenceNonZero=True; SequenceMatches=True`
+
+Combined with the preceding checks:
+
+- Gateway contract response contains all required fields and one complete package listener.
+- Package listener PID and Windows TCP listener PID both equal 16208.
+- Windows process table contains PID 16208.
+- Windows process sequence is non-zero and exactly matches the package-attested `sequenceNumber`.
+
+Therefore the central process identity tuple `(port, processId, sequenceNumber)` matches for the current listener. PID reuse, a missing process table entry, unsupported Windows sequence API, or a package-vs-OS sequence mismatch are not supported explanations for the current failure.
+
+### Remaining Companion inspection conditions
+
+Current `IsolatedGatewayRuntime.InspectSnapshot` also requires:
+- complete IPv4 and IPv6 listener tables from the Windows IP Helper API;
+- every listener on the chosen port to be loopback and match a package-attested PID/sequence tuple;
+- a second listener snapshot with complete IPv4 and IPv6 tables, the same port listener count and address/PID set, and unchanged process sequence values.
+
+These exact listener snapshot/address checks have not yet been independently validated by the user's command outputs. The generic UI error should not be attributed to them until tested; other code paths, lifecycle state and inspection timeout remain possible.
+
+Source: https://github.com/openclaw/openclaw-windows-node/blob/main/src/OpenClaw.Connection/NativeGateway/IsolatedGatewayRuntime.cs
+
+### Next action
+
+Run one bounded, read-only check of two IP Helper TCP-listener snapshots and two process-sequence snapshots for the current Gateway port, returning only completeness, loopback, package identity and stability booleans. No credentials, SID, sandbox ID, sequence values or raw JSON should be printed.
+
+Do not restart Gateway, reinstall either package, reset pairing/tokens, edit ACLs or grant elevated permissions. Native Node remains BLOCKED until Companion shows Node 1/1 online and a harmless permitted native action succeeds.
