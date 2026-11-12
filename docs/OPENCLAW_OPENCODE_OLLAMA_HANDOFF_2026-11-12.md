@@ -529,3 +529,21 @@ Source: https://github.com/openclaw/openclaw-windows-node/blob/main/src/OpenClaw
 Run one bounded, read-only check of two IP Helper TCP-listener snapshots and two process-sequence snapshots for the current Gateway port, returning only completeness, loopback, package identity and stability booleans. No credentials, SID, sandbox ID, sequence values or raw JSON should be printed.
 
 Do not restart Gateway, reinstall either package, reset pairing/tokens, edit ACLs or grant elevated permissions. Native Node remains BLOCKED until Companion shows Node 1/1 online and a harmless permitted native action succeeds.
+
+
+## 18. Use Companion's own retry to run the final production listener proof (12 November 2026)
+
+After the user's latest check, the Gateway package and Windows agree on the complete listener process identity tuple:
+
+`PIDMatch=True; API=OK; TableValid=True; GatewayPIDPresent=True; SequenceNonZero=True; SequenceMatches=True`
+
+The current source's remaining `InspectSnapshot` requirements are complete IPv4 and IPv6 IP Helper listener tables, loopback-only listener addresses, and a stable second listener/process-sequence snapshot. Rather than adding another external PowerShell reproduction (which cannot prove the exact result inside the active Companion process), the next functional test should be the existing Companion Node Retry action once. It will invoke the real production inspection path with the current package status, Windows listener snapshots and process sequence tables.
+
+This is not a Gateway restart, reinstall or pairing/token reset. If retry succeeds, verify the Companion UI shows Node 1/1 online and then run one harmless permitted native Node action. If the same error persists, record the exact UI message and keep Node BLOCKED; do not weaken the ownership proof or bypass credential withholding.
+
+Current evidence:
+- Contract shape: pass.
+- Package PID == Windows TCP listener PID: pass (16208).
+- Windows process sequence API: pass.
+- Package sequence == Windows process sequence: pass.
+- Loopback / IPv4+IPv6 completeness / second snapshot stability: not independently proven; Companion Retry is the authoritative end-to-end test.
