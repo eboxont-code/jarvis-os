@@ -198,3 +198,44 @@ Keep commands as single-line PowerShell commands for this user. Do not print or 
 ---
 
 **Handoff outcome:** The local model path and browser ACP proof are preserved. The immediate blocker for the native Windows app is the Companion's separate Node ownership/credential-handoff check, not the working browser ACP path. Resume at **Exact next action 1** above.
+
+
+## 9. Continuation checkpoint — 12 November 2026, 09:59 AEST
+
+This section records the later Windows checks and the additional OpenJarvis repair/build evidence supplied after the initial handoff. It supplements the earlier findings; it does not close the native Companion blocker.
+
+### Latest Windows / Gateway checks
+
+- Windows: Windows 11 Pro, version `10.0.26300`, build `26300`, 64-bit. The earlier registry query reported UBR `9711`.
+- `Get-AppxPackage` filtered to `OpenClawFoundation.OpenClaw*` returned only `OpenClawFoundation.OpenClawGateway`, package version `2026.11.100.0`, full package name `OpenClawFoundation.OpenClawGateway_2026.11.100.0_x64__rfcbke2p71se2`.
+- The separately observed Add/Remove Programs entry remains OpenClaw Companion version `2026.9.8-1`.
+- The running Companion App Info screen had shown `v2026.11.1`, build date 7 November 2026, install type `Unpackaged (developer)`. The active process executable path has **not** yet been matched to the registered `2026.9.8-1` entry. Do not uninstall either copy until that mapping is established.
+- The Gateway continues to report `running`, port `50368`, `isolated-session` integration version `1`, and ownership present.
+- `clawctl status --json` returned `State=running`, `Port=50368`, `OwnershipPresent=True`, `Integration=isolated-session`, `Version=1`.
+- `clawctl gateway-service status --json` returned schema `1`, command `gateway-service status`, Gateway launch version `1`, attempt ID present and valid GUID format, ownership present, sandbox ID present, account SID field present, and exactly one owned listener.
+- The detailed listener check returned port `50368`, PID `25904`, valid start-time parse and sequence number. Windows TCP inspection independently showed exactly one loopback listener: `127.0.0.1:50368`, owned by PID `25904`.
+- `clawctl companion prepare --check --json` returned schema `1`, `ok=true`, integration `isolated-session v1`, companion port `50368`, and token configured. Only the boolean presence was recorded; token contents were not displayed or saved.
+- A Windows process-owner/start-time comparison using CIM was inconclusive: the owner query returned an empty value and process start-time conversion failed on one attempt. These results are **not** evidence of an SID mismatch. A later `Get-Process -Id 25904` did find a running `node` process, and Windows' TCP table showed it listening on the expected port.
+- The Companion Connection page still showed Gateway and Operator connected, Node mode enabled, but the Windows Node in Error/offline state. The technical-details page displayed approved/effective capabilities (browser, camera, canvas, device, local inference, screen and system); this proves configured permissions, not a live Node connection.
+- The reported Node error remains `Gateway ownership inspection failed` / earlier `The installed Gateway MSIX does not expose Companion's isolated-session contract`; credentials were not sent. Diagnostics showed `0/1` Nodes online. Gateway/Operator reachability and the browser ACP path must not be mistaken for successful native Node registration.
+- One Gateway restart was attempted during troubleshooting, but it did not resolve the Companion Node error. The Gateway was subsequently verified running again. Do not repeat restarts, reset pairing or regenerate credentials without a specific evidence-based reason.
+
+### OpenJarvis source/build evidence supplied separately
+
+These records concern the existing local `C:\Users\Boxont\OpenJarvis` checkout and a separate temporary repair-build copy. They are included for continuity; they do **not** mean the OpenJarvis code or compiled desktop binaries were committed to this repository.
+
+1. **Hidden-console patch attempt, 8 November 2026:** the repair log records backups of the existing Tauri source and desktop EXE, SHA-256 values `A728EB029A7CAD8C7658A982AAA55BEB798AAD79CB2668444CEF2DFC0CF25F4F` (source) and `085244CCEFF72B00AC05F50515036481C58B5640A03C04340C0BCF0DB6AF2D0C` (EXE). The attempted source patch added `CREATE_NO_WINDOW` to the shared managed child-process launcher (four call sites, affecting helper launches such as `uv.exe` and `ollama.exe`, not the desktop window). The first build attempt failed and the log says the original source was restored and verified.
+2. **Second hidden-console attempt:** a second log shows the same backups and patch, then a Cargo offline build. A separate captured Cargo stdout file reports `Compiling openjarvis-desktop v1.0.2` followed by `Finished release profile [optimized] target(s) in 49.66s`. The available log set does not confirm a final installed executable hash, a successful launch of the patched executable, or a verified no-console runtime. Treat this as a successful Cargo compilation record only, not a verified repair/release.
+3. **Separate repair build copy:** `OpenJarvis-Repair-493725251.log` records the frontend TypeScript/Vite stage succeeding (`3509 modules transformed`), but the native Rust build failed in `web_atoms v0.2.5` build script with Windows error code `5` (`Access is denied`). That attempt used a separate `C:\Users\Boxont\Desktop\OpenJarvis-Repair-Build-493725251` path and did not produce a verified installer. Do not conflate this with the normal OpenJarvis source checkout.
+4. No new OpenJarvis installer or MSI was verified in these logs. The current local source tree is known to contain custom/dirty changes and must be preserved. No `git reset`, `git clean`, bulk staging, overwrite or forced push was performed in this session.
+
+### Updated exact next actions
+
+1. From normal Windows PowerShell, identify the **running Companion process only** (process name, PID and executable path). Compare the executable path with the registered `OpenClaw Companion 2026.9.8-1` uninstall entry and the App Info screen showing unpackaged/developer `v2026.11.1`. Do not remove either copy.
+2. Capture one fresh Companion Connection event timeline and Recent log after a controlled Node reconnect attempt. Keep tokens, device credentials, SIDs and raw settings redacted.
+3. Compare the active executable/package identity with the official Windows Node/Companion and Gateway MSIX release channels. Do not install a prerelease or reinstall the same Gateway package speculatively.
+4. Retest native desktop registration: Gateway connected, Operator connected, Node online `1/1`, and one harmless permitted Node operation verified from the desktop app.
+5. Only after the native path is understood, complete a disposable coding task through browser ACPX and verify files, tests, scope, return evidence and cancellation; then inspect the installed OpenJarvis MCP surface.
+6. The local OpenJarvis source/build artefacts and their repair logs remain local evidence. They have **not** been committed as application source or binaries to `jarvis-os`; only this sanitized troubleshooting record is being synchronised here.
+
+**Current outcome:** Gateway status and Companion preparation/ownership fields pass their read-only checks; native Companion Node credential handoff remains blocked. Local Qwen and browser ACPX proof remain separate verified paths.
