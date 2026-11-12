@@ -381,3 +381,22 @@ The full interpretation and source comparison are recorded above. Key results:
 - PR #2114 would name the failed operation and rejected field while retaining credential withholding; it is still open, blocked on localization review, and has not been tested with a real Gateway MSIX or shipped Companion.
 - No user action now: do not request another diagnostics export, screenshot, version check, Gateway restart, reinstall, token reset or pairing reset. Keep native Node blocked and continue upstream producer/consumer fix verification.
 
+## 13. Official release check — 12 November 2026
+
+A fresh release/source check was completed after reviewing the existing diagnostics. No supported stable package update is presently available for this machine.
+
+- Gateway packaging releases: the latest published stable release page is v2026.11.1-msix.0, released 5 November 2026. It packages OpenClaw 2026.11.1 and its numeric MSIX identity is 2026.11.100.0 — exactly the installed Gateway package. The listed release changes concern Hyper-V checks and staged-package dependency resolution, not the observed-port/ownership status selection. There is no later stable Gateway MSIX on the published releases page.
+- Companion releases: stable v2026.11.1 was promoted 7 November 2026, matching the active Companion. v2026.11.2-alpha.10 is explicitly a prerelease (8 November); do not recommend it as a repair.
+- Current packaging main still uses the exactly-one-observed-port selection in Program.cs (fetched blob d9fd53f295d636cc8b9568d432bf1fc4cf9b42d0): `ObservedPorts is { Count: 1 }`. README documents that running ownership is included only when a single port and its isolated-session listener identities are observed. Therefore the multi-listener status omission is a known upstream failure mode, but it remains unproven on this PC because the user's earlier manual command reported one listener and ownership/listener identity fields present.
+- Targeted GitHub search found no open packaging PR explicitly matching ObservedPorts. Recent packaging main commits concern restart handoffs, beta releases, diagnostics context and fixture/test changes; none of the inspected current Program.cs lines change the selected-port rule.
+- Companion PR #2114 remains open, labelled waiting on author, with a review request to localize its new user-facing detail. It would make a malformed later response identify the exact operation/field while continuing to withhold credentials; it does not repair the packaging source or prove this PC's precise failure.
+
+### Decision
+
+Do not update/reinstall Gateway or Companion now: installed versions already match the latest stable releases, and no stable Gateway MSIX with the suspected selector repair is published. Do not sideload the newer Companion alpha, install PR #2114, restart Gateway again, or reset tokens/pairing.
+
+### One remaining local discriminator — targeted and read-only
+
+If another local result is needed, request only a safe summary of the current `clawctl gateway-service status --json` response. Print the integration kind/version, gateway state, whether gateway.port exists, whether ownership/sandboxId/agentUserSid exist, listener count, and whether each listener contains port/processId/processStartTimeUtc/sequenceNumber. Do not print any token, SID, sandbox ID value, URL, raw JSON, or credential. This distinguishes a missing producer response field from a later failure in Companion's own Windows listener/process snapshot. The previous manual presence summary was not timestamp-aligned with the latest Companion inspection, so a single fresh summary would close that gap.
+
+No further full diagnostics export is needed. Preserve the current Node token and pairing. Keep native Node BLOCKED until 1/1 online and a harmless permitted native action succeeds.
