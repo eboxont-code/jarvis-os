@@ -239,3 +239,33 @@ These records concern the existing local `C:\Users\Boxont\OpenJarvis` checkout a
 6. The local OpenJarvis source/build artefacts and their repair logs remain local evidence. They have **not** been committed as application source or binaries to `jarvis-os`; only this sanitized troubleshooting record is being synchronised here.
 
 **Current outcome:** Gateway status and Companion preparation/ownership fields pass their read-only checks; native Companion Node credential handoff remains blocked. Local Qwen and browser ACPX proof remain separate verified paths.
+
+## 10. Upstream issue and release cross-check — 12 November 2026
+
+This section records public upstream evidence checked after the Windows snapshot above. It is diagnostic context, not proof that any one upstream defect is the cause on this PC.
+
+### Related upstream reports
+
+1. **[openclaw-windows-node #1691 — Companion cannot connect: Gateway MSIX missing isolated-session contract](https://github.com/openclaw/openclaw-windows-node/issues/1691)** remains open and was updated on 11 November. Its discussion contains a source-supported multi-listener failure path: the Windows Gateway package's status selector can omit a configured Gateway port when more than one observed listener exists; the ownership block is then omitted, and Companion reports the generic missing-contract error. One later report in the same issue describes Gateway MSIX 2026.11.100.0 with both gateway.port and ownership missing. The issue discussion also contains a locally deployed development-package recovery, but that is not an official stable package fix.
+
+   **Comparison with this PC:** the user's captured clawctl status --json reported State=running, Port=50368, and OwnershipPresent=True; clawctl gateway-service status --json reported one listener, port 50368, PID 25904, a valid process-start timestamp and sequence number; Windows TCP inspection independently showed one listener at 127.0.0.1:50368. Those observations do not reproduce the reported missing-port/multiple-listener state. They do not prove that every later Companion preflight response is valid.
+
+2. **[openclaw-windows-node #2020 — Misleading missing-contract error hides native Gateway response validation failures](https://github.com/openclaw/openclaw-windows-node/issues/2020)** remains open. It documents that the same generic "does not expose the isolated-session contract" message can be emitted after the initial integration-contract probe succeeds, when a later lifecycle response is malformed or missing a required field. The issue specifically warns that top-level clawctl status --json does not exercise every later decoder. The exact rejected operation/field must therefore be captured; the generic error alone cannot distinguish an unsupported Gateway package from a later malformed response.
+
+3. **[openclaw-windows-node PR #2114 — Gateway setup reports a missing contract when a package response is invalid](https://github.com/openclaw/openclaw-windows-node/pull/2114)** is open and has not been merged. Its proposed change reports the failing clawctl operation and missing/rejected field instead of incorrectly advising a Gateway MSIX update, while continuing to withhold credentials. The PR reports successful synthetic-response tests and local build/test runs, but explicitly does not verify a real Gateway MSIX, a shipped Companion UI, or a native/WSL end-to-end path. Its latest review requests a P2 change to localize the new user-facing text through the native resource system. Treat it as a diagnostic proposal, not an available user fix; do not install its branch or assume it repairs the underlying connection.
+
+### Stable release identity cross-check
+
+- The [Windows Gateway packaging releases](https://github.com/openclaw/openclaw-windows-packaging/releases) list v2026.11.1-msix.0, released 5 November 2026, with payload OpenClaw 2026.11.1 and x64 MSIX OpenClawGateway-2026.11.1-msix.0-x64.msix. Its numeric MSIX package identity corresponds to 2026.11.100.0, the Gateway package installed on this PC.
+- The [Windows Companion releases](https://github.com/openclaw/openclaw-windows-node/releases) list stable v2026.11.1, released 7 November 2026. The same page also lists a newer v2026.11.2-alpha.10 prerelease; do not treat that alpha as a stable repair.
+- Therefore, the Gateway package version 2026.11.100.0 is not evidence of an old Gateway payload: it is the package identity for the stable 2026.11.1 Gateway release. The running Companion's App Info also reported v2026.11.1 and "Current". The separate Add/Remove Programs record 2026.9.8-1 may be a leftover/other installation, but that is not yet proven. Do not describe the active Companion as outdated until its running executable path is mapped to the registered uninstall entry.
+
+### Updated interpretation and next action
+
+- Discard the earlier SIDMatches=False output: Windows returned a blank process owner and no readable process start time, so the comparison did not run successfully and is not evidence of an account/SID mismatch.
+- The Gateway listener, base status and detailed ownership fields all passed the user's recorded checks. Do not repeat a Gateway restart, reinstall, token reset, pairing reset or credential change based on the generic message alone.
+- **Next read-only Windows check:** run this while Companion is running: `Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'OpenClaw' } | Select-Object ProcessId,Name,ExecutablePath`. Compare the active executable path with the App Info version and the registered 2026.9.8-1 uninstall record. This identifies which Companion build is actually running without changing either installation.
+- After that identity check, capture a fresh Companion Connection timeline and Recent log for a single controlled Node reconnect attempt. Preserve the exact failed operation/field where available; redact tokens, SIDs, device identifiers, raw settings and private paths.
+- Keep the native Node task **BLOCKED** until Gateway, Operator and Node are all connected (1/1) and a harmless permitted Node action succeeds from the native desktop app.
+
+**Source boundaries:** the upstream issue reports and PR are evidence of plausible failure classes and current project work. They do not establish which class caused this PC's error. The local listener/status observations remain the stronger evidence about the state actually measured on this PC.
