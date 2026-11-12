@@ -324,13 +324,60 @@ The latest screenshots show:
 
 This means the active Companion version is no longer an open question, but the native Node ownership/credential-handoff failure remains. clawctl status reporting a running Gateway and the UI marking the saved Gateway record Connected do not prove that the separate Windows Node has registered.
 
-### Next action
+### Existing diagnostics review — no repeated export required
 
-1. In the Companion, open Diagnostics.
-2. Capture the Connection timeline and Recent log around one controlled Node reconnect attempt.
-3. Share only the relevant error lines and event sequence. Redact tokens, device IDs, SIDs, credentials, raw settings and private paths.
-4. Identify the exact failing preflight/operation/field before selecting a package or code repair.
+The Library already contains openclaw-diagnostics-20261112-004308.txt, generated 12 November 2026 at 00:43 +10. This is the bundle to use; do not ask the user to reopen Diagnostics or generate another export.
 
-Do not reinstall the Companion based only on the stale/unmapped 2026.9.8-1 Add/Remove Programs record. Do not restart or reinstall the Gateway, reset pairing/tokens, or weaken ownership checks based on the current evidence. Keep this task BLOCKED until the native UI shows Node 1/1 online and a harmless permitted Node action succeeds.
+The bundle's Connection Event Timeline proves this sequence:
 
-**Outcome:** The currently running Companion is verified as stable v2026.11.1; Gateway runtime reports running on port 50368; the desktop connection remains degraded and Windows Node is still offline. The process-path null error was limited to the separate session-host process and does not invalidate the Companion executable/version result.
+1. The Operator completes hello-ok; the Gateway returns the device token with operator.admin and operator.pairing scopes, and the WebSocket connects.
+2. The separate Node credential source resolves as identity.NodeDeviceToken (IsBootstrap=False, Status=Resolved, no fallback).
+3. The Node client is created, its service is present, and it attaches 7 capabilities / 26 commands.
+4. The Node WebSocket connects and receives the Gateway connect.challenge.
+5. Companion then blocks the credential handoff with: The installed Gateway MSIX does not expose Companion's isolated-session contract. Credentials were not sent. It retries once and remains in Error.
+
+This excludes a simple missing-token, bad-token-resolution, or basic TCP-reachability explanation. The Node reaches the Gateway challenge; credentials are withheld because the package/ownership preflight has not been accepted.
+
+The bundle's 9 November native setup log also records:
+- clawctl companion prepare --check --json exited 0.
+- clawctl gateway-service status --json exited 0, but Companion's summary repeatedly said gateway running, session unreported, readiness unreported.
+- The Gateway listener was independently verified on port 50368 (PID 26416 in that earlier attempt).
+- openclaw.exe config validate --json returned valid: true, with no warnings.
+- A package-managed Gateway stop/start was performed in that setup attempt; do not repeat it as a generic troubleshooting step.
+
+The current screenshots are later than that bundle and show a different, more generic message: Gateway ownership inspection failed. Credentials were not sent. Current Companion source (IsolatedGatewayRuntime.cs, InspectAsync) catches several inspection failures (InvalidOperationException, IOException, Win32Exception, COMException, UnauthorizedAccessException, TimeoutException), logs only the exception type, and replaces the detail with that generic UI text. Therefore the screenshot confirms the ownership-inspection path is failing, but does not reveal which exception or response field caused it.
+
+### Current upstream source and matching report
+
+1. Companion parser requirements: current NativeGatewayPackageClient.StatusAsync invokes clawctl gateway-service status --json, requires integration metadata, a running gateway.state, gateway.port, an ownership object with sandboxId and agentUserSid, an ownership listeners array, and each listener's port, processId, processStartTimeUtc, and sequenceNumber. Missing or wrong fields cause validation exceptions. This is a much narrower contract than merely having a running Gateway or successful WebSocket challenge.
+
+2. Known packaging selector defect remains on current main: current openclaw-windows-packaging Program.cs selects the status port only if result.Record.ObservedPorts contains exactly one entry (lines 1095–1097; fetched main blob d9fd53f295d636cc8b9568d432bf1fc4cf9b42d0). With multiple observed ports, the command result has no selected port, and ClawCtlJson cannot serialize full ownership tied to that port. The Companion parser then rejects the later gateway-service status response. This is a source-supported failure path, but the user's separate manual snapshot reported one listener and Port=50368, SandboxIdPresent=True, AgentSidPresent=True, ListenerCount=1, valid process start time and sequence. Therefore the multi-listener selector bug is a strong candidate to compare, not a confirmed explanation for this machine. A TCP listener count outside the isolated session is not automatically the same thing as the package's ObservedPorts set.
+
+3. Upstream issue #1691 has an unusually close report (11 November): reporter uses Gateway MSIX 2026.11.100.0 / payload 2026.11.1 and Companion v2026.11.1 (also tested Store Companion 2026.11.102.0), with the same installed Gateway MSIX does not expose contract / Credentials were not sent message. They report integration.kind=isolated-session, version 1, and running state but no gateway.port and no ownership in clawctl status --json / gateway-service status --json; clawctl companion prepare --check --json still returns a port. They could not inspect listener count from the human account. This strongly matches the installed-version pair and symptom, but is another user's report, not direct proof of the exact local response.
+
+4. Upstream issue #2020: the current Companion's generic unsupported-contract message can also be emitted when the initial integration probe succeeds but a later lifecycle response is missing a required field, has the wrong type, or has a schema/command mismatch. The top-level clawctl status --json passing does not validate the later gateway-service status response. The local diagnostic bundle does not contain the raw package JSON returned to Companion, and the later manual presence summary conflicts with the possibility that gateway.port / ownership were missing in that same invocation. Do not assume the multi-listener explanation without reconciling which exact command context returned the fields.
+
+5. PR #2114 remains open / needs changes: it changes the Companion decoder and error presentation to name the exact clawctl operation and missing/rejected field while still withholding credentials and avoiding re-probes. It reports synthetic-response unit tests and full local test runs, but no real Gateway MSIX or shipped Companion end-to-end verification. Its review requires new user-facing text to go through native localization resources. It is a diagnostic/classification improvement, not a fix for the packaging-side missing-port defect. Do not install its branch or treat it as a released repair.
+
+### Next step and user burden
+
+- No further diagnostics export, screenshot, version check, Gateway restart, reinstall, token reset, pairing reset, or ownership bypass is needed at this stage.
+- Continue by tracking the producer-side Gateway package fix and the Companion diagnostic-classification fix, and compare official stable release artifacts against the current main source before recommending any upgrade.
+- Only request a single narrow, non-secret status-output comparison if it is necessary to reconcile the existing manual field-presence checks with the failing Companion inspection. Do not ask the user to repeat the full diagnostic workflow.
+- Keep native Node BLOCKED until the desktop app shows Node 1/1 online and a harmless permitted native Node action succeeds.
+
+**Outcome:** the exact failure stage is narrowed: the Node reaches Gateway challenge, but Companion refuses to release its Node credential because isolated-session ownership preflight is failing. The exact local rejected field/exception remains unproven. The correct next move is upstream contract/diagnostic work, not another user-facing round of basic diagnostics.
+
+## 12. Diagnostic bundle and upstream failure-path comparison — 12 November 2026
+
+The full interpretation and source comparison are recorded above. Key results:
+
+- Existing Library diagnostics already proves the Operator hello-ok and Node challenge path; no repeat export is required.
+- The NodeDeviceToken resolves before the challenge. The handoff is denied only after the challenge because the Companion's isolated-session ownership preflight fails.
+- The setup log already includes a package-managed Gateway stop/start and confirms the Gateway listener and configuration validity. Do not repeat it.
+- The current UI's generic Gateway ownership inspection failed message is emitted by Companion's IsolatedGatewayRuntime.InspectAsync catch path, which collapses several inspection/validation exceptions and logs only exception type.
+- Current parser requires gateway.port and full ownership/listener process identity. Current packaging main selects the port only when the observed-port set contains exactly one entry. This is a confirmed upstream source defect for multi-listener status, but the user's one-listener manual snapshot with ownership fields present means it is not yet proven to be the precise local cause.
+- Upstream issue #1691 has a 11 November report using the same exact Gateway MSIX 2026.11.100.0 and Companion v2026.11.1 pair with the same error and missing gateway.port/ownership. Issue #2020 records the broader generic-error classification defect.
+- PR #2114 would name the failed operation and rejected field while retaining credential withholding; it is still open, blocked on localization review, and has not been tested with a real Gateway MSIX or shipped Companion.
+- No user action now: do not request another diagnostics export, screenshot, version check, Gateway restart, reinstall, token reset or pairing reset. Keep native Node blocked and continue upstream producer/consumer fix verification.
+
