@@ -632,3 +632,34 @@ Do not automatically change the separate count-only selector in Program.cs used 
 - Attempting to create a packaging branch through the linked GitHub integration returned HTTP 403 (write access denied). No upstream branch or PR was created. No local Windows process, Gateway package, Companion install, configuration, data, token or pairing state was changed.
 
 **Next safe local action:** expand Companion's existing **Show technical details** section and capture that screen. Do not trigger browser status, restart the Gateway, reinstall packages, reset pairing/tokens, change ACLs or bypass ownership validation. Keep Node BLOCKED until the native app shows 1/1 online and a harmless permitted Node action succeeds.
+
+## 22. Exact producer repair proposed upstream and patch preserved (12 November 2026)
+
+The user supplied the Companion technical-details screenshot. It confirms that the approved/effective capability list and command allowlist are populated, while the Node failure remains the generic unsupported isolated-session contract message. This does not expose a lower-level rejected field, but it confirms that changing permissions is not the appropriate next step.
+
+### Maintainer notification
+
+Posted a source-specific repair proposal to [Companion issue #1691 comment](https://github.com/openclaw/openclaw-windows-node/issues/1691#issuecomment-6818699921). The comment identifies current packaging main commit `7185d5ea504643e0799f3ae665f64180261d5da5`, the GatewayStatus count-only selector in `Program.cs`, the existing `GatewayAddress.ResolvePort()` helper and the required command-level regression controls. It explicitly preserves ambiguous multi-listener behavior and all ownership/process identity checks.
+
+### Patch saved in JARVIS
+
+The proposed one-file patch and test plan are preserved in the private JARVIS repository:
+
+- `patches/openclaw-windows-packaging/001-gateway-service-status-configured-port.patch`
+- `patches/openclaw-windows-packaging/README.md`
+
+The proposed source change is only:
+
+```csharp
+int? port = Gateway.GatewayAddress.ResolvePort(result.Record);
+```
+
+The patch is a candidate based on upstream main commit above. It has **not** been applied to upstream, compiled, tested or installed. The existing GatewayAddress helper tests cover resolver semantics, but a command-level GatewayStatus JSON regression is still required.
+
+### Exact current boundary
+
+The linked GitHub identity is `eboxont-code`. Upstream packaging repository metadata explicitly reports `pull=true`, `push=false`; a branch creation attempt returned HTTP 403. A comment could be posted on the related Companion issue, but no upstream branch or PR can be created from the current permission set. No local Windows machine access or package build was available in this session.
+
+No local Gateway/Companion files, processes, installations, settings, agent data, tokens or pairings were changed. The technical-details screenshot confirms populated permissions/capabilities but still only shows the generic error; it does not prove the exact local GatewayRecord listener count at the failing sample.
+
+**Next:** maintainer needs to apply/review the proposed packaging fix, add the command-level regression controls, run the canonical Windows packaging/NativeAOT validation and publish an official stable Gateway MSIX. Only then install the official fixed package and verify Companion Node 1/1 plus a harmless native Node action. Do not run `openclaw browser status --json` as a diagnostic; the upstream reproduction says it can trigger the auxiliary listener. Do not restart to clear it, reset credentials/pairing, change ACLs or bypass ownership validation.
