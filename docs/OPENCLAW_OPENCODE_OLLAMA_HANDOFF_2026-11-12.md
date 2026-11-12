@@ -269,3 +269,68 @@ This section records public upstream evidence checked after the Windows snapshot
 - Keep the native Node task **BLOCKED** until Gateway, Operator and Node are all connected (1/1) and a harmless permitted Node action succeeds from the native desktop app.
 
 **Source boundaries:** the upstream issue reports and PR are evidence of plausible failure classes and current project work. They do not establish which class caused this PC's error. The local listener/status observations remain the stronger evidence about the state actually measured on this PC.
+
+## 11. Active Companion executable and live UI state — 12 November 2026
+
+### Active executable and version — verified from user-provided Windows output
+
+The process/version query returned:
+
+- OpenClaw.Tray.WinUI.exe, PID 4776.
+- Executable: C:\Users\Boxont\AppData\Local\OpenClawTray\OpenClaw.Tray.WinUI.exe.
+- File version: 2026.11.1.0.
+
+The Companion About screenshot independently shows:
+
+- App name: OpenClaw Windows Companion.
+- Version: v2026.11.1.
+- Build date: 7 November 2026.
+- Runtime: .NET 10.0.14 / WinUI 3 / Windows App SDK 2.6.4.
+- Architecture: x64.
+- Windows: 10.0.26300.0.
+- Update channel: stable.
+- Install type: Unpackaged (developer).
+
+This confirms the active desktop Companion is the stable 2026.11.1 build. The separate Add/Remove Programs entry 2026.9.8-1 is not proof that the older version is running; its relationship to the active unpackaged app remains unknown.
+
+The broad process command also encountered Get-Item error "Cannot bind argument to parameter 'Path' because it is null" for openclaw-session-host.exe, PID 2780, whose ExecutablePath was blank. The PowerShell pipeline continued and returned the separate Companion executable and its version successfully. Treat the session-host path as unavailable, not as a Companion version failure.
+
+### Fresh runtime status
+
+The user's latest clawctl status output reports:
+
+- Session: running.
+- Agent: T3-P2.
+- Shared folder: C:\Users\T3-P2\Shared.
+- Runtime: Node.js 24.22.1.
+- Gateway: running on port 50368.
+- Activation: none pending.
+- Recovery: configured.
+
+### Companion UI state — native Node still failing
+
+The latest screenshots show:
+
+- Tray/status menu: Connection degraded · 127.0.0.1:50368.
+- Node inventory: 0/1 node.
+- Session count: 9 sessions; two sessions were visible in the menu (Main session and Direct message).
+- About page: active stable v2026.11.1 as above.
+- Connection page: overall status Connection degraded.
+- Saved Native Gateway record: ws://127.0.0.1:50368/, paired via device token, UI status Connected.
+- Operator: Reconnecting...
+- Node mode: enabled, but Windows Node remains in error/offline state.
+- Visible failure: Gateway ownership inspection failed. Check the installed Gateway package and retry. Credentials were not sent.
+- The node capability chips displayed warnings for Browser control, Camera, Canvas, Screen capture and Share Windows Ollama. A warning badge is not proof that the corresponding capability is independently broken; the Node registration itself has not completed.
+
+This means the active Companion version is no longer an open question, but the native Node ownership/credential-handoff failure remains. clawctl status reporting a running Gateway and the UI marking the saved Gateway record Connected do not prove that the separate Windows Node has registered.
+
+### Next action
+
+1. In the Companion, open Diagnostics.
+2. Capture the Connection timeline and Recent log around one controlled Node reconnect attempt.
+3. Share only the relevant error lines and event sequence. Redact tokens, device IDs, SIDs, credentials, raw settings and private paths.
+4. Identify the exact failing preflight/operation/field before selecting a package or code repair.
+
+Do not reinstall the Companion based only on the stale/unmapped 2026.9.8-1 Add/Remove Programs record. Do not restart or reinstall the Gateway, reset pairing/tokens, or weaken ownership checks based on the current evidence. Keep this task BLOCKED until the native UI shows Node 1/1 online and a harmless permitted Node action succeeds.
+
+**Outcome:** The currently running Companion is verified as stable v2026.11.1; Gateway runtime reports running on port 50368; the desktop connection remains degraded and Windows Node is still offline. The process-path null error was limited to the separate session-host process and does not invalidate the Companion executable/version result.
