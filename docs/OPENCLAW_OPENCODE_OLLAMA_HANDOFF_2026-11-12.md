@@ -547,3 +547,20 @@ Current evidence:
 - Windows process sequence API: pass.
 - Package sequence == Windows process sequence: pass.
 - Loopback / IPv4+IPv6 completeness / second snapshot stability: not independently proven; Companion Retry is the authoritative end-to-end test.
+
+
+## 19. Upstream diagnostic PR CI and review status (12 November 2026)
+
+A fresh read of upstream PR [#2114](https://github.com/openclaw/openclaw-windows-node/pull/2114), issue [#2020](https://github.com/openclaw/openclaw-windows-node/issues/2020), and the PR's GitHub Actions results adds the following status:
+
+- PR #2114 is still **open and unmerged** at head `865a61892a6132a7876840c4de8e01767076c808`. It changes Companion's decoder/error surface so a malformed later Gateway response can identify the `clawctl` operation and rejected field, rather than falsely implying the initial isolated-session contract is absent. It retains credential withholding and does not re-probe to explain the error.
+- CodeQL for the PR head completed successfully (run `43051640502`). The Build and Test workflow (run `43051640650`) failed its required CI gate. The Core/CLI job and Tray/setup/integration job passed; the fast-validation job passed.
+- Three WSL end-to-end jobs failed before exercising their target scenarios because the CI runner could not resolve the Ubuntu 24.04 download server: `Wsl/InstallDistro/WININET_E_NAME_NOT_RESOLVED`. The Setup and Connect E2E job reported 24 of 71 tests failed because the shared E2E setup fixture could not provision its fresh WSL distro. Revocation-recovery and network-recovery E2E jobs hit the same WSL provisioning failure. This is evidence of an environment/provisioning blocker in those jobs, not evidence that the focused decoder tests failed; it still means the overall Build and Test workflow and CI gate are red.
+- The latest PR review still has one P2 finding: localize the new user-facing error/recovery text through the native `.resw` resource owner. The PR's own evidence also says real Gateway MSIX behavior, shipped Companion rendering, and native/WSL end-to-end behavior are not verified.
+- This is a **diagnostic-classification proposal, not a connectivity repair or supported release**. Do not install the PR branch, sideload it, or change the user's installed packages based on it. Issue #2020 confirms the old generic error may conceal a later malformed response; it does not identify this PC's exact rejected field.
+
+### Local evidence and decision unchanged
+
+The user's latest read-only checks still show a running Gateway on port 50368, complete isolated-session contract fields and one listener; the package and Windows listener PID match (16208), and the Windows process sequence matches the package-attested sequence. The existing diagnostic bundle still establishes Operator `hello-ok`, resolved NodeDeviceToken, Node challenge received, then credential withholding by Companion's ownership preflight. No evidence identifies the precise failing field or proves that the upstream multi-listener producer defect is occurring in the same failing invocation.
+
+**Next action:** no further local command, export, restart, reinstall, token/pairing reset, ACL change or ownership bypass is justified. Keep native Node marked BLOCKED. Wait for a reviewed/localized diagnostic fix and, separately, a producer-side Gateway packaging fix to reach an official stable release; then verify the actual installed packages and require Node 1/1 plus a harmless permitted native action before closing this item.
