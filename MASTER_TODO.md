@@ -465,7 +465,7 @@ Only after that baseline is recorded should we configure OpenCode, configure Ope
 **Status: NOT STARTED**
 
 - [x] **VERIFIED** — Inspect the installed OpenJarvis build's actual MCP server command, supported transport, tool registry and permission controls — evidence: 15 November installed-release source inspection confirms client support for stdio and Streamable HTTP with caller-side allowed-tool-name filtering; no standalone MCP-server launch command/transport was found. Internal `MCPServer` auto-discovers calculator/think/file-read/web-search/code-interpreter/REPL/memory/channel/LLM/retrieval tools and applies capability policy, rate limiting and allowed-directory gates, but that default surface is broader than the approved initial read-only scope. Current user config has no MCP section/server declaration. No server was enabled or configured.
-- [ ] Confirm the MCP server can expose a narrow set of OpenJarvis capabilities without requiring a replacement desktop build or an unsupported upstream-only feature.
+- [ ] **WORKING** — Confirm the MCP server can expose a narrow set of OpenJarvis capabilities without requiring a replacement desktop build or an unsupported upstream-only feature — scope: design a separate local stdio read-only adapter; do not enable/configure any MCP server or modify OpenJarvis.
 - [ ] Prefer local stdio transport where supported by both installed applications; otherwise use authenticated loopback-only transport.
 - [ ] Connect OpenClaw as the MCP client to the verified OpenJarvis MCP server.
 - [ ] Start with a whitelist of read-only tools and verify discovery plus real tool responses.
