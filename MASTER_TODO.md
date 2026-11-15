@@ -1360,7 +1360,7 @@ The immediate priority is integration of the four already-installed applications
 ### Milestone B — One shared Ollama service
 - [ ] Select one process to own the Ollama service after inspecting current startup behaviour.
 - [ ] Verify the local endpoint, available model tags and real completion.
-- [ ] Test candidate models for context and tool-calling capability.
+- [ ] **WORKING** — Test candidate models for context and tool-calling capability — scope: two additional sequential inert calculator-schema calls on existing qwen3.8:27b plus read-only local resource snapshots; do not execute tools, change models or configuration.
 - [ ] Connect/verify OpenJarvis without triggering another model download.
 - [ ] Prove there is no duplicate server, port conflict or broken restart/close behaviour.
 
