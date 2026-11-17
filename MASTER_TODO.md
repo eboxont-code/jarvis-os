@@ -216,7 +216,7 @@ This is the starting information supplied by the user and previous recorded chec
 | OpenCode | Version 2.2.7 in T3-P2. Its global `opencode.jsonc` loads local Ollama, selects `ollama/qwen3.8:27b`, uses `ollama/qwen3.5:4b` as the small model and allows only the Ollama provider. Direct CLI and direct ACP tests returned READY. | Keep the local-only provider configuration; complete a real coding task through the OpenClaw ACPX session and verify tests, scope and cancellation. |
 | Local models | Current T3-P2 API listing returned qwen3.5:0.8b, qwen3.5:2b, qwen3.5:4b and qwen3.8:27b. A previous Boxont inventory also listed qwen3.5:9b; that difference has not been reconciled. | Refresh tags in the selected shared-server context and test context, tool calling, latency and resource use. Do not pull or replace models. |
 
-**Current integration handoff:** [OpenClaw / OpenCode / Ollama handoff — 12 November 2026](docs/OPENCLAW_OPENCODE_OLLAMA_HANDOFF_2026-11-12.md). This records successful local/browser paths and the separate unresolved native Companion Node failure.
+**Current integration handoffs:** [OpenClaw / OpenCode / Ollama handoff — 12 November 2026](docs/OPENCLAW_OPENCODE_OLLAMA_HANDOFF_2026-11-12.md) and [verified continuation handoff — 18 November 2026](docs/CONTINUATION_HANDOFF_2026-11-18.md). The latter records the precise safe resume boundary, verified local state, config-integrity hashes and the separate unresolved native Companion Node failure.
 
 ### The architecture I recommend
 
@@ -1499,6 +1499,9 @@ At the end of each session, update this master file, phase status, live status a
 Do not create another competing project checklist. This file remains authoritative.
 
 ## 14. Execution log
+
+- **18 November 2026 — Continuation evidence consolidated:** Added [`docs/CONTINUATION_HANDOFF_2026-11-18.md`](docs/CONTINUATION_HANDOFF_2026-11-18.md) as the dated, GitHub-backed handoff for future authorised AI sessions. It preserves the verified Ollama/OpenJarvis/OpenCode/OpenClaw state, test outcomes, protected-config SHA-256 integrity evidence, recovery results, blocked native Companion/MCP boundary, known workspace caveat and mandatory safe resume sequence. `MASTER_TODO.md` remains authoritative; no application, model, configuration, token, ACL, pairing, Gateway, Companion or security setting was changed by this documentation update.
+
 
 Add newest entries at the top. Keep each entry short and evidence-based.
 
