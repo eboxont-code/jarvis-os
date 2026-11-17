@@ -1,4 +1,5 @@
 import importlib.util
+import io
 import json
 import pathlib
 import subprocess
@@ -8,6 +9,8 @@ from unittest.mock import patch
 
 
 MODULE_PATH = pathlib.Path(__file__).with_name("openjarvis_readonly_mcp_adapter.py")
+if not MODULE_PATH.exists():
+    MODULE_PATH = pathlib.Path(__file__).resolve().parents[1] / "runtime" / MODULE_PATH.name
 SPEC = importlib.util.spec_from_file_location("adapter", MODULE_PATH)
 adapter = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
@@ -46,34 +49,41 @@ class AdapterTests(unittest.TestCase):
         self.assertTrue(response["result"]["isError"])
         self.assertIn("endpoint_unavailable", response["result"]["content"][0]["text"])
 
-    def test_stdio_initialize_uses_mcp_framing(self):
-        body = json.dumps({"jsonrpc": "2.0", "id": 7, "method": "initialize"}).encode()
-        framed = f"Content-Length: {len(body)}\r\n\r\n".encode() + body
-        process = subprocess.Popen(
+    def test_stdio_initialize_and_discovery_use_newline_json(self):
+        requests = [
+            {"jsonrpc": "2.0", "id": 7, "method": "initialize"},
+            {"jsonrpc": "2.0", "method": "notifications/initialized"},
+            {"jsonrpc": "2.0", "id": 8, "method": "tools/list"},
+        ]
+        process = subprocess.run(
             [sys.executable, str(MODULE_PATH)],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            input=b"".join(json.dumps(request).encode() + b"\n" for request in requests),
+            capture_output=True,
+            timeout=5,
+            check=True,
         )
-        assert process.stdin is not None and process.stdout is not None
-        process.stdin.write(framed)
-        process.stdin.flush()
-        headers = {}
-        while True:
-            line = process.stdout.readline()
-            if line in (b"\r\n", b"\n"):
-                break
-            key, value = line.decode().split(":", 1)
-            headers[key.lower()] = value.strip()
-        reply = json.loads(process.stdout.read(int(headers["content-length"])))
-        process.stdin.close()
-        process.wait(timeout=5)
-        process.stdout.close()
-        process.stderr.close()
-        self.assertEqual(reply["id"], 7)
-        self.assertEqual(reply["result"]["serverInfo"]["name"], "jarvis-openjarvis-readonly")
+        replies = [json.loads(line) for line in process.stdout.splitlines()]
+        self.assertEqual([reply["id"] for reply in replies], [7, 8])
+        self.assertEqual(replies[0]["result"]["serverInfo"]["name"], "jarvis-openjarvis-readonly")
+        self.assertEqual([tool["name"] for tool in replies[1]["result"]["tools"]], list(adapter.TOOLS))
+        self.assertNotIn(b"Content-Length", process.stdout)
+
+    def test_stdio_bad_frame_does_not_consume_next_request(self):
+        process = subprocess.run(
+            [sys.executable, str(MODULE_PATH)],
+            input=b'not-json\n{"jsonrpc":"2.0","id":9,"method":"tools/list"}\n',
+            capture_output=True, timeout=5, check=True,
+        )
+        replies = [json.loads(line) for line in process.stdout.splitlines()]
+        self.assertEqual(replies[0]["error"]["code"], -32700)
+        self.assertEqual(replies[1]["id"], 9)
+
+    def test_oversized_frame_is_rejected_and_next_frame_preserved(self):
+        stream = io.BytesIO(b"x" * (adapter.MAX_RESPONSE_BYTES + 1) + b'\n{"id":10}\n')
+        with self.assertRaisesRegex(ValueError, "message_too_large"):
+            adapter.read_message(stream)
+        self.assertEqual(adapter.read_message(stream), {"id": 10})
 
 
 if __name__ == "__main__":
     unittest.main()
-

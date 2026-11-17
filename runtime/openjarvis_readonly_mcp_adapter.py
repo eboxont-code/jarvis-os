@@ -189,21 +189,17 @@ def handle(request: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def read_message(stream: Any) -> dict[str, Any] | None:
-    headers: dict[str, str] = {}
-    while True:
-        line = stream.readline()
-        if not line:
-            return None
-        if line in (b"\r\n", b"\n"):
-            break
-        key, separator, value = line.decode("ascii").partition(":")
-        if not separator:
-            raise ValueError("invalid_header")
-        headers[key.lower()] = value.strip()
-    length = int(headers.get("content-length", "-1"))
-    if length < 0 or length > MAX_RESPONSE_BYTES:
-        raise ValueError("invalid_content_length")
-    payload = stream.read(length)
+    # MCP stdio uses one UTF-8 JSON-RPC message per line, not LSP headers.
+    payload = stream.readline(MAX_RESPONSE_BYTES + 1)
+    if not payload:
+        return None
+    if len(payload) > MAX_RESPONSE_BYTES:
+        # Drain this one oversized frame before accepting the next message.
+        while not payload.endswith(b"\n"):
+            payload = stream.readline(MAX_RESPONSE_BYTES + 1)
+            if not payload:
+                break
+        raise ValueError("message_too_large")
     parsed = json.loads(payload.decode("utf-8"))
     if not isinstance(parsed, dict):
         raise ValueError("invalid_request")
@@ -212,8 +208,7 @@ def read_message(stream: Any) -> dict[str, Any] | None:
 
 def write_message(stream: Any, payload: dict[str, Any]) -> None:
     body = json.dumps(payload, separators=(",", ":")).encode("utf-8")
-    stream.write(f"Content-Length: {len(body)}\r\n\r\n".encode("ascii"))
-    stream.write(body)
+    stream.write(body + b"\n")
     stream.flush()
 
 
@@ -233,4 +228,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

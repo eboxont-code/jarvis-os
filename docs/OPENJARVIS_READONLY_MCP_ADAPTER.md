@@ -1,6 +1,16 @@
 # OpenJarvis read-only MCP adapter — design boundary
 
-**Status:** Design only. No adapter process, MCP server, OpenClaw configuration or OpenJarvis configuration has been enabled by this document.
+**Scope:** technical design and verification record; `MASTER_TODO.md` is the sole status authority.
+
+## 18 November 2026 transport and deployment correction
+
+The original adapter incorrectly used LSP-style Content-Length headers. Standard MCP stdio requires one UTF-8 JSON-RPC message per newline ([official transport specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)). The adapter now reads bounded newline messages and writes newline JSON. Seven regression tests pass, including real subprocess initialize/notification/discovery, malformed-frame recovery and oversized-frame rejection. Tests also resolve the repository's runtime source correctly.
+
+A fresh OpenClaw discovery attempt from the Boxont Documents scratch directory failed with EPIPE. A supported `clawctl pwsh --command` read-only check established that the isolated account can run the existing `C:\Python314\python.exe` but cannot read that Boxont adapter path. The corrected adapter was therefore copied into the existing supported shared workspace at `C:\Users\T3-P2\Shared\jarvis-readonly-mcp-20261118\openjarvis_readonly_mcp_adapter.py`; no ACL, profile, managed Node runtime or Gateway/Companion change was made. Host and isolated account SHA-256 read-backs matched.
+
+From that shared path, `openclaw mcp add` and `mcp probe --json` exited 0 and discovered exactly the three tool names with no diagnostics, prompt approval and 10-second timeouts. The temporary registration was removed; `mcp list` confirmed cleanup. All seven tests and a real stdio initialize/list/three-call sequence also passed under the isolated account, reaching the live OpenJarvis/Ollama services. This proves discovery and standalone isolated-account calls; a Gateway agent-routed call and persistent registration are separate acceptance evidence recorded in the master.
+
+The user has revoked the blanket official-repair waiting gate and approved retaining the tested read-only connection. Follow the current master for registration state; historical dated handoffs do not override this newer directive.
 
 ## Why a separate adapter
 
