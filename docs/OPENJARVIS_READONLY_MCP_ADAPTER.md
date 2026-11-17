@@ -8,7 +8,7 @@ The original adapter incorrectly used LSP-style Content-Length headers. Standard
 
 A fresh OpenClaw discovery attempt from the Boxont Documents scratch directory failed with EPIPE. A supported `clawctl pwsh --command` read-only check established that the isolated account can run the existing `C:\Python314\python.exe` but cannot read that Boxont adapter path. The corrected adapter was therefore copied into the existing supported shared workspace at `C:\Users\T3-P2\Shared\jarvis-readonly-mcp-20261118\openjarvis_readonly_mcp_adapter.py`; no ACL, profile, managed Node runtime or Gateway/Companion change was made. Host and isolated account SHA-256 read-backs matched.
 
-From that shared path, `openclaw mcp add` and `mcp probe --json` exited 0 and discovered exactly the three tool names with no diagnostics, prompt approval and 10-second timeouts. The temporary registration was removed; `mcp list` confirmed cleanup. All seven tests and a real stdio initialize/list/three-call sequence also passed under the isolated account, reaching the live OpenJarvis/Ollama services. This proves discovery and standalone isolated-account calls; a Gateway agent-routed call and persistent registration are separate acceptance evidence recorded in the master.
+From that shared path, `openclaw mcp add` and `mcp probe --json` exited 0 and discovered exactly the three tool names with no diagnostics, prompt approval and 10-second timeouts. The temporary registration was removed; `mcp list` confirmed cleanup. All seven tests and a real stdio initialize/list/three-call sequence also passed under the isolated account, reaching the live OpenJarvis/Ollama services. Subsequent approved persistence and actual Gateway-agent execution also passed. The persistent server is named `openjarvis-readonly`; exactly three tools are selected, prompt approval is configured and both timeouts are 10 seconds. A verified backup preceded an exact-three-tool additive selection. The normal deferred `dispatch_action` path executed health/models/runtime-status with empty args; independent stored-session read-back confirms successful real responses for all three. The direct operator tools.invoke endpoint returned not_found for these deferred tools; it is not the verified execution route. Failure-isolation/recovery remains a separate acceptance item in the master.
 
 The user has revoked the blanket official-repair waiting gate and approved retaining the tested read-only connection. Follow the current master for registration state; historical dated handoffs do not override this newer directive.
 
@@ -79,7 +79,7 @@ Before the adapter is registered with any coordinator:
 4. With the existing applications running, verify all three tools return safe data and do not modify protected configuration hashes.
 5. Stop the adapter and verify ordinary OpenJarvis chat and Ollama health remain unaffected.
 6. Review its source and test logs independently.
-7. Only then request explicit approval to add a temporary OpenClaw MCP configuration. Native Companion remains out of scope while its ownership/credential-handoff issue is blocked pending an official reviewed stable fix.
+7. Only then request explicit approval to add a temporary OpenClaw MCP configuration. Native Companion's separate ownership/credential-handoff issue is out of scope for this adapter. The current master records the user's removal of the blanket official-release wait gate; do not bypass ownership checks or perform unapproved lifecycle/security actions.
 
 ## Rollback
 
