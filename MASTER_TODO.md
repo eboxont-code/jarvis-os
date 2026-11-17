@@ -399,7 +399,7 @@ Only after that baseline is recorded should we configure OpenCode, configure Ope
 - [ ] **PARTIAL** — Identify OpenClaw's Gateway/config location and installed MCP/ACP capabilities — done: Gateway 2026.11.1 running on loopback 50368; `clawctl status`, service status, ownership schema and Companion preparation checks pass; ACPX is registered/enabled and the browser path returned READY; remaining: identify the active Companion executable/install identity, resolve native Node ownership/credential handoff, and finish policy/recovery tests.
 - [ ] **PARTIAL** — Identify OpenCode's config location, Ollama provider discovery and ACP-compatible launch path — done: T3-P2 OpenCode 2.2.7 loads the local Ollama config, lists four installed models, and direct CLI/ACP prompts returned READY; remaining: complete a delegated disposable coding task through OpenClaw ACPX and verify full permission/return behaviour.
 - [ ] **PARTIAL** — Back up the relevant configuration files before changing them — done: OpenCode JSONC backup created before its local-provider configuration; OpenClaw config backup was created before the 65,536 context update; remaining: verify recovery copies and inventory the Companion configuration without exporting secrets.
-- [ ] Capture a baseline health test and current OpenJarvis chat/model state.
+- [ ] **WORKING** — Capture a baseline health test and current OpenJarvis chat/model state.
 - [ ] Record a rollback method for each configuration change.
 
 **Acceptance:** A verified inventory exists, all existing data/configuration is preserved, and no installation or runtime has been changed merely to gather information.
