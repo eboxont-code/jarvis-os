@@ -44,7 +44,7 @@ def gateway_ready(doc):
         if not (doc['ok'] is True and doc['schemaVersion'] == 1
                 and doc['command'] == 'gateway-service status'
                 and i['kind'] == 'isolated-session' and i['version'] == 1
-                and g['state'] == 'running' and g['port'] == 50368
+                and g['state'] == 'running' and g['port'] == 18789
                 and own['sandboxId'] and own['agentUserSid']):
             return False
         if 'gatewayLaunch' in i:
@@ -52,7 +52,7 @@ def gateway_ready(doc):
                 return False
             if not re.fullmatch('[a-f0-9]{32}', g['launch']['attemptId']):
                 return False
-        matches = [r for r in own['listeners'] if r['port'] == 50368]
+        matches = [r for r in own['listeners'] if r['port'] == 18789]
         if len(matches) != 1:
             return False
         r = matches[0]

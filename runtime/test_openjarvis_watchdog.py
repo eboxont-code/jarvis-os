@@ -7,6 +7,17 @@ from unittest.mock import patch
 import openjarvis_watchdog as w
 
 class RecoveryTests(unittest.TestCase):
+    def test_bridge_entry_requires_both_owned_bootstrap_and_manifest(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home=pathlib.Path(directory);python=home/'OpenJarvis/.venv/Scripts/python.exe'
+            python.parent.mkdir(parents=True);python.write_bytes(b'fixture')
+            cfg=home/'.openjarvis/inference.json';cfg.parent.mkdir();cfg.write_text(json.dumps({'confirmed':True,'model':'fixture-local'}))
+            runtime=home/'runtime';addon=runtime/'frontdoor/backend_bootstrap.py';addon.parent.mkdir(parents=True);addon.write_text('fixture')
+            (addon.parent/'frontdoor.json').write_text('{}')
+            with patch.object(w,'HERE',runtime),patch.object(w.pathlib.Path,'home',return_value=home),patch.object(w.boot,'get_json',return_value={'models':[{'name':'fixture-local'}]}),patch.object(w.subprocess,'Popen') as launch:
+                w.launch_backend();argv=launch.call_args.args[0]
+                self.assertEqual(argv[:3],[str(python),str(addon),'serve'])
+                self.assertEqual(launch.call_args.kwargs['env']['OLLAMA_HOST'],'http://127.0.0.1:11434')
     def test_venv_server_child_selected_but_unrelated_python_preserved(self):
         rows=[{'ProcessId':1,'ExecutablePath':'desktop.exe','Name':'desktop.exe'},
           {'ProcessId':2,'ExecutablePath':'venv/python.exe','Name':'python.exe','RootServe':True},
@@ -58,7 +69,7 @@ class RecoveryTests(unittest.TestCase):
             home=pathlib.Path(directory);python=home/'OpenJarvis/.venv/Scripts/python.exe'
             python.parent.mkdir(parents=True);python.write_bytes(b'fixture')
             cfg=home/'.openjarvis/inference.json';cfg.parent.mkdir();cfg.write_text(json.dumps({'confirmed':True,'model':'fixture-local'}))
-            with patch.object(w.pathlib.Path,'home',return_value=home),patch.object(w.boot,'get_json',return_value={'models':[{'name':'fixture-local'}]}),patch.object(w.subprocess,'Popen') as launch:
+            with patch.object(w,'HERE',home/'runtime'),patch.object(w.pathlib.Path,'home',return_value=home),patch.object(w.boot,'get_json',return_value={'models':[{'name':'fixture-local'}]}),patch.object(w.subprocess,'Popen') as launch:
                 w.launch_backend();argv=launch.call_args.args[0]
                 self.assertEqual(argv[:4],[str(python),'-m','openjarvis.cli','serve'])
                 self.assertEqual(argv[argv.index('--host')+1],'127.0.0.1')

@@ -35,7 +35,7 @@ def inventory(executable):
     # Never export command lines. Match this user's exact preserved checkout.
     app=str(executable).replace("'","''")
     root=str(pathlib.Path.home()/'OpenJarvis').replace("'","''")
-    serve="($_.CommandLine -match '(jarvis.exe|openjarvis.cli)' -and $_.CommandLine -match '\\bserve\\b' -and $_.CommandLine -match '--port[ =]+8000(?:\\s|$)')"
+    serve="($_.CommandLine -match '(jarvis.exe|openjarvis.cli|backend_bootstrap.py)' -and $_.CommandLine -match '\\bserve\\b' -and $_.CommandLine -match '--port[ =]+8000(?:\\s|$)')"
     script=("ConvertTo-Json -InputObject @(Get-CimInstance Win32_Process|Where-Object {"
       "$_.ExecutablePath -eq '"+app+"' -or $_.Name -in 'python.exe','uv.exe'}|"
       "Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,@{n='CreationDate';e={$_.CreationDate.ToString('o')}},"
@@ -78,7 +78,9 @@ def launch_backend():
     # Never change the user's saved configuration or global environment.
     environment=os.environ.copy()
     environment['OLLAMA_HOST']='http://127.0.0.1:11434'
-    return subprocess.Popen([str(python),'-m','openjarvis.cli','serve','--host','127.0.0.1',
+    addon=HERE/'frontdoor/backend_bootstrap.py'
+    entry=[str(addon)] if addon.is_file() and (addon.parent/'frontdoor.json').is_file() else ['-m','openjarvis.cli']
+    return subprocess.Popen([str(python),*entry,'serve','--host','127.0.0.1',
        '--port','8000','--engine','ollama','--model',cfg['model'],'--agent','simple'],
        cwd=root,stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,
        stderr=subprocess.DEVNULL,creationflags=boot.FLAGS,env=environment)

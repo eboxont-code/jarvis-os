@@ -21,6 +21,8 @@ If you cannot access the private repository or edit its master file, say so clea
 
 ## Continue without previous chat context
 
+The current OpenJarvis-first bridge priority is recorded in the latest master. Read [its self-contained implementation/execution handoff](docs/OPENJARVIS_FRONTDOOR_2026-11-18.md) immediately after the complete agent instructions and master. It contains source links, current paths, permission boundaries, failures, approved port migration, acceptance evidence and exact continuation/rollback. Do not treat generated code or an old health snapshot as a completed four-app chat workflow.
+
 After the complete latest agent instructions and master, read [the self-contained autostart handoff](docs/CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md) and [startup mechanism/rollback](docs/AUTOSTART_READINESS.md). They link implementation, sanitized attempt evidence, installed paths, authorisation boundaries and exact post-reboot checks. The master remains the sole priority/status authority.
 
 When the user returns after restarting, collect fresh boot time and startup evidence before opening apps, relaunching the worker or reconnecting Companion. An old ready snapshot is not new-boot acceptance. Earlier handoffs are historical; their official-repair wait gate and unregistered-MCP block are superseded by current master evidence.

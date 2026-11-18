@@ -1,5 +1,7 @@
 # JARVIS Project Controller — Windows
 
+> **Current OpenJarvis front-door integration:** read [the dated bridge handoff](../docs/OPENJARVIS_FRONTDOOR_2026-11-18.md) after the complete latest master. Its project-owned addon, coordinator and guarded coding worker are distinct from this older prompt controller. Current Gateway port is18789 after the approved migration; previous50368 snapshots are historical. Full current startup/native acceptance remains in the sole master.
+
 > This older repository/prompt controller is separate from the installed **JARVIS AI Stack** login startup. For ready-after-reboot continuation, read the [autostart handoff](../docs/CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md) and [startup/rollback documentation](../docs/AUTOSTART_READINESS.md) after the complete latest master. Do not rerun this controller installer or alter OpenJarvis configuration to verify existing app autostart. The controller prompt-loading test below remains a separate acceptance item.
 
 The controller connects the private eboxont-code/jarvis-os master checklist to the installed OpenJarvis configuration without editing or replacing the OpenJarvis source checkout.

@@ -8,10 +8,10 @@ import start_ai_stack as app
 def ready():
     return {'ok':True,'schemaVersion':1,'command':'gateway-service status',
             'integration':{'kind':'isolated-session','version':1,'gatewayLaunch':{'version':1}},
-            'gateway':{'state':'running','port':50368,
+            'gateway':{'state':'running','port':18789,
                        'launch':{'version':1,'attemptId':'a'*32},
                        'ownership':{'sandboxId':'fixture','agentUserSid':'fixture',
-                                    'listeners':[{'port':50368,'processId':12,'sequenceNumber':2,
+                                    'listeners':[{'port':18789,'processId':12,'sequenceNumber':2,
                                                   'processStartTimeUtc':'2026-11-18T00:00:00+00:00'}]}}}
 
 class StartupTests(unittest.TestCase):
@@ -64,7 +64,7 @@ class StartupTests(unittest.TestCase):
 
     def test_fixed_local_endpoint_whitelist(self):
         for u in ['https://example.org','http://127.0.0.1:8000/v1/chat/completions',
-                  'http://127.0.0.1:50368/','http://localhost:11434/api/pull']:
+                  'http://127.0.0.1:18789/','http://localhost:11434/api/pull']:
             with self.assertRaises(app.NotReady):app.get_json(u)
 
     def test_command_failure_does_not_expose_stderr(self):

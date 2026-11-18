@@ -1,5 +1,7 @@
 # Automatic readiness of the existing Windows AI stack
 
+> **Later bridge/port migration:** read [the current front-door handoff](OPENJARVIS_FRONTDOOR_2026-11-18.md) and latest master first. A later observed Windows boot reserved50368; the user-approved Gateway move to18789 passes native listener ownership proof. Current Companion Node startup acceptance has failed, so earlier all-four-ready snapshots below are historical. Do not restore the reserved port or infer reboot readiness from backend health.
+
 > **Later 1.0.5 desktop repair:** read [the verified native attach repair](OPENJARVIS_DESKTOP_ATTACH_2026-11-18.md) after the complete latest master. The port conflict came from a two-second native health timeout versus Windows localhost fallback. Child-scoped IPv4, fast attach preflight and bounded catalogue retries now pass actual GUI chat/reopen and full runtime checks; earlier blocked/API-only statements remain historical. Actual new Windows reboot acceptance is still pending.
 
 `MASTER_TODO.md` is the project-status authority. This document describes the
