@@ -29,6 +29,10 @@ When the user returns after restarting, collect fresh boot time and startup evid
 
 The installed **JARVIS AI Stack** login launcher is distinct from the older **JARVIS Project Session** repository/prompt controller below. Do not rerun startup installation or change application settings to begin a continuation. Prompt-controller acceptance is not proven by app-autostart acceptance.
 
+## Recorded setup upgrades
+
+The user also asked another AI to continue the proposed setup improvements. Read [the ordered upgrade recommendations in MASTER_TODO Section10](MASTER_TODO.md#user-requested-upgrade-order--recorded-18-november-2026): existing startup reliability first, then desktop UI Automation, browser automation, tested Git/backups, local operational history and connection/task status UI. These are proposals with acceptance criteria, not newly installed/verified capabilities or permission to download/spend/change security. Resume only the next eligible existing master task.
+
 ## Windows OpenJarvis runtime bootstrap
 If working from the installed Windows OpenJarvis app and the local controller is installed, start sessions using the desktop shortcut **JARVIS Project Session**. It refreshes the private repository and supplies the full current AGENTS.md and MASTER_TODO.md through the supported OpenJarvis system-prompt path.
 

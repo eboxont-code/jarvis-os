@@ -145,3 +145,9 @@ To disable routing, after verified task shutdown and approval for the backend li
 Do **not** restore port50368 while Windows still reserves it. A supported port migration must update matching startup/native checks and preserve current credentials/pairings.
 
 Another AI needs authenticated private-repository access and an authorised computer tool to inspect this machine. A GitHub link supplies the handoff, not automatic machine access or permission to repeat lifecycle/config changes.
+
+## User-requested next upgrades — continuation reference
+
+After recording the successful bridge, the user asked which software/tool upgrades would help and explicitly requested that the recommendations be saved for another AI. The authoritative ordered recommendations and acceptance criteria are now in [MASTER_TODO Section10, User-requested upgrade order](../MASTER_TODO.md#user-requested-upgrade-order--recorded-18-november-2026). Read that section together with the complete master; this handoff is evidence/navigation only.
+
+The recorded order is: finish existing startup/watchdog and Companion readiness first; then evaluate Windows UI Automation desktop control, Playwright browser automation, existing Git plus tested backups, SQLite local operational history, and a supporting OpenJarvis per-connection/task/error status screen. None of those additional proposed capabilities became installed or verified from this documentation request. Current successful coding acceptance, incomplete Node/reboot/full desktop-control evidence and all original preservation/$0 boundaries remain as recorded above. Do not start several upgrades together or replace the master with a separate task database.
