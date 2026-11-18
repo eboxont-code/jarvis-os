@@ -111,4 +111,23 @@ class StartupTests(unittest.TestCase):
                 with self.assertRaises(app.NotReady):s.execute()
                 launch.assert_called_once_with('ollama')
 
+class DesktopAttachRegression(unittest.TestCase):
+    def test_native_attach_requires_two_fast_healthy_probes(self):
+        with patch.object(app,'get_json',return_value={'status':'ok'}) as get:
+            self.assertTrue(app.native_attach_ready(clock=lambda:0,sleep=lambda _:None))
+            self.assertEqual(get.call_count,2)
+
+    def test_healthy_but_slow_backend_does_not_open_native_attach_gate(self):
+        with patch.object(app,'get_json',return_value={'status':'ok'}):
+            times=iter([0,2.06])
+            self.assertFalse(app.native_attach_ready(clock=lambda:next(times),sleep=lambda _:None))
+
+    def test_catalogue_retry_survives_timeout_before_matching_models(self):
+        with tempfile.TemporaryDirectory() as directory,patch.object(app,'HERE',pathlib.Path(directory)),patch.object(app.time,'sleep'):
+            s=app.Startup({});expected={'fixture'}
+            with patch.object(app,'get_json',side_effect=[TimeoutError(),{'data':[]},{'data':[{'id':'fixture'}]}]) as get:
+                s.required('shared_models',lambda:{r['id'] for r in app.get_json('http://127.0.0.1:8000/v1/models')['data']}==expected,120)
+                self.assertEqual(get.call_count,3)
+                self.assertTrue(s.checks['shared_models']['ready'])
+
 if __name__=='__main__':unittest.main()
