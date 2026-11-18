@@ -19,6 +19,52 @@ exception/root cause remains unproven. The second stayed healthy across at least
 193.1s of observations and returned the same local marker in2.3s. Do not claim a
 permanent application-source or native-package fix from this evidence.
 
+## Applied source fix for the reproduced event-loop hang
+
+A later traced reopen reproduced a live-port health hang. Stack frames showed
+connectors_router._connector_summary → KnowledgeStore.__init__ → secure_create on
+the main asyncio event loop. The async connector-list route performed synchronous
+store initialization once per connector, including Windows permission work.
+That observation establishes a concrete blocking path; it does not prove every
+earlier listener exit had the same cause.
+
+Backed up and hash-verified the complete existing
+C:\Users\Boxont\OpenJarvis\src\openjarvis\server\connectors_router.py before editing.
+Only _connector_summary and list_connectors changed, verified by AST comparison:
+
+- Connector listing is now a regular FastAPI def route, so the installed FastAPI
+  executes it in its worker thread pool instead of blocking the API event loop.
+- Status counts open the existing knowledge database with a read-only SQLite URI
+  (mode=ro),100ms lock timeout and explicit close. No store creation/migration,
+  per-connector permission reapplication or user-data write is needed.
+- The security helpers, authentication, stored settings, connector behavior and
+  all other custom source remain unchanged. Original source bytes remain in the
+  verified local backup; the executable was not rebuilt or replaced.
+
+Original SHA256:025a30d9bacdd7c5984ee94399affdcd0b4b14491fd6ab0a5272ed1c189b619a
+Patched SHA256:e4df64bf11b4095b503533026226cb917bf00c771797fdcd50c01f4893ac342a
+
+[Reviewable34-line patch](../runtime/patches/openjarvis-connectors-readonly-status.patch)
+and [real ASGI concurrency regression](../tests/test_connector_status_responsiveness.py)
+are committed, rather than copying the user's full dirty custom checkout.
+git apply --reverse --check --ignore-space-change passes against the applied file
+(read-only validation; no reversal performed). Do not reapply it blindly.
+
+The fixture baseline failed: the slow connector blocked health for657ms.
+After the patch, the same test passes with the connector still slow, correct
+source-filtered counts, read-only URI and unchanged fixture database hash.
+Together with24 startup/watchdog tests,25 checks pass; source compilation passes.
+The first fixture attempt had a cleanup handle bug, corrected before the clean
+baseline/passing comparison. Existing pytest router tests could not run because
+pytest is not installed in the preserved venv; no package was installed.
+
+Live fixed-loopback regression:27 connectors in109ms; five concurrent health
+checks20–97ms. Real local27B chat then passed in9.4s. The patched backend started
+in30.4s, and ongoing watchdog health remains active. Native close/reopen and final
+revised startup evidence are recorded in the master. Additional evidence:
+[connector health](evidence/backend-recovery-2026-11-18/connector-health.json).
+The original pre-patch failure history below remains preserved.
+
 ## Installed mitigation and ongoing recovery
 
 The project-owned [watchdog](../runtime/openjarvis_watchdog.py) now runs at
@@ -121,4 +167,5 @@ watchdog reports it without a restart loop; diagnose that exact state rather tha
 resetting profiles/security or concealing the failure.
 
 No model downloads, new packages, spending, cloud inference, security/pairing/ACL
-changes, app reinstall/update, original source edit or database reset occurred.
+policy changes, app reinstall/update or database reset occurred. One source module
+received the backed-up scoped fix above; no other original custom source was edited.
