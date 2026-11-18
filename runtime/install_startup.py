@@ -41,6 +41,8 @@ def uninstall(state):
     # Refuse to overwrite later user startup edits. Restore only AutoStart,
     # preserving every other current Companion setting and saved credential.
     if companion_running():raise RuntimeError('close_companion_before_rollback')
+    if ps("@(Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'pythonw.exe' -and $_.CommandLine -like '*jarvis-os-runtime\\openjarvis_watchdog.py*' }).Count").strip()!='0':
+        raise RuntimeError('stop_watchdog_before_rollback')
     link=STARTUP/'JARVIS AI Stack.lnk'
     if link.exists():
         if sha(link)!=state.get('installed_shortcut_hash'):raise RuntimeError('newer_startup_shortcut_preserved')
@@ -74,7 +76,8 @@ def install():
     assert p.returncode==0
     shared=pathlib.Path(json.loads(p.stdout)['session']['sharedFolder']);assert shared.is_dir()
     isolated=shared/'jarvis-startup-20261118';isolated.mkdir(exist_ok=True)
-    for name in ('start_ai_stack.py','test_start_ai_stack.py','install_startup.py'):
+    for name in ('start_ai_stack.py','test_start_ai_stack.py','install_startup.py',
+                 'openjarvis_watchdog.py','test_openjarvis_watchdog.py'):
         if SOURCE.resolve()!=(RUNTIME).resolve():shutil.copy2(SOURCE/name,RUNTIME/name)
     shutil.copy2(SOURCE/'isolated_readiness_probe.py',isolated/'isolated_readiness_probe.py')
     apps={'ollama':LOCAL/'Programs/Ollama/ollama app.exe',
