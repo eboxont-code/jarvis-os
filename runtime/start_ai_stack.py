@@ -115,6 +115,19 @@ def launch_once(path, args=()):
                                 creationflags=FLAGS)
     return None
 
+def watchdog_ready():
+    try:
+        d=json.loads((HERE/'runtime-health.json').read_text())
+        age=(dt.datetime.now(dt.timezone.utc)-dt.datetime.fromisoformat(d['checked_at'])).total_seconds()
+        pid=d['watchdog_pid']
+        if d.get('openjarvis_ready') is not True or not 0<=age<60 or type(pid) is not int or pid<=0:
+            return False
+        path=str(HERE/'openjarvis_watchdog.py').replace("'","''")
+        command=("$p=Get-CimInstance Win32_Process -Filter 'ProcessId = "+str(pid)+"'; "
+          "@{alive=([bool]($p -and $p.Name -eq 'pythonw.exe' -and $p.CommandLine -like '*"+path+"*'))}|ConvertTo-Json -Compress")
+        return run_json([PS,'-NoProfile','-NonInteractive','-Command',command],20).get('alive') is True
+    except (OSError,ValueError,KeyError,TypeError,NotReady,subprocess.TimeoutExpired):return False
+
 def retry_owned_companion(path, child, current_gateway):
     # A retained Popen handle identifies our exact process, even if PIDs recycle.
     # Never restart a previously running app, a replacement, or an unverified
@@ -209,8 +222,21 @@ class Startup:
                       'missing_or_invalid_native_listener_proof')
         self.required('gateway_authenticated', lambda: self.probe('health').get('ready') is True, 100)
 
-        launch_once(self.m['openjarvis'])
+        # A separate locked normal-user watchdog provides ongoing health and
+        # bounded closed-port recovery after this one-time startup exits.
+        watchdog=HERE/'openjarvis_watchdog.py'
+        if not watchdog.is_file():
+            raise NotReady('watchdog_missing')
+        if (HERE/'watchdog.stop').exists():
+            raise NotReady('watchdog_deliberately_paused')
+        subprocess.Popen([str(pathlib.Path(sys.executable).with_name('pythonw.exe')),str(watchdog),'--bootstrap'],
+                         cwd=HERE,stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL,creationflags=FLAGS)
         self.required('openjarvis', lambda: get_json('http://127.0.0.1:8000/health').get('status') == 'ok', 360)
+        self.required('openjarvis_watchdog',watchdog_ready,60)
+        # Start the preserved desktop only after a healthy backend exists;
+        # its normal attach path avoids a second backend/dependency-sync launch.
+        launch_once(self.m['openjarvis'])
         models = {r['id'] for r in get_json('http://127.0.0.1:8000/v1/models')['data']}
         if models != tags:
             raise NotReady('model_catalogue_mismatch')
