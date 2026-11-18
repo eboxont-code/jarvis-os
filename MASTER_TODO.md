@@ -7,7 +7,7 @@
 **Mobile priority:** Android first; iOS later  
 **Budget:** $0 additional expenditure — non-negotiable  
 **Master status:** IN PROGRESS  
-**Current milestone:** Safely integrate the installed Ollama, OpenJarvis, OpenClaw and OpenCode applications into one tested, local-first workflow.
+**Current milestone:** FIRST PRIORITY — after Windows sign-in following a reboot, automatically start the existing Ollama, OpenJarvis, OpenClaw Gateway/Companion and OpenCode with saved connections ready, no manual reconnect or agent intervention.
 
 > This is the single source of truth for project scope, implementation order, status and acceptance evidence. Update this file after every meaningful milestone. A checkbox is completed only after the capability has been executed and verified.
 
@@ -496,6 +496,8 @@ Only after that baseline is recorded should we configure OpenCode, configure Ope
 **Acceptance:** A multi-step task is delegated across the applications, completed within approved boundaries, verified, recorded once in the authoritative project plan and recoverable after interruption.
 
 #### INTEGRATION PHASE H — End-to-end integrated acceptance
+
+- [ ] **WORKING** — Make the four installed applications automatically connected and ready after Windows sign-in — user explicitly set this as first priority on 18 November. Inventory existing startup owners, prepare reversible ordered readiness-gated startup, preserve saved settings/pairing/models/data, test one unattended launch and verify real Gateway/native Node/MCP/ACP readiness. Do not mark reboot acceptance VERIFIED until an actual Windows restart/sign-in passes without manual recovery. No paid service, downloads, resets, security changes or fabricated readiness.
 **Status: PARTIAL — useful scaffolded report and a fresh post-restart MCP → ACP verification pass, with native and operator 4/4 tests. Controlled idle restart/settings/history recovery VERIFIED after manual intervention: failed old ACP closed, Companion reconnected, competing main recovery cancelled, and OpenJarvis relaunched again after listener loss. Final API27B marker10.34s, desktop27B marker2.5s, three live adapter tools, online Node/device.status and refreshed report pass. Unattended/active-task recovery, original listener-loss cause, multiple-listener native admission, larger generation reliability and full traffic audit remain incomplete.**
 
 - [ ] **PARTIAL** — Run the complete integration test on a disposable local project — bounded useful report task VERIFIED: six fixed local GET endpoints, standalone HTML/JSON, refresh without inference. OpenJarvis drafted brief/formatter and explained result; OpenClaw called real MCP health and created one ACP binding; OpenCode applied only render_value in operator-provided framework and ran tests. Coordinator/operator each verified 4/4. Completion notice followed actual native edit/test, idle state and independent verification. Two earlier 900s generation failures and controller assistance prevent broad autonomy claims; full restart/traffic audit remain open.
