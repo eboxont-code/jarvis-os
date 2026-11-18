@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-11-18T02:01:22.463061+00:00",
+  "watchdog_pid": 7104,
+  "openjarvis_ready": true,
+  "phase": "healthy",
+  "boot_id": "2026-11-18T11:15:15.5000000+10:00",
+  "recovery_times": [],
+  "events": [
+    {
+      "time": 1794966904.479328,
+      "event": "confirmed_closed_port_recovery"
+    },
+    {
+      "time": 1794966943.1561449,
+      "event": "recovered"
+    }
+  ],
+  "scope": "Current OpenJarvis health only; startup-last.json is historical startup evidence."
+}
