@@ -19,6 +19,14 @@ You are now working on Project JARVIS in the private GitHub repository `eboxont-
 
 If you cannot access the private repository or edit its master file, say so clearly. Do not pretend you read or updated anything.
 
+## Continue without previous chat context
+
+After the complete latest agent instructions and master, read [the self-contained autostart handoff](docs/CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md) and [startup mechanism/rollback](docs/AUTOSTART_READINESS.md). They link implementation, sanitized attempt evidence, installed paths, authorisation boundaries and exact post-reboot checks. The master remains the sole priority/status authority.
+
+When the user returns after restarting, collect fresh boot time and startup evidence before opening apps, relaunching the worker or reconnecting Companion. An old ready snapshot is not new-boot acceptance. Earlier handoffs are historical; their official-repair wait gate and unregistered-MCP block are superseded by current master evidence.
+
+The installed **JARVIS AI Stack** login launcher is distinct from the older **JARVIS Project Session** repository/prompt controller below. Do not rerun startup installation or change application settings to begin a continuation. Prompt-controller acceptance is not proven by app-autostart acceptance.
+
 ## Windows OpenJarvis runtime bootstrap
 If working from the installed Windows OpenJarvis app and the local controller is installed, start sessions using the desktop shortcut **JARVIS Project Session**. It refreshes the private repository and supplies the full current AGENTS.md and MASTER_TODO.md through the supported OpenJarvis system-prompt path.
 
