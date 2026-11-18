@@ -1,0 +1,90 @@
+# Automatic readiness of the existing Windows AI stack
+
+`MASTER_TODO.md` is the project-status authority. This document describes the
+normal-user startup mechanism, acceptance boundary and rollback.
+
+## After Windows sign-in
+
+One user Startup shortcut, **JARVIS AI Stack**, launches the installed
+`C:\Python314\pythonw.exe` with
+`%USERPROFILE%\Documents\Codex\jarvis-os-runtime\start_ai_stack.py`.
+No Codex process, subscription, cloud inference, package install or model download
+is a startup dependency. Interactive desktop apps require the user to sign in;
+this does not configure automatic Windows login.
+
+The sequence is:
+
+1. Start the existing Ollama app if absent; wait for its local API and confirm the
+   saved OpenJarvis model and existing startup fallback are already installed.
+2. Adopt the official Gateway's existing logon start, or request **one** supported
+   `gateway-service start` if stopped. Wait for a complete native status contract
+   including the selected port, listener identity and launch receipt, then check
+   authenticated Gateway health. An open TCP port alone does not pass.
+3. Start the existing OpenJarvis desktop if absent; wait for actual health and a
+   model catalogue matching Ollama.
+4. Check the retained exact-three-tool read-only MCP registration, real adapter
+   status calls, local-only Ollama configuration and existing OpenCode ACP
+   initialization. Close the probe before continuing. No agent/model prompt is sent.
+5. Recheck the real Gateway proof, then start Companion with its existing saved
+   connection. Require the existing paired Node to become connected automatically.
+   Companion still performs its own native ownership and credential checks.
+6. Confirm the host OpenCode configuration is local Ollama only and start its
+   existing desktop app. The coding harness remains available on demand rather
+   than creating a perpetual coding job at login.
+
+The official Gateway logon task is preserved. The old Companion Run entry,
+Companion Startup shortcut, Ollama Startup shortcut and port-only wait task are
+backed up before their duplicate launches are disabled. Companion's own
+`AutoStart` preference is set false because JARVIS owns the ordered launch.
+No other Companion setting, saved connection, token, pairing or permission is
+changed. Keep the independent Companion startup entry disabled to retain ordering.
+
+## Failure and duplicate protection
+
+An OS-held file lock permits one launcher. Existing exact app executables are
+adopted, not launched twice. Readiness waits and subprocess calls have deadlines.
+Missing model files, incomplete Gateway proof, offline Node or provider mismatch
+produce a failed result; the launcher does not reset, repair, reinstall, switch
+profiles, fabricate ownership proof, restart existing applications or run a paid
+fallback. A timed-out start command is never retried as a second start.
+
+The operational snapshot is
+`%USERPROFILE%\Documents\Codex\jarvis-os-runtime\startup-last.json`.
+Its overall `ready` flag stays false until every phase completes. It contains
+only phase names, booleans, bounded error codes and elapsed times, never command
+output, credentials or raw settings. It is a runtime check, not another project
+TODO or status tracker.
+
+The existing Gateway packaging can omit its port/ownership proof when an ACP
+backend introduces an additional listener. Startup initializes/closes its probe
+before native admission, then uses Companion's normal handshake. This sequencing
+does not fix that package defect or bypass security; admission fails closed if a
+valid current proof is unavailable.
+
+## Install and rollback
+
+The supplied `install_startup.py` uses the current user's startup folder,
+registry entry and existing wait task. Run it from the source directory with the
+existing Python installation, with Companion fully exited. It verifies backups
+before changing registrations and preserves them under the stable runtime folder.
+The installation records the exact original settings hash and shortcut copies;
+only the `AutoStart` JSON boolean is patched. No elevation is requested.
+
+For rollback, fully exit Companion and run:
+
+```powershell
+C:\Python314\python.exe "$env:USERPROFILE\Documents\Codex\jarvis-os-runtime\install_startup.py" --undo
+```
+
+Undo restores the original startup entries and original `AutoStart` boolean while
+preserving other current settings. It refuses to overwrite a replaced JARVIS
+shortcut, a new Run value or a conflicting original shortcut. Runtime code and
+backups remain available for review; nothing is recursively deleted.
+
+## Acceptance boundary
+
+Unit/protocol tests and an unattended stopped-stack launch are necessary checks.
+They do not prove Windows logon execution. Mark reboot readiness VERIFIED only
+after an actual computer restart and sign-in reaches all ready connections
+without prompts, reconnect clicks, extra launches or agent intervention. Save
+the result and relevant actual checks in the sole master execution log.
