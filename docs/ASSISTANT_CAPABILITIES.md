@@ -2,6 +2,8 @@
 
 These 20 requirements extend the [OpenClaw roadmap](../REQUIREMENTS.md). OpenClaw coordinates the work from the local PC. Named providers are candidates. Before adopting one, verify its supported interface, account permissions and ongoing zero-cost operation. Each row describes a setup prerequisite and a practical test using sample data.
 
+Apply the [dependency review](DEPENDENCY_REVIEW.md) before selecting any provider. The local implementation must remain free to operate. Hosted brand names below identify optional interoperability targets. Enable an operation only after verifying its free entitlement and maintained interface.
+
 ## Capability checklist
 
 | # | Capability | Setup and acceptance check |

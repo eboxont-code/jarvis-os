@@ -140,6 +140,8 @@ Before installing any dependency, integration, model, hosted tool or service, ve
 - Whether a local or self-hosted alternative exists.
 - Hardware and storage requirements.
 
+Require maintained, supported software for every tool and agent. Compare the installed build with the official stable release for its distribution channel. Prefer open source and strong adoption among tools that pass the actual workload. Exclude archived or superseded agents, trials, metered overages and unverified costs. Record dated upstream evidence in the [dependency review](docs/DEPENDENCY_REVIEW.md).
+
 Reject dependencies that introduce mandatory payments or undisclosed/uncertain costs. Open-source software is not automatically a free service: distinguish free software from paid hosted infrastructure. Recheck pricing and licence when versions, providers or deployment models change.
 
 #### 6. Deployment policy
