@@ -1,0 +1,52 @@
+{
+  "checked_at": "2026-11-18T00:53:46.939098+00:00",
+  "ready": false,
+  "checks": {
+    "ollama": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 4.5
+    },
+    "gateway_contract": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 119.5
+    },
+    "gateway_authenticated": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 197.4
+    },
+    "openjarvis": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 250.5
+    },
+    "shared_models": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 251
+    },
+    "mcp_acp_bindings": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 254.7
+    },
+    "native_admission": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 255.6
+    },
+    "companion_node": {
+      "ready": false,
+      "detail": "saved_node_did_not_connect_no_reset_attempted",
+      "elapsed_seconds": 419.1
+    },
+    "complete": {
+      "ready": false,
+      "detail": "companion_node",
+      "elapsed_seconds": 419.1
+    }
+  },
+  "scope": "Startup runtime checks only; no inference or reboot acceptance claim."
+}
