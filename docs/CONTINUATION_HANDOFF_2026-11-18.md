@@ -1,5 +1,7 @@
 # JARVIS Continuation Handoff — 2026-11-18
 
+> **Historical snapshot — superseded for current continuation.** Read the complete current [master](../MASTER_TODO.md), then [the later autostart continuation handoff](CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md). The official-repair wait gate, unregistered MCP and ENOENT-only block below are earlier evidence, not current instructions. The user revoked the blanket wait gate; real MCP/ACP/native checks and an unattended stopped-stack startup subsequently passed. Actual Windows reboot/sign-in acceptance remains governed by the latest master. The original record below is preserved intact as history.
+
 > **Purpose:** allow a new authorised AI session to continue the JARVIS project without relying on private chat history.
 >
 > **Authority:** [MASTER_TODO.md](../MASTER_TODO.md) remains the sole project plan and status authority. This document is a dated evidence and handoff record, not a competing checklist. Follow [AGENTS.md](../AGENTS.md) first.
