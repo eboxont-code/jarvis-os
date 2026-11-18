@@ -33,6 +33,12 @@ At the beginning of every JARVIS work session:
 
 If the repository or master file cannot be accessed, say so and ask for access or the file. Never pretend it was read.
 
+## Continuation without prior chat history
+
+After reading the complete current master, read [the 18 November autostart handoff](docs/CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md) and [startup implementation/rollback](docs/AUTOSTART_READINESS.md) for Windows startup or four-app integration continuation. The handoff contains installed locations, safe evidence links, known failures and the exact observation-first reboot acceptance procedure. It is dated evidence, not another status authority.
+
+Older handoffs retain superseded wait gates and historical unregistered/blocked MCP statements. Follow the current master; do not revive those as present policy. A historical ready=true snapshot does not verify a new boot. On a post-reboot continuation, inspect the new boot time, snapshot and existing processes before launching/reconnecting anything. The installed JARVIS AI Stack startup worker and the older JARVIS Project Session controller are separate; do not rerun either installer or alter saved configuration simply to resume this project. The older controller's live prompt-loading acceptance remains separate and unverified.
+
 ## Full Windows computer control — core requirement
 
 Full visual and programmatic Windows desktop control is a mandatory core capability, not an optional enhancement. Read and follow `docs/WINDOWS_COMPUTER_CONTROL.md` together with Phase 6 of `MASTER_TODO.md` before implementing desktop-control work.
