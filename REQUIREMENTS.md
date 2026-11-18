@@ -13,6 +13,10 @@ OpenClaw owns the conversation and coordinates work. The Windows Companion conne
 
 The checkboxes below track acceptance for the current OpenClaw architecture. An unchecked requirement can have working components. Check it when evidence covers the whole stated requirement. Keep operational evidence local and publish only a sanitised result.
 
+## Assistant setup requirements
+
+Use the [20-area assistant capability checklist](docs/ASSISTANT_CAPABILITIES.md) when selecting providers, defining approvals and recording connection tests. The project-wide cost and privacy requirements apply to every integration.
+
 ## Integration requirements
 
 | Gate | Required outcome and proof |
