@@ -1,5 +1,7 @@
 # JARVIS Project Controller — Windows
 
+> This older repository/prompt controller is separate from the installed **JARVIS AI Stack** login startup. For ready-after-reboot continuation, read the [autostart handoff](../docs/CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md) and [startup/rollback documentation](../docs/AUTOSTART_READINESS.md) after the complete latest master. Do not rerun this controller installer or alter OpenJarvis configuration to verify existing app autostart. The controller prompt-loading test below remains a separate acceptance item.
+
 The controller connects the private eboxont-code/jarvis-os master checklist to the installed OpenJarvis configuration without editing or replacing the OpenJarvis source checkout.
 
 ## What it does
