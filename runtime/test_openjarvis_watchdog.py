@@ -7,6 +7,22 @@ from unittest.mock import patch
 import openjarvis_watchdog as w
 
 class RecoveryTests(unittest.TestCase):
+    def test_venv_server_child_selected_but_unrelated_python_preserved(self):
+        rows=[{'ProcessId':1,'ExecutablePath':'desktop.exe','Name':'desktop.exe'},
+          {'ProcessId':2,'ExecutablePath':'venv/python.exe','Name':'python.exe','RootServe':True},
+          {'ProcessId':3,'ParentProcessId':2,'ExecutablePath':'base/python.exe','Name':'python.exe','Serve8000':True},
+          {'ProcessId':4,'ParentProcessId':99,'Name':'python.exe','Serve8000':True},
+          {'ProcessId':5,'ParentProcessId':2,'Name':'python.exe','Serve8000':False}]
+        selected=w.select_inventory(rows,'desktop.exe')
+        self.assertEqual({r['ProcessId'] for r in selected},{1,2,3})
+
+    def test_server_leaf_stops_before_venv_shim(self):
+        rows=[{'ProcessId':2,'ParentProcessId':99,'CreationDate':'fixture','ExecutablePath':'parent.exe'},
+              {'ProcessId':3,'ParentProcessId':2,'CreationDate':'fixture','ExecutablePath':'child.exe'}]
+        with patch.object(w.boot,'run_json') as run:
+            w.stop_exact(rows)
+        self.assertIn('ProcessId = 3',run.call_args_list[0].args[0][-1])
+
     def test_startup_grace_and_ambiguous_desktops_prevent_recovery(self):
         now=dt.datetime.now(dt.timezone.utc)
         app={'Desktop':True,'CreationDate':now.isoformat()}
@@ -49,6 +65,8 @@ class RecoveryTests(unittest.TestCase):
                 self.assertEqual(argv[argv.index('--engine')+1],'ollama')
                 self.assertNotIn('uv',argv);self.assertNotIn('sync',argv)
                 self.assertEqual(launch.call_args.kwargs['stderr'],w.subprocess.DEVNULL)
+                self.assertEqual(launch.call_args.kwargs['env']['OLLAMA_HOST'],'http://127.0.0.1:11434')
+                self.assertIsNot(launch.call_args.kwargs['env'],w.os.environ)
 
     def test_missing_model_prevents_backend_launch_or_download(self):
         with tempfile.TemporaryDirectory() as directory:
