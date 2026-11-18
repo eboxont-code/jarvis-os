@@ -27,6 +27,9 @@ The sequence is:
    initialization. Close the probe before continuing. No agent/model prompt is sent.
 5. Recheck the real Gateway proof, then start Companion with its existing saved
    connection. Require the existing paired Node to become connected automatically.
+   If its first handoff fails, permit one normal retry of only the Companion
+   process this launcher started, after rechecking current Gateway ownership.
+   Existing independently started or replacement Companion processes are preserved.
    Companion still performs its own native ownership and credential checks.
 6. Confirm the host OpenCode configuration is local Ollama only and start its
    existing desktop app. The coding harness remains available on demand rather
@@ -45,8 +48,10 @@ An OS-held file lock permits one launcher. Existing exact app executables are
 adopted, not launched twice. Readiness waits and subprocess calls have deadlines.
 Missing model files, incomplete Gateway proof, offline Node or provider mismatch
 produce a failed result; the launcher does not reset, repair, reinstall, switch
-profiles, fabricate ownership proof, restart existing applications or run a paid
-fallback. A timed-out start command is never retried as a second start.
+profiles, fabricate ownership proof, restart pre-existing applications or run a paid
+fallback. Only its own failed Companion can be retried once; Gateway, Ollama and
+OpenJarvis are never automatically restarted. A timed-out Gateway start command
+is never retried as a second start.
 
 The operational snapshot is
 `%USERPROFILE%\Documents\Codex\jarvis-os-runtime\startup-last.json`.
