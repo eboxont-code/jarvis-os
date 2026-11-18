@@ -73,6 +73,32 @@ class StartupTests(unittest.TestCase):
             with self.assertRaises(app.NotReady) as caught:app.run_json(['fixture'])
         self.assertEqual(str(caught.exception),'local_command_failed')
 
+    def test_probe_failure_preserves_safe_stage_only(self):
+        result=app.subprocess.CompletedProcess(['fixture'],1,stdout='{"ready":false,"stage":"mcp_live_calls","error_type":"AssertionError"}',stderr='PRIVATE_FIXTURE')
+        with patch.object(app.subprocess,'run',return_value=result):
+            data=app.run_json(['fixture'],accept_error_json=True)
+        self.assertEqual(data['stage'],'mcp_live_calls')
+        result.stdout='{"ready":false,"token":"PRIVATE_FIXTURE"}'
+        with patch.object(app.subprocess,'run',return_value=result):
+            with self.assertRaises(app.NotReady):app.run_json(['fixture'],accept_error_json=True)
+
+    def test_companion_retry_preserves_apps_it_did_not_start(self):
+        from unittest.mock import Mock
+        child=Mock();child.poll.return_value=None
+        with patch.object(app,'launch_once') as launch:
+            with self.assertRaises(app.NotReady):app.retry_owned_companion('fixture',None,ready())
+            bad=ready();del bad['gateway']['port']
+            with self.assertRaises(app.NotReady):app.retry_owned_companion('fixture',child,bad)
+            child.terminate.assert_not_called();launch.assert_not_called()
+
+    def test_companion_retry_targets_exact_owned_handle_once(self):
+        from unittest.mock import Mock
+        child=Mock();child.poll.return_value=None
+        with patch.object(app,'existing',return_value=False),patch.object(app,'launch_once') as launch:
+            app.retry_owned_companion('fixture',child,ready())
+            child.terminate.assert_called_once();child.wait.assert_called_once_with(timeout=15)
+            launch.assert_called_once_with('fixture',['--background'])
+
     def test_missing_contract_prevents_companion_even_with_open_port(self):
         with tempfile.TemporaryDirectory() as d:
             cfg=pathlib.Path(d)/'inference.json'
