@@ -88,6 +88,19 @@ backups remain available for review; nothing is recursively deleted.
 
 ## Acceptance boundary
 
+On 18 November 2026, the installed launcher completed an unattended stopped-stack
+test in 376.2 seconds. Ollama, authenticated Gateway, OpenJarvis health/catalogue,
+three real read-only adapter calls, ACP initialization, paired online Node and
+OpenCode desktop passed. Companion needed the launcher's one owned-process retry;
+no operator reconnect or extra app launch was used. A subsequent native
+`device.status` call succeeded. Four protected host configurations and the active
+isolated Gateway configuration remained unchanged. Thirteen tests passed.
+
+Earlier failed attempts are retained in the master execution log. The bounded
+Companion retry is recovery, not proof of a permanent native package repair.
+An actual Windows reboot/sign-in has **not** been performed for this startup
+installation; its logon trigger remains pending acceptance.
+
 Unit/protocol tests and an unattended stopped-stack launch are necessary checks.
 They do not prove Windows logon execution. Mark reboot readiness VERIFIED only
 after an actual computer restart and sign-in reaches all ready connections
