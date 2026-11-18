@@ -3,6 +3,10 @@
 This is dated implementation and execution evidence. **MASTER_TODO.md remains the sole priority/status authority.** Read its complete latest version and root AGENTS.md before continuing. Do not infer current readiness from this document or old chat history.
 
 
+## Latest user-visible discrepancy — inspect this first
+
+After the upgrade documentation, the user supplied current Companion tray/Connection screenshots showing selected loopback50368 and connection error. Fresh read-only checks found native Gateway proof valid on18789,18789 reachable,50368 closed, and Jarvis/Ollama ports8000/11434 reachable. Selective parsing of existing Roaming/OpenClawTray/settings.json found saved GatewayUrl already loopback18789. No secrets/raw config were displayed. The active UI and saved endpoint disagree; stale in-memory selection or another instance/profile are hypotheses, not a verified cause. No reconnect, restart or setting/pairing/security change was performed. This is the first diagnostic for the existing Startup acceptance item: identify actual active Companion executable/profile/selected connection with supported read-only inspection, then prepare a minimal supported repair and obtain any required approval. Preserve healthy Gateway18789 and the passing coding bridge. Do not reset pairing or restart Gateway on assumption.
+
 ## Start here when continuing with another AI
 
 This document is a dated execution/handoff record, not a second status tracker. Read the complete latest [AGENTS.md](../AGENTS.md), [MASTER_TODO.md](../MASTER_TODO.md) and [JARVIS_BOOT.md](../JARVIS_BOOT.md) on main first. Then read this whole record, [startup/rollback](AUTOSTART_READINESS.md), [autostart continuation](CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md) and the original handoffs required by the user: [18 November](CONTINUATION_HANDOFF_2026-11-18.md), [12 November](OPENCLAW_OPENCODE_OLLAMA_HANDOFF_2026-11-12.md), [read-only MCP](OPENJARVIS_READONLY_MCP_ADAPTER.md). Older instructions about waiting indefinitely for an official repair are superseded by the current master/user instruction; preservation, zero spend and exact-action approval boundaries still apply.
