@@ -23,16 +23,25 @@ def port_open():
         with socket.create_connection(('127.0.0.1',8000),timeout=2):return True
     except OSError:return False
 
+def select_inventory(rows,executable):
+    apps={r['ProcessId'] for r in rows if str(r.get('ExecutablePath','')).casefold()==str(executable).casefold()}
+    roots={r['ProcessId'] for r in rows if r.get('RootServe')}
+    return [dict(r,Desktop=r['ProcessId'] in apps) for r in rows if
+       r['ProcessId'] in apps or r['ProcessId'] in roots or
+       (r.get('Name')=='uv.exe' and r.get('ParentProcessId') in apps) or
+       (r.get('Name')=='python.exe' and r.get('Serve8000') and r.get('ParentProcessId') in roots)]
+
 def inventory(executable):
     # Never export command lines. Match this user's exact preserved checkout.
     app=str(executable).replace("'","''")
     root=str(pathlib.Path.home()/'OpenJarvis').replace("'","''")
-    script=("$all=Get-CimInstance Win32_Process; $apps=@($all|Where-Object {$_.ExecutablePath -eq '"+app+"'}); "
-      "$ids=@($apps|ForEach-Object ProcessId); ConvertTo-Json -InputObject @($all|Where-Object {"
-      "$_.ProcessId -in $ids -or ($_.Name -eq 'uv.exe' -and $_.ParentProcessId -in $ids) -or "
-      "($_.Name -eq 'python.exe' -and $_.CommandLine -like '*"+root+"\\.venv\\Scripts\\*' -and $_.CommandLine -match '(jarvis.exe|openjarvis.cli)' -and $_.CommandLine -match '\\bserve\\b' -and $_.CommandLine -match '--port[ =]+8000(?:\\s|$)')"
-      "}|Select-Object ProcessId,Name,ExecutablePath,@{n='CreationDate';e={$_.CreationDate.ToString('o')}},@{n='Desktop';e={$_.ProcessId -in $ids}}) -Compress")
-    return boot.run_json([boot.PS,'-NoProfile','-NonInteractive','-Command',script],20)
+    serve="($_.CommandLine -match '(jarvis.exe|openjarvis.cli)' -and $_.CommandLine -match '\\bserve\\b' -and $_.CommandLine -match '--port[ =]+8000(?:\\s|$)')"
+    script=("ConvertTo-Json -InputObject @(Get-CimInstance Win32_Process|Where-Object {"
+      "$_.ExecutablePath -eq '"+app+"' -or $_.Name -in 'python.exe','uv.exe'}|"
+      "Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,@{n='CreationDate';e={$_.CreationDate.ToString('o')}},"
+      "@{n='Serve8000';e={"+serve+"}},@{n='RootServe';e={$_.Name -eq 'python.exe' -and "
+      "$_.CommandLine -like '*"+root+"\\.venv\\Scripts\\*' -and "+serve+"}}) -Compress")
+    return select_inventory(boot.run_json([boot.PS,'-NoProfile','-NonInteractive','-Command',script],20),executable)
 
 def eligible(rows,now):
     apps=[r for r in rows if r.get('Desktop')]
@@ -47,7 +56,8 @@ def stop_exact(rows):
     # Snapshot identity must still match. Never taskkill /T or kill by name.
     # Each target was selected by exact desktop path/child or fixed local
     # checkout's jarvis-serve command; unrelated Python/app processes excluded.
-    for row in sorted(rows,key=lambda r:not r.get('Desktop')):
+    targets={r['ProcessId'] for r in rows}
+    for row in sorted(rows,key=lambda r:(not r.get('Desktop'),r.get('ParentProcessId') not in targets)):
         target=int(row['ProcessId']); stamp=row['CreationDate'].replace("'","''")
         path=str(row['ExecutablePath']).replace("'","''")
         script=("$p=Get-CimInstance Win32_Process -Filter 'ProcessId = "+str(target)+"'; "
@@ -63,10 +73,15 @@ def launch_backend():
     tags={m['name'] for m in boot.get_json('http://127.0.0.1:11434/api/tags')['models']}
     if not python.is_file() or not cfg.get('confirmed') or cfg.get('model') not in tags:
         raise boot.NotReady('existing_local_backend_or_model_missing')
+    # Supported Ollama environment setting, scoped to our child only. Windows
+    # localhost/IPv6 fallback took >2s, exceeding the desktop's 2s attach probe.
+    # Never change the user's saved configuration or global environment.
+    environment=os.environ.copy()
+    environment['OLLAMA_HOST']='http://127.0.0.1:11434'
     return subprocess.Popen([str(python),'-m','openjarvis.cli','serve','--host','127.0.0.1',
        '--port','8000','--engine','ollama','--model',cfg['model'],'--agent','simple'],
        cwd=root,stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,
-       stderr=subprocess.DEVNULL,creationflags=boot.FLAGS)
+       stderr=subprocess.DEVNULL,creationflags=boot.FLAGS,env=environment)
 
 def recover(executable,rows):
     if healthy() or port_open():raise boot.NotReady('recovery_precondition_changed')
