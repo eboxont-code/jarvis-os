@@ -3,6 +3,7 @@ import json,pathlib,queue,subprocess,sys,threading,time,urllib.parse,uuid
 HOME=pathlib.Path.home()
 ROOT=pathlib.Path(__file__).resolve().parent
 FLAGS=getattr(subprocess,'CREATE_NO_WINDOW',0)
+STAGE='start'
 
 def command():
     import shutil
@@ -46,20 +47,26 @@ def acp_initialize(executable):
             except subprocess.TimeoutExpired:p.kill();p.wait(timeout=5)
 
 def main():
+    global STAGE
     phase=sys.argv[1]
     if phase=='health':
+        STAGE='gateway_authenticated'
         d=rpc('health');return {'ready':d.get('ok') is True}
     if phase=='node':
+        STAGE='node_connection'
         rows=rpc('node.list').get('nodes',[])
         return {'ready':len(rows)==1 and rows[0].get('connected') is True and rows[0].get('paired') is True}
     if phase not in ('connections','acp'):raise ValueError('phase_not_allowed')
+    STAGE='read_local_configuration'
     c=json.loads((HOME/'.openclaw/openclaw.json').read_text(encoding='utf-8-sig'))
     providers=c.get('models',{}).get('providers',{})
     defaults=c.get('agents',{}).get('defaults',{}).get('model',{})
     primary=defaults.get('primary','') if isinstance(defaults,dict) else defaults
+    STAGE='local_provider'
     assert set(providers)=={'ollama'}
     assert all(urllib.parse.urlparse(p.get('baseUrl','')).hostname in ('127.0.0.1','localhost','::1') for p in providers.values())
     assert str(primary).startswith('ollama/') and (not isinstance(defaults,dict) or not defaults.get('fallbacks'))
+    STAGE='acp_binding'
     entry=c['plugins']['entries']['acpx'];assert entry.get('enabled') is True
     executable=entry['config']['agents']['opencode']['command'];assert pathlib.Path(executable).is_file()
     assert entry['config']['agents']['opencode'].get('args')==['acp']
@@ -68,6 +75,7 @@ def main():
     # changing a Gateway registration or launching a model task.
     adapter=ROOT.parent/'jarvis-readonly-mcp-20261118/openjarvis_readonly_mcp_adapter.py'
     names=['openjarvis_health','openjarvis_models','openjarvis_runtime_status']
+    STAGE='mcp_registration'
     server=c['mcp']['servers']['openjarvis-readonly']
     assert pathlib.Path(server['command']).resolve()==pathlib.Path(sys.executable).resolve()
     assert len(server['args'])==1 and pathlib.Path(server['args'][0]).resolve()==adapter.resolve()
@@ -78,16 +86,23 @@ def main():
               {'jsonrpc':'2.0','method':'notifications/initialized'},
               {'jsonrpc':'2.0','id':2,'method':'tools/list'}]
     requests += [{'jsonrpc':'2.0','id':i+3,'method':'tools/call','params':{'name':n,'arguments':{}}} for i,n in enumerate(names)]
-    p=subprocess.run([sys.executable,str(adapter)],input=''.join(json.dumps(r)+'\n' for r in requests),
-                     capture_output=True,text=True,encoding='utf-8',timeout=25,creationflags=FLAGS)
+    STAGE='mcp_protocol'
+    p=subprocess.run([sys.executable,str(adapter)],input=b''.join((json.dumps(r)+'\n').encode('utf-8') for r in requests),
+                     capture_output=True,timeout=25,creationflags=FLAGS)
+    STAGE='mcp_subprocess_exit'
     assert p.returncode==0
-    replies=[json.loads(line) for line in p.stdout.splitlines()];assert len(replies)==5
+    replies=[json.loads(line) for line in p.stdout.splitlines()]
+    STAGE='mcp_reply_count'
+    assert len(replies)==5
+    STAGE='mcp_discovery'
     assert [t['name'] for t in replies[1]['result']['tools']]==names
+    STAGE='mcp_live_calls'
     assert all(not r['result']['isError'] and json.loads(r['result']['content'][0]['text'])['available'] for r in replies[2:])
+    STAGE='acp_initialize'
     assert acp_initialize(executable)
     return {'ready':True,'local_provider':True,'mcp_tools':3,'acp_initialize':True}
 
 if __name__=='__main__':
     try:print(json.dumps(main()))
     except Exception as exc:
-        print(json.dumps({'ready':False,'error_type':type(exc).__name__}));raise SystemExit(1)
+        print(json.dumps({'ready':False,'error_type':type(exc).__name__,'stage':STAGE}));raise SystemExit(1)
