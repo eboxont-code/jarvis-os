@@ -1,0 +1,28 @@
+{
+  "recorded_date": "2026-11-18",
+  "timezone": "Australia/Brisbane",
+  "connector_status_ok": true,
+  "connector_count": 27,
+  "connector_seconds": 0.109,
+  "concurrent_health_seconds": [
+    0.062,
+    0.044,
+    0.097,
+    0.021,
+    0.02
+  ],
+  "real_local_chat_pass": true,
+  "local_chat_seconds": 9.4,
+  "patched_backend_start_seconds": 30.4,
+  "fixture_failed_before_patch": true,
+  "fixture_health_block_seconds_before_patch": 0.657,
+  "fixture_passed_after_patch": true,
+  "fixture_database_unchanged": true,
+  "startup_watchdog_tests_passed": 24,
+  "connector_regression_tests_passed": 1,
+  "pytest_router_suite": "unavailable_existing_venv_no_package_installed",
+  "patch_scope": [
+    "create_connectors_router._connector_summary",
+    "create_connectors_router.list_connectors"
+  ]
+}
