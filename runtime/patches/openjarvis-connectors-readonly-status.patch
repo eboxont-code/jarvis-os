@@ -1,0 +1,34 @@
+--- a/src/openjarvis/server/connectors_router.py
++++ b/src/openjarvis/server/connectors_router.py
+@@ -145,12 +145,19 @@
+         """Build the dict returned by GET /connectors."""
+         chunks = 0
+         try:
+-            from openjarvis.connectors.store import KnowledgeStore
++            import sqlite3
++            from contextlib import closing
++
++            from openjarvis.core.config import DEFAULT_CONFIG_DIR
+ 
+             sources = _knowledge_sources(connector_id, instance)
+             placeholders = ", ".join("?" for _ in sources)
+-            with KnowledgeStore() as store:
+-                rows = store._conn.execute(
++            # Status is a read: do not create/migrate the store or reapply
++            # Windows file permissions once per connector. Existing ACLs
++            # remain enforced by SQLite's ordinary read-only file access.
++            uri = (DEFAULT_CONFIG_DIR / "knowledge.db").resolve().as_uri() + "?mode=ro"
++            with closing(sqlite3.connect(uri, uri=True, timeout=0.1)) as conn:
++                rows = conn.execute(
+                     f"SELECT COUNT(*) FROM knowledge_chunks "
+                     f"WHERE source IN ({placeholders})",
+                     sources,
+@@ -430,7 +437,7 @@
+     # ------------------------------------------------------------------
+ 
+     @router.get("")
+-    async def list_connectors():
++    def list_connectors():
+         """List all registered connectors with their connection status."""
+         _ensure_connectors_registered()
+         results = []
