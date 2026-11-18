@@ -128,6 +128,17 @@ def watchdog_ready():
         return run_json([PS,'-NoProfile','-NonInteractive','-Command',command],20).get('alive') is True
     except (OSError,ValueError,KeyError,TypeError,NotReady,subprocess.TimeoutExpired):return False
 
+def native_attach_ready(clock=time.monotonic,sleep=time.sleep):
+    # Actual desktop 1.0.5 performs two health probes with a two-second timeout.
+    # Keep one second of headroom; don't open a second would-be server when the
+    # healthy API is too slow for native attach. No setup/security bypass.
+    for index in range(2):
+        started=clock()
+        if get_json('http://127.0.0.1:8000/health').get('status')!='ok' or clock()-started>=1:
+            return False
+        if index==0:sleep(.5)
+    return True
+
 def retry_owned_companion(path, child, current_gateway):
     # A retained Popen handle identifies our exact process, even if PIDs recycle.
     # Never restart a previously running app, a replacement, or an unverified
@@ -234,13 +245,14 @@ class Startup:
                          stderr=subprocess.DEVNULL,creationflags=FLAGS)
         self.required('openjarvis', lambda: get_json('http://127.0.0.1:8000/health').get('status') == 'ok', 360)
         self.required('openjarvis_watchdog',watchdog_ready,60)
+        self.required('desktop_attach_ready',native_attach_ready,90,
+                      'api_too_slow_for_native_two_second_attach')
         # Start the preserved desktop only after a healthy backend exists;
         # its normal attach path avoids a second backend/dependency-sync launch.
         launch_once(self.m['openjarvis'])
-        models = {r['id'] for r in get_json('http://127.0.0.1:8000/v1/models')['data']}
-        if models != tags:
-            raise NotReady('model_catalogue_mismatch')
-        self.record('shared_models', True)
+        self.required('shared_models',lambda: {r['id'] for r in
+                      get_json('http://127.0.0.1:8000/v1/models')['data']}==tags,120,
+                      'model_catalogue_timeout_or_mismatch')
         self.required('mcp_acp_bindings', lambda: self.probe('connections').get('ready') is True, 240)
 
         # The ACP handshake probe is now closed. Recheck actual package proof
