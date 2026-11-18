@@ -4,6 +4,7 @@ import hashlib,json,os,pathlib,re,subprocess,time
 HERE=pathlib.Path(__file__).resolve().parent
 PROJECTS=HERE/'projects'
 COMMAND=r'C:\Python314\python.exe verify.py'
+MODEL='jarvis-code-qwen27b:16k'
 
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def no_reparse(path):
@@ -34,7 +35,11 @@ def ensure_project(name,fixture=False):
       {'action':'edit','resource':'*.env*','effect':'deny'},
       {'action':'shell','resource':COMMAND,'effect':'allow'}]
     if fixture:permissions.append({'action':'edit','resource':'tests/**','effect':'deny'})
-    config={'model':'ollama/qwen3.8:27b','enabled_providers':['ollama'],'permissions':permissions}
+    config={'model':'ollama/'+MODEL,'enabled_providers':['ollama'],'permissions':permissions,
+      'agents':{'title':{'disabled':True}},
+      'providers':{'ollama':{'models':{MODEL:{
+        'body':{'think':False,'reasoning_effort':'none'},
+        'limit':{'context':16384,'output':2048}}}}}}
     (root/'opencode.jsonc').write_text(json.dumps(config,indent=2))
     (root/'AGENTS.md').write_text('# OpenJarvis front-door coding project\n'
       'The root jarvis-os MASTER_TODO is sole project-status authority; operator syncs it. '

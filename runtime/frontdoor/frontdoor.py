@@ -7,6 +7,7 @@ HERE=pathlib.Path(__file__).resolve().parent
 CONFIG=HERE/'frontdoor.json'
 SECRET=re.compile(r'(?i)(?:\bsk-[A-Za-z0-9_-]{16,}|\bgh[pousr]_[A-Za-z0-9]{20,}|(?:api[_-]?key|password|access[_-]?token|bearer)\s*[:=]\s*[^\s]{8,})')
 CODING=re.compile(r'(?i)\b(opencode|code|coding|implement|program|python|function|script|unit tests?|src/|(?:build|create).{0,35}(?:app|tool|calculator|website|web page|test))\b')
+QUESTION=re.compile(r'(?i)^\s*(?:hi|hello|hey|thanks|thank you|what|why|who|when|where|how|explain|tell me|summari[sz]e)\b')
 
 def messages_for(body):
     rows=[]
@@ -47,7 +48,9 @@ def install(app):
 
     async def bridge(request_body:ChatCompletionRequest,request:Request):
         latest=request_body.messages[-1].content if request_body.messages else ''
-        if request_body.tools or (isinstance(latest,str) and latest.startswith('/local ')):
+        conversational=isinstance(latest,str) and bool(QUESTION.search(latest))
+        if request_body.tools or conversational or (isinstance(latest,str) and latest.startswith('/local ')):
+            if isinstance(latest,str) and SECRET.search(latest):raise HTTPException(400,'Remove credentials before sending this request.')
             if isinstance(latest,str) and latest.startswith('/local '):request_body.messages[-1].content=latest[7:]
             return await original(request_body,request)
         rows=messages_for(request_body)

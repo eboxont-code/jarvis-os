@@ -50,7 +50,10 @@ def finish_receipt(job_id,receipt):
     evidence=code_evidence(job_id,{'project':receipt['project'],'session':receipt['native_session_id']})
     if evidence:
         receipt.update(evidence);receipt['status']='passed' if evidence['verification'].get('passed') else 'failed'
-    else:receipt['status']='failed';receipt['reason']='native_verifier_evidence_missing'
+    else:
+        receipt['status']='failed'
+        receipt['verification_reason']='native_verifier_evidence_missing'
+        receipt.setdefault('reason','native_verifier_evidence_missing')
     save(JOBS/(job_id+'.code-result.json'),receipt)
     return receipt
 

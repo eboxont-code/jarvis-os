@@ -17,7 +17,7 @@ class BridgeTests(unittest.TestCase):
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),base_url='http://test') as c:
                 with patch.object(frontdoor,'CONFIG',pathlib.Path('nonexistent-frontdoor-manifest')):
                     for _ in range(2):
-                        r=await c.post('/v1/chat/completions',json=self.body('hello').model_dump())
+                        r=await c.post('/v1/chat/completions',json=self.body('/claw hello').model_dump())
                         self.assertEqual(r.status_code,503)
         asyncio.run(run())
     def test_real_stream_shape_with_owned_worker_result(self):
@@ -31,7 +31,7 @@ class BridgeTests(unittest.TestCase):
                 return Process()
             async def run():
                 async with httpx.AsyncClient(transport=httpx.ASGITransport(app=self.app()),base_url='http://test') as c:
-                    b=self.body('hello');b.stream=True
+                    b=self.body('/claw hello');b.stream=True
                     with patch.object(frontdoor,'CONFIG',config),patch.object(frontdoor.subprocess,'Popen',side_effect=start) as launch:
                         r=await c.post('/v1/chat/completions',json=b.model_dump())
                         self.assertIn('ROUNDTRIP_FIXTURE_OK',r.text);self.assertIn('data: [DONE]',r.text)
@@ -54,6 +54,8 @@ class BridgeTests(unittest.TestCase):
         self.assertTrue(frontdoor.CODING.search('Use OpenCode to repair this project'))
         self.assertTrue(frontdoor.CODING.search('Build a website'))
         self.assertFalse(frontdoor.CODING.search('What is two plus two?'))
+        self.assertTrue(frontdoor.QUESTION.search('Explain this Python function'))
+        self.assertFalse(frontdoor.QUESTION.search('Use OpenCode to fix this Python function'))
     def test_project_paths(self):
         for value in ('../outside','C:/Users','CON','a/b','x'*33):
             with self.assertRaises(ValueError):projects.project_path(value)

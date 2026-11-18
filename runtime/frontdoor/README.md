@@ -2,7 +2,7 @@
 
 Implementation and operational records only. The root MASTER_TODO.md is the sole project-status authority. Read the dated front-door handoff before deployment; scripts contain this machine's verified paths and are not portable installers.
 
-Ordinary OpenJarvis text chat enters one restricted OpenClaw coordinator. It can answer using the existing local Ollama model, call three read-only service-status tools, or delegate one coding job through `jarvis-code` MCP to the installed OpenCode ACP executable. Results return to the same OpenJarvis conversation. `/local ` uses the original OpenJarvis chat route; requests with client tools retain their native route.
+Ordinary greetings/questions retain native OpenJarvis chat. Explicit coding requests route through the approved local OpenClaw Gateway job-ID-only delegate to installed OpenCode ACP and local Ollama; verified file/test receipts return to the same chat. Other bridge requests use one restricted model coordinator, which remains slow/unreliable. `/local ` explicitly uses original Jarvis; client-tool requests retain their native route. See the dated handoff for the actual GUI167s edit/test pass, active Stop/recovery pass and remaining Companion/reboot limitations. The router is bounded lexical routing, not unrestricted semantic task planning.
 
 The in-process addon replaces only the existing chat route callable, retaining the original app's middleware/authentication and route dependencies. The original checkout is preserved. The project watchdog launches `backend_bootstrap.py` only when its adjacent `frontdoor.json` manifest exists; otherwise it uses the original installed CLI.
 
@@ -19,3 +19,5 @@ Run tests using the existing OpenJarvis environment, without installing packages
 ```
 
 The existing startup/watchdog sources and tests are in the parent runtime directory; run its tests separately as well. Deployment must preserve the existing startup manifest and backups. Do not rerun one-time activation or port-change helpers on another machine without fresh inventory and approval for the exact changes.
+
+Code projects use the no-download local alias jarvis-code-qwen27b:16k. `prepare_code_model.py` refuses a missing installed source and preserves existing aliases; do not run it blindly. It creates a supported local manifest referencing existing weights, never a pull/download. Global Code and original Ollama models remain preserved.

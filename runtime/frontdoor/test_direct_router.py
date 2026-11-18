@@ -25,4 +25,11 @@ class DirectRouterTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d,patch.object(g,'JOBS',pathlib.Path(d)),patch.object(g,'rpc',side_effect=RuntimeError('unavailable')) as rpc:
             job=self.job('Use OpenCode to fix this Python function');job['deadline']=time.time()+60
             r=g.direct_run('a'*32,job);self.assertEqual(r['status'],'failed');self.assertEqual(rpc.call_count,1)
+    def test_missing_verifier_preserves_the_actual_worker_failure(self):
+        with tempfile.TemporaryDirectory() as d,patch.object(g,'JOBS',pathlib.Path(d)),patch.object(g,'code_evidence',return_value=None):
+            receipt={'project':'main','native_session_id':'ses_fixture','reason':'deadline_exceeded'}
+            result=g.finish_receipt('a'*32,receipt)
+            self.assertEqual(result['status'],'failed')
+            self.assertEqual(result['reason'],'deadline_exceeded')
+            self.assertEqual(result['verification_reason'],'native_verifier_evidence_missing')
 if __name__=='__main__':unittest.main()

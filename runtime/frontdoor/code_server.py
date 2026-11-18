@@ -64,7 +64,7 @@ def code_task(args,cancel_event):
         # re-entrant export/process launch from an active ACP callback.
         (JOBS/(args['job_id']+'.code-session.json')).write_text(json.dumps({'project':args['project'],'session':client.session}))
         client.completed=lambda:(JOBS/(args['job_id']+'.finish-code')).exists()
-        prompt=('Use only existing local ollama/qwen3.8:27b. Work in this exact project only. '
+        prompt=('Use only the configured existing local Ollama model. Work in this exact project only. '
           'Read AGENTS.md and source/tests before editing. Edit only permitted src/, tests/, README.md; '
           'respect protected tests if policy denies their edit. No delegation, installs, network, credentials or outside paths. '
           'Run exactly '+COMMAND+'; no wrappers or alternate commands. Do not call unittest.main in source/tests. '
@@ -141,5 +141,5 @@ if __name__=='__main__':
             (JOBS/(jid+'.code-result.json')).write_text(json.dumps(receipt,indent=2))
             print(json.dumps(receipt),flush=True)
         except Exception as exc:
-            print(json.dumps({'status':'refused','error_type':type(exc).__name__,'owned_acp_process_exited':True}),flush=True)
+            print(json.dumps({'status':'refused','error_type':type(exc).__name__,'owned_acp_process_exited':False}),flush=True)
     else:main()
