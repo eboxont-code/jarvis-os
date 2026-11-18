@@ -1,6 +1,7 @@
 """Normal-user, local-only, bounded startup for the existing JARVIS apps.
 
-No inference, installs, configuration edits, automatic restarts or credential exports.
+No inference, installs, configuration edits or credential exports. A failed
+Companion launched by this worker may receive one ownership-gated client retry.
 Runtime readiness is not project status; MASTER_TODO.md remains authoritative.
 """
 import datetime as dt
@@ -22,13 +23,17 @@ PS = pathlib.Path(os.environ.get('SystemRoot', r'C:\Windows')) / 'System32/Windo
 class NotReady(RuntimeError):
     pass
 
-def run_json(args, timeout=25):
+def run_json(args, timeout=25, accept_error_json=False):
     p = subprocess.run([str(a) for a in args], capture_output=True, timeout=timeout,
                        encoding='utf-8-sig', creationflags=FLAGS)
-    if p.returncode:
+    if p.returncode and not accept_error_json:
         raise NotReady('local_command_failed')
     try:
-        return json.loads(p.stdout)
+        value=json.loads(p.stdout)
+        if p.returncode and (not isinstance(value,dict) or value.get('ready') is not False
+                             or not set(value)<= {'ready','error_type','stage'}):
+            raise NotReady('local_command_failed')
+        return value
     except ValueError:
         raise NotReady('local_command_invalid_json') from None
 
@@ -105,9 +110,25 @@ def launch_once(path, args=()):
     if not path.is_file():
         raise NotReady('installed_application_missing')
     if not existing(path):
-        subprocess.Popen([str(path), *args], cwd=path.parent, stdin=subprocess.DEVNULL,
-                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                         creationflags=FLAGS)
+        return subprocess.Popen([str(path), *args], cwd=path.parent, stdin=subprocess.DEVNULL,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                creationflags=FLAGS)
+    return None
+
+def retry_owned_companion(path, child, current_gateway):
+    # A retained Popen handle identifies our exact process, even if PIDs recycle.
+    # Never restart a previously running app, a replacement, or an unverified
+    # Gateway. No Gateway lifecycle/pairing/credential/configuration operation.
+    if child is None:
+        raise NotReady('existing_companion_preserved')
+    if not gateway_ready(current_gateway):
+        raise NotReady('companion_retry_missing_ownership_proof')
+    if child.poll() is None:
+        child.terminate()
+        child.wait(timeout=15)
+    if existing(path):
+        raise NotReady('replacement_companion_preserved')
+    return launch_once(path, ['--background'])
 
 def host_opencode_local(config):
     try:
@@ -141,7 +162,8 @@ class Startup:
     def required(self, phase, check, seconds, detail=''):
         self.record(phase, False, 'waiting')
         if not wait_until(check, seconds):
-            self.record(phase, False, detail or 'deadline_exceeded')
+            reason=detail or self.checks[phase]['detail']
+            self.record(phase, False, reason if reason not in ('','waiting') else 'deadline_exceeded')
             raise NotReady(phase)
         self.record(phase, True)
 
@@ -154,7 +176,13 @@ class Startup:
             raise NotReady('invalid_probe')
         quoted = self.m['isolated_probe'].replace("'", "''")
         command = "& 'C:\\Python314\\python.exe' '" + quoted + "' " + phase
-        return run_json([self.m['clawctl'], 'pwsh', '--command', command], 75)
+        result=run_json([self.m['clawctl'], 'pwsh', '--command', command], 75, accept_error_json=True)
+        if result.get('ready') is False:
+            stage=result.get('stage','probe_not_ready')
+            if not re.fullmatch('[a-z_]+',stage):stage='probe_not_ready'
+            field={'health':'gateway_authenticated','connections':'mcp_acp_bindings','node':'companion_node'}[phase]
+            self.record(field,False,stage)
+        return result
 
     def execute(self):
         launch_once(self.m['ollama'])
@@ -187,7 +215,7 @@ class Startup:
         if models != tags:
             raise NotReady('model_catalogue_mismatch')
         self.record('shared_models', True)
-        self.required('mcp_acp_bindings', lambda: self.probe('connections').get('ready') is True, 120)
+        self.required('mcp_acp_bindings', lambda: self.probe('connections').get('ready') is True, 240)
 
         # The ACP handshake probe is now closed. Recheck actual package proof
         # twice before Companion starts; an open TCP port alone is insufficient.
@@ -195,9 +223,16 @@ class Startup:
         time.sleep(3)
         if not gateway_ready(self.status()):
             raise NotReady('native_admission_changed')
-        launch_once(self.m['companion'], ['--background'])
-        self.required('companion_node', lambda: self.probe('node').get('ready') is True, 150,
-                      'saved_node_did_not_connect_no_reset_attempted')
+        owned_companion=launch_once(self.m['companion'], ['--background'])
+        try:
+            self.required('companion_node', lambda: self.probe('node').get('ready') is True, 90,
+                          'saved_node_did_not_connect')
+        except NotReady:
+            self.record('companion_retry', False, 'one_launcher_owned_client_retry')
+            retry_owned_companion(self.m['companion'],owned_companion,self.status())
+            self.required('companion_node', lambda: self.probe('node').get('ready') is True, 150,
+                          'saved_node_did_not_connect_no_further_retry')
+            self.record('companion_retry', True, 'one_client_retry_gateway_unchanged')
 
         if not host_opencode_local(self.m['opencode_config']):
             raise NotReady('opencode_local_provider_check_failed')
