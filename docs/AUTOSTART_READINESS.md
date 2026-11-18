@@ -1,5 +1,7 @@
 # Automatic readiness of the existing Windows AI stack
 
+> **Later 1.0.5 desktop repair:** read [the verified native attach repair](OPENJARVIS_DESKTOP_ATTACH_2026-11-18.md) after the complete latest master. The port conflict came from a two-second native health timeout versus Windows localhost fallback. Child-scoped IPv4, fast attach preflight and bounded catalogue retries now pass actual GUI chat/reopen and full runtime checks; earlier blocked/API-only statements remain historical. Actual new Windows reboot acceptance is still pending.
+
 `MASTER_TODO.md` is the project-status authority. This document describes the
 normal-user startup mechanism, acceptance boundary and rollback. For a new agent,
 read the [self-contained continuation handoff](CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md)
