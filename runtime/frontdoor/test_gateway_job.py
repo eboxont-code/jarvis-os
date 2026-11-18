@@ -1,8 +1,21 @@
 import json,pathlib,tempfile,time,unittest
 from unittest.mock import patch
 import gateway_job as g
+import code_server,projects
 
 class WorkerTests(unittest.TestCase):
+    def test_outer_verifier_requires_local_native_allowed_test_evidence(self):
+        with tempfile.TemporaryDirectory() as d:
+            home=pathlib.Path(d);p=home/'.openclaw/openclaw.json';p.parent.mkdir();p.write_text(json.dumps({'plugins':{'entries':{'acpx':{'config':{'agents':{'opencode':{'command':'fixture'}}}}}}}))
+            native={'available':True,'models':[{'providerID':'ollama'}],'tools':[{'tool':'shell','status':'completed','exit_code':0,'permitted_verifier':True}]}
+            with patch.object(g.pathlib.Path,'home',return_value=home),patch.object(projects,'project_path',return_value=home),patch.object(projects,'snapshot',return_value={'src/math.py':'fixture'}),patch.object(code_server,'native_evidence',return_value=native),patch.object(projects,'verify',return_value={'passed':True,'tests_run':3}) as verify:
+                r=g.code_evidence('fixture',{'project':'main','session':'ses_fixture'})
+                self.assertEqual(r['verification']['tests_run'],3);verify.assert_called_once()
+    def test_outer_verifier_does_not_execute_without_native_proof(self):
+        with tempfile.TemporaryDirectory() as d:
+            home=pathlib.Path(d);p=home/'.openclaw/openclaw.json';p.parent.mkdir();p.write_text(json.dumps({'plugins':{'entries':{'acpx':{'config':{'agents':{'opencode':{'command':'fixture'}}}}}}}))
+            with patch.object(g.pathlib.Path,'home',return_value=home),patch.object(projects,'project_path',return_value=home),patch.object(projects,'snapshot',return_value={}),patch.object(code_server,'native_evidence',return_value={'available':True,'models':[{'providerID':'ollama'}],'tools':[]}),patch.object(projects,'verify') as verify:
+                self.assertIsNone(g.code_evidence('fixture',{'project':'main','session':'ses_fixture'}));verify.assert_not_called()
     def test_rejects_non_job_path(self):
         with self.assertRaises(ValueError):g.run('../config')
     def test_polls_then_returns_only_assistant_text(self):

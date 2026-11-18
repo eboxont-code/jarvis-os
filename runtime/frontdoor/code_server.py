@@ -131,4 +131,15 @@ def main():
     deadline=time.monotonic()+12
     while ACTIVE and time.monotonic()<deadline:time.sleep(.1)
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    if len(sys.argv)==3 and sys.argv[1]=='--job':
+        jid=sys.argv[2]
+        try:
+            job=approved_job(jid)
+            receipt=code_task({'job_id':jid,'project':job['project'],'task':job['messages'][-1]['content']},threading.Event())
+            receipt['transport']='OpenClaw native delegate -> installed OpenCode ACP'
+            (JOBS/(jid+'.code-result.json')).write_text(json.dumps(receipt,indent=2))
+            print(json.dumps(receipt),flush=True)
+        except Exception as exc:
+            print(json.dumps({'status':'refused','error_type':type(exc).__name__,'owned_acp_process_exited':True}),flush=True)
+    else:main()

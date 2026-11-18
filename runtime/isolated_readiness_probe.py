@@ -5,6 +5,19 @@ ROOT=pathlib.Path(__file__).resolve().parent
 FLAGS=getattr(subprocess,'CREATE_NO_WINDOW',0)
 STAGE='start'
 
+def local_provider_policy(config):
+    providers=config.get('models',{}).get('providers',{})
+    assert set(providers) in ({'ollama'},{'ollama','jarvis-local'})
+    assert all(urllib.parse.urlparse(p.get('baseUrl','')).hostname in ('127.0.0.1','localhost','::1') for p in providers.values())
+    if 'jarvis-local' in providers:
+        p=providers['jarvis-local'];u=urllib.parse.urlparse(p['baseUrl'])
+        assert p.get('api')=='ollama' and u.scheme=='http' and u.hostname=='127.0.0.1' and u.port==11434
+        assert len(p.get('models',[]))==1
+        m=p['models'][0]
+        assert m['id']=='qwen3.8:27b' and m.get('contextTokens')==16384
+        assert m.get('params',{}).get('num_ctx')==16384 and m['params'].get('think') is False
+    return True
+
 def command():
     import shutil
     c=shutil.which('openclaw')
@@ -63,8 +76,7 @@ def main():
     defaults=c.get('agents',{}).get('defaults',{}).get('model',{})
     primary=defaults.get('primary','') if isinstance(defaults,dict) else defaults
     STAGE='local_provider'
-    assert set(providers)=={'ollama'}
-    assert all(urllib.parse.urlparse(p.get('baseUrl','')).hostname in ('127.0.0.1','localhost','::1') for p in providers.values())
+    local_provider_policy(c)
     assert str(primary).startswith('ollama/') and (not isinstance(defaults,dict) or not defaults.get('fallbacks'))
     STAGE='acp_binding'
     entry=c['plugins']['entries']['acpx'];assert entry.get('enabled') is True

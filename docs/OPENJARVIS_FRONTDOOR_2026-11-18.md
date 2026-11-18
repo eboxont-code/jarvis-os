@@ -1,6 +1,20 @@
-# OpenJarvis front-door bridge — 18 November 2026
+# OpenJarvis front-door bridge â€” 18 November 2026
 
 This is dated implementation and execution evidence. **MASTER_TODO.md remains the sole priority/status authority.** Read its complete latest version and root AGENTS.md before continuing. Do not infer current readiness from this document or old chat history.
+
+## Later native-delegate candidate â€” approval required before enabling
+
+The model-driven route still timed out before dispatching Code. A bridge-only `jarvis-local` provider was added through validated config patch: same existing physical model, fixed loopback11434,16K context/think=false/max1024. The original Ollama provider remains unchanged. Actual session metadata and Ollama residency confirm16K, but this alone did not make model-driven tool discovery reliable. The per-agent-only16K attempt above had not overridden the original provider row's forced65K. The local-provider guard now admits only the existing Ollama provider and this exact constrained local alias; remote/unknown providers remain rejected.
+
+The installed `tools.invoke` API was tested read-only with the short MCP name, full MCP id and dispatch helper; each returned not_found. No permissions were broadened to bypass that boundary.
+
+The prepared alternative is a small native OpenClaw plugin, **not yet enabled** at this checkpoint. It registers only operator-authenticated `jarvis.frontdoor.status` (read) and `jarvis.frontdoor.code` (write). The coding endpoint accepts exactly one32-hex job ID, validates an active code-authorised job/project, and starts only the fixed existing Python/script with that ID. No command, cwd, prompt, file path, provider, token or URL is accepted by the endpoint. There are no packages or dependencies to install, no network client, no startup inference and no security/pairing reset. Code remains confined by the existing guarded worker/project permissions and independent verification. Explicit coding actions can use this Gateway endpoint without an extra manager-model inference; other chat retains the coordinator or `/local ` route.
+
+Reviewed source is under `runtime/frontdoor/claw-plugin/`; the prepared installer is `enable_native_plugin.py`. Eight Node tests pass (RPC scopes, job-ID-only inputs, inactive/noncoding rejection, authority loss, duplicate claim retention, exact fixed argv/no shell, and refusal of unconfirmed shutdown). Fifty-nine Python checks pass, including native routing exactly once and no model fallback after dispatch failure. The plugin was tested only with mocked registration/processes; no live Gateway activation or native coding round trip is claimed yet.
+
+**Exact approval-dependent step:** enable only this reviewed local plugin/load path and perform one supported Gateway stop/start cycle. The original user instructions require explicit approval for Gateway restarts. Prepared config appends this one load path/allow entry while preserving existing plugin entries; it changes no agent/model/auth settings. After approval, stop through qualified clawctl, run the helper's dry-run/apply only while stopped, start through qualified clawctl, require native ownership proof and the authenticated status RPC, then deploy matching worker/code files and create `native-delegate.enabled` only after the live status succeeds. Run the invoice-final GUI task (still failing/unchanged before Code), verify actual receipt/edit/tests, then native local escape and final audit/read-back. Preserve all earlier failures.
+
+The actual GUI Stop test on the stalled v3 coordinator returned the UI to idle after582.5s; the worker reported cancelled and no Code job had started. No unsettled latch remained. This proves that cancellation path, not active-Code crash recovery or whole-stack readiness.
 
 ## User goal and boundaries
 
@@ -8,7 +22,7 @@ The user wants one input surface: type in OpenJarvis, have OpenClaw coordinate, 
 
 The user separately approved moving the existing Gateway from Windows-reserved port 50368 to available port 18789, updating matching local connections and starting the existing Gateway/Companion. No port exclusions, security settings, tokens or pairing were changed. The native Companion contract problem remains a separate acceptance item; a working coding bridge does not establish full Windows desktop control.
 
-## Current machine layout — recheck before use
+## Current machine layout â€” recheck before use
 
 - Host checkout/backend: `%USERPROFILE%\OpenJarvis`, existing `.venv\Scripts\python.exe` (3.13). Desktop1.0.5: `%LOCALAPPDATA%\OpenJarvis\openjarvis-desktop.exe`.
 - Runtime owner: `%USERPROFILE%\Documents\Codex\jarvis-os-runtime`; existing Python314 and login shortcut JARVIS AI Stack. The earlier project/prompt controller is distinct and its acceptance remains separate.
@@ -37,7 +51,7 @@ Operational jobs include local prompts and are **private**. Never publish job in
 
 The root MASTER_TODO bridge item was marked WORKING and read back at `ed5029832c94d6bc082920e56c3b53426dcffe80` before implementation.
 
-The Gateway originally could not bind: Windows excluded50360–50459, including50368. A supported start reproduced EACCES. Under explicit approval, only `gateway.port` changed to18789 with a byte-verified backup retained privately at `.openclaw\openclaw.before-port-18789-20261118.json`. All other values matched. Companion's saved loopback URL was already18789 and was preserved. Startup native-proof checks/tests now expect18789. A real native ownership/listener proof passed afterward.
+The Gateway originally could not bind: Windows excluded50360â€“50459, including50368. A supported start reproduced EACCES. Under explicit approval, only `gateway.port` changed to18789 with a byte-verified backup retained privately at `.openclaw\openclaw.before-port-18789-20261118.json`. All other values matched. Companion's saved loopback URL was already18789 and was preserved. Startup native-proof checks/tests now expect18789. A real native ownership/listener proof passed afterward.
 
 The agent/MCP registration used the installed supported config-patch CLI after dry-run validation. The first proposed allow+alsoAllow combination was rejected before write and corrected to a restrictive allowlist. The CLI canonicalised implicit defaults: existing main-agent fields were preserved, its standard existing workspace became explicit, and ownership/system-agent/heartbeat/talk routing fields became explicit. This was recorded rather than falsely claiming byte equality. No existing field was removed. The private pre-agent backup stays inside the isolated profile as `openclaw.before-jarvis-frontdoor.json`.
 

@@ -1,0 +1,1 @@
+{"id":"jarvis-frontdoor-bridge","name":"Guarded Jarvis delegate","description":"Operator-authenticated job-ID-only delegation to the existing local Code worker.","activation":{"onStartup":true},"configSchema":{"type":"object","additionalProperties":false,"properties":{}}}
