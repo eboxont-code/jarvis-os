@@ -1,0 +1,233 @@
+"""Normal-user, local-only, bounded startup for the existing JARVIS apps.
+
+No inference, installs, configuration edits, automatic restarts or credential exports.
+Runtime readiness is not project status; MASTER_TODO.md remains authoritative.
+"""
+import datetime as dt
+import json
+import os
+import pathlib
+import re
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+HERE = pathlib.Path(__file__).resolve().parent
+FLAGS = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
+PS = pathlib.Path(os.environ.get('SystemRoot', r'C:\Windows')) / 'System32/WindowsPowerShell/v1.0/powershell.exe'
+
+class NotReady(RuntimeError):
+    pass
+
+def run_json(args, timeout=25):
+    p = subprocess.run([str(a) for a in args], capture_output=True, timeout=timeout,
+                       encoding='utf-8-sig', creationflags=FLAGS)
+    if p.returncode:
+        raise NotReady('local_command_failed')
+    try:
+        return json.loads(p.stdout)
+    except ValueError:
+        raise NotReady('local_command_invalid_json') from None
+
+def gateway_ready(doc):
+    """Only gate a launch; Companion still performs its own native authorization."""
+    try:
+        g = doc['gateway']; i = doc['integration']; own = g['ownership']
+        if not (doc['ok'] is True and doc['schemaVersion'] == 1
+                and doc['command'] == 'gateway-service status'
+                and i['kind'] == 'isolated-session' and i['version'] == 1
+                and g['state'] == 'running' and g['port'] == 50368
+                and own['sandboxId'] and own['agentUserSid']):
+            return False
+        if 'gatewayLaunch' in i:
+            if i['gatewayLaunch']['version'] != 1 or g['launch']['version'] != 1:
+                return False
+            if not re.fullmatch('[a-f0-9]{32}', g['launch']['attemptId']):
+                return False
+        matches = [r for r in own['listeners'] if r['port'] == 50368]
+        if len(matches) != 1:
+            return False
+        r = matches[0]
+        return (type(r['processId']) is int and r['processId'] > 0
+                and type(r['sequenceNumber']) is int and r['sequenceNumber'] > 0
+                and dt.datetime.fromisoformat(r['processStartTimeUtc']).tzinfo is not None)
+    except (KeyError, TypeError, ValueError):
+        return False
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args, **kwargs):
+        return None
+
+def get_json(url):
+    if url not in {
+        'http://127.0.0.1:11434/api/version', 'http://127.0.0.1:11434/api/tags',
+        'http://127.0.0.1:8000/health', 'http://127.0.0.1:8000/v1/models',
+    }:
+        raise NotReady('endpoint_not_allowed')
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+    with opener.open(url, timeout=3) as response:
+        raw = response.read(1_000_001)
+    if len(raw) > 1_000_000:
+        raise NotReady('response_too_large')
+    return json.loads(raw)
+
+def wait_until(check, seconds, interval=4, clock=time.monotonic, sleep=time.sleep):
+    end = clock() + seconds
+    while True:
+        try:
+            if check():
+                return True
+        except (OSError, ValueError, NotReady, subprocess.TimeoutExpired):
+            pass
+        remaining = end - clock()
+        if remaining <= 0:
+            return False
+        sleep(min(interval, remaining))
+
+def processes():
+    # Select only metadata; never return command lines or settings.
+    command = ('ConvertTo-Json -InputObject @(Get-CimInstance Win32_Process | Where-Object { $_.Name -in '
+               '"ollama app.exe","ollama.exe","openjarvis-desktop.exe",'
+               '"OpenClaw.Tray.WinUI.exe","OpenCode.exe","opencode.exe" } | '
+               'Select-Object ProcessId,Name,ExecutablePath) -Compress')
+    rows = run_json([PS, '-NoProfile', '-NonInteractive', '-Command', command])
+    return rows if isinstance(rows, list) else [rows] if rows else []
+
+def existing(path):
+    return any(str(r.get('ExecutablePath', '')).casefold() == str(path).casefold()
+               for r in processes())
+
+def launch_once(path, args=()):
+    path = pathlib.Path(path)
+    if not path.is_file():
+        raise NotReady('installed_application_missing')
+    if not existing(path):
+        subprocess.Popen([str(path), *args], cwd=path.parent, stdin=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         creationflags=FLAGS)
+
+def host_opencode_local(config):
+    try:
+        d = json.loads(pathlib.Path(config).read_text(encoding='utf-8-sig'))
+        p = d.get('provider', {})
+        return (set(p) == {'ollama'} and d.get('enabled_providers') == ['ollama']
+                and str(d.get('model', '')).startswith('ollama/')
+                and urllib.parse.urlparse(p['ollama']['options']['baseURL']).hostname
+                    in {'127.0.0.1', 'localhost', '::1'})
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
+
+class Startup:
+    def __init__(self, manifest):
+        self.m = manifest
+        self.checks = {}
+        self.started = time.monotonic()
+
+    def record(self, phase, ready, detail=''):
+        self.checks[phase] = {'ready': bool(ready), 'detail': detail,
+                              'elapsed_seconds': round(time.monotonic() - self.started, 1)}
+        doc = {'checked_at': dt.datetime.now(dt.timezone.utc).isoformat(),
+               'ready': self.checks.get('complete', {}).get('ready') is True
+                        and all(v['ready'] for v in self.checks.values()),
+               'checks': self.checks,
+               'scope': 'Startup runtime checks only; no inference or reboot acceptance claim.'}
+        target = HERE / 'startup-last.json'; temp = target.with_suffix('.tmp')
+        temp.write_text(json.dumps(doc, indent=2), encoding='utf-8')
+        temp.replace(target)
+
+    def required(self, phase, check, seconds, detail=''):
+        self.record(phase, False, 'waiting')
+        if not wait_until(check, seconds):
+            self.record(phase, False, detail or 'deadline_exceeded')
+            raise NotReady(phase)
+        self.record(phase, True)
+
+    def status(self):
+        return run_json([self.m['clawctl'], 'gateway-service', 'status', '--json'], 20)
+
+    def probe(self, phase):
+        # Fixed project helper and fixed phase; no secrets passed in arguments.
+        if phase not in {'health', 'connections', 'node'}:
+            raise NotReady('invalid_probe')
+        quoted = self.m['isolated_probe'].replace("'", "''")
+        command = "& 'C:\\Python314\\python.exe' '" + quoted + "' " + phase
+        return run_json([self.m['clawctl'], 'pwsh', '--command', command], 75)
+
+    def execute(self):
+        launch_once(self.m['ollama'])
+        self.required('ollama', lambda: bool(get_json('http://127.0.0.1:11434/api/version').get('version')), 90)
+        tags = {m['name'] for m in get_json('http://127.0.0.1:11434/api/tags')['models']}
+        cfg = json.loads(pathlib.Path(self.m['inference_config']).read_text(encoding='utf-8-sig'))
+        if not cfg.get('confirmed') or cfg.get('model') not in tags or 'qwen3.5:4b' not in tags:
+            raise NotReady('existing_model_confirmation_failed')
+
+        try:
+            current = self.status()
+        except (NotReady, subprocess.TimeoutExpired):
+            current = {}
+        state = current.get('gateway', {}).get('state')
+        if state in {'not-started', 'stopped'}:
+            # One supported start; a caller timeout never triggers a second start.
+            try:
+                run_json([self.m['clawctl'], 'gateway-service', 'start', '--json'], 120)
+            except (NotReady, subprocess.TimeoutExpired):
+                pass
+        elif state not in {'starting', 'running'}:
+            raise NotReady('gateway_state_not_startable')
+        self.required('gateway_contract', lambda: gateway_ready(self.status()), 300,
+                      'missing_or_invalid_native_listener_proof')
+        self.required('gateway_authenticated', lambda: self.probe('health').get('ready') is True, 100)
+
+        launch_once(self.m['openjarvis'])
+        self.required('openjarvis', lambda: get_json('http://127.0.0.1:8000/health').get('status') == 'ok', 360)
+        models = {r['id'] for r in get_json('http://127.0.0.1:8000/v1/models')['data']}
+        if models != tags:
+            raise NotReady('model_catalogue_mismatch')
+        self.record('shared_models', True)
+        self.required('mcp_acp_bindings', lambda: self.probe('connections').get('ready') is True, 120)
+
+        # The ACP handshake probe is now closed. Recheck actual package proof
+        # twice before Companion starts; an open TCP port alone is insufficient.
+        self.required('native_admission', lambda: gateway_ready(self.status()), 100)
+        time.sleep(3)
+        if not gateway_ready(self.status()):
+            raise NotReady('native_admission_changed')
+        launch_once(self.m['companion'], ['--background'])
+        self.required('companion_node', lambda: self.probe('node').get('ready') is True, 150,
+                      'saved_node_did_not_connect_no_reset_attempted')
+
+        if not host_opencode_local(self.m['opencode_config']):
+            raise NotReady('opencode_local_provider_check_failed')
+        launch_once(self.m['opencode'])
+        self.required('opencode_desktop', lambda: existing(self.m['opencode']), 60)
+        self.record('complete', True, 'existing_apps_and_saved_runtime_connections_ready')
+
+def main():
+    import msvcrt
+    # An OS-held lock prevents duplicate launchers; no stale-file cleanup.
+    lock = (HERE / 'startup.lock').open('a+b')
+    lock.seek(0); lock.write(b'0'); lock.flush(); lock.seek(0)
+    try:
+        msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+    except OSError:
+        return 0
+    startup = None
+    try:
+        m = json.loads((HERE / 'manifest.json').read_text(encoding='utf-8-sig'))
+        startup = Startup(m)
+        startup.execute()
+        return 0
+    except Exception as exc:
+        # No exception text/stdout/stderr/settings can leak into the boot log.
+        if startup:
+            code = str(exc) if isinstance(exc, NotReady) else type(exc).__name__
+            startup.record('complete', False, code if re.fullmatch('[a-zA-Z0-9_]+', code) else 'startup_failed')
+        return 1
+    finally:
+        lock.close()
+
+if __name__ == '__main__':
+    raise SystemExit(main())
