@@ -6,6 +6,18 @@ read the [self-contained continuation handoff](CONTINUATION_HANDOFF_2026-11-18_A
 for exact observation-first reboot checks, installed locations and sanitized
 [attempt evidence](evidence/autostart-2026-11-18/attempt-4.json).
 
+## Later backend recovery repair — 18 November
+
+The first real reboot did trigger this launcher, but a later OpenJarvis backend
+lost its listener. The current implementation adds a locked ongoing watchdog and
+starts the existing backend before attaching the desktop. Read
+[the backend recovery record](OPENJARVIS_BACKEND_RECOVERY_2026-11-18.md) for current
+behavior, fault-test evidence, retry/heartbeat limits and rollback. The safe
+`runtime-health.json` is current health; `startup-last.json` is a dated startup
+snapshot. Final revised warm startup passed18.6s including live watchdog PID and
+fresh heartbeat; actual Windows reboot acceptance of this revised version remains
+pending in the master.
+
 ## After Windows sign-in
 
 One user Startup shortcut, **JARVIS AI Stack**, launches the installed
@@ -23,8 +35,11 @@ The sequence is:
    `gateway-service start` if stopped. Wait for a complete native status contract
    including the selected port, listener identity and launch receipt, then check
    authenticated Gateway health. An open TCP port alone does not pass.
-3. Start the existing OpenJarvis desktop if absent; wait for actual health and a
-   model catalogue matching Ollama.
+3. Start the normal-user locked watchdog with bootstrap; it starts the existing
+   venv/CLI backend only when needed, using the installed confirmed local model.
+   Require actual health, a fresh heartbeat from the real watchdog process and
+   a model catalogue matching Ollama, then attach the existing desktop if absent.
+   No dependency sync or model download is used.
 4. Check the retained exact-three-tool read-only MCP registration, real adapter
    status calls, local-only Ollama configuration and existing OpenCode ACP
    initialization. Close the probe before continuing. No agent/model prompt is sent.
@@ -53,7 +68,9 @@ Missing model files, incomplete Gateway proof, offline Node or provider mismatch
 produce a failed result; the launcher does not reset, repair, reinstall, switch
 profiles, fabricate ownership proof, restart pre-existing applications or run a paid
 fallback. Only its own failed Companion can be retried once; Gateway, Ollama and
-OpenJarvis are never automatically restarted. A timed-out Gateway start command
+the OpenJarvis desktop are never automatically restarted. Only the exact failed
+OpenJarvis backend with confirmed closed port can receive bounded ongoing
+recovery; see the later backend recovery record above. A timed-out Gateway start command
 is never retried as a second start.
 
 The operational snapshot is
