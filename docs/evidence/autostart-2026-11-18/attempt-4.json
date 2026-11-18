@@ -1,0 +1,62 @@
+{
+  "checked_at": "2026-11-18T01:10:43.687745+00:00",
+  "ready": true,
+  "checks": {
+    "ollama": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 4.5
+    },
+    "gateway_contract": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 118.8
+    },
+    "gateway_authenticated": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 196.5
+    },
+    "openjarvis": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 243.1
+    },
+    "shared_models": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 243.7
+    },
+    "mcp_acp_bindings": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 246.7
+    },
+    "native_admission": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 247.4
+    },
+    "companion_node": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 364.3
+    },
+    "companion_retry": {
+      "ready": true,
+      "detail": "one_client_retry_gateway_unchanged",
+      "elapsed_seconds": 364.3
+    },
+    "opencode_desktop": {
+      "ready": true,
+      "detail": "",
+      "elapsed_seconds": 376.2
+    },
+    "complete": {
+      "ready": true,
+      "detail": "existing_apps_and_saved_runtime_connections_ready",
+      "elapsed_seconds": 376.2
+    }
+  },
+  "scope": "Startup runtime checks only; no inference or reboot acceptance claim."
+}
