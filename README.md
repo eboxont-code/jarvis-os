@@ -2,6 +2,10 @@
 
 A local Windows AI workspace with OpenClaw as the main assistant. Ollama serves the model on the same PC. OpenCode is available through ACP for coding tasks.
 
+## Features and requirements
+
+The [active roadmap](REQUIREMENTS.md) covers all 14 delivery phases, integration gates A–H and acceptance tests T01–T31. It records current evidence and the remaining tests for native Chat, delegated coding and Windows control.
+
 ## Use the workspace
 
 Open **OpenClaw Chat** from the desktop, or open Companion and choose the **main** agent. The Windows installation this repository supports uses **qwen3.8:27b**. The Ollama entry in the model picker starts a direct chat. The OpenCode (ACP) entry uses the same local model for a coding session.
