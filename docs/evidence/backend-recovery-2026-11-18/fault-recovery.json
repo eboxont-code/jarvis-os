@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-11-18T01:57:11.451217+00:00",
+  "openjarvis_ready": true,
+  "phase": "healthy",
+  "recovery_times": [
+    1794966904.479328
+  ],
+  "events": [
+    {
+      "time": 1794966904.479328,
+      "event": "confirmed_closed_port_recovery"
+    },
+    {
+      "time": 1794966943.1561449,
+      "event": "recovered"
+    }
+  ],
+  "scope": "Current OpenJarvis health only; startup-last.json is historical startup evidence."
+}
