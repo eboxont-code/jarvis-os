@@ -1,7 +1,10 @@
 # Automatic readiness of the existing Windows AI stack
 
 `MASTER_TODO.md` is the project-status authority. This document describes the
-normal-user startup mechanism, acceptance boundary and rollback.
+normal-user startup mechanism, acceptance boundary and rollback. For a new agent,
+read the [self-contained continuation handoff](CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md)
+for exact observation-first reboot checks, installed locations and sanitized
+[attempt evidence](evidence/autostart-2026-11-18/attempt-4.json).
 
 ## After Windows sign-in
 
