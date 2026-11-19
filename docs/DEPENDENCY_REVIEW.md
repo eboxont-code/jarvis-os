@@ -117,3 +117,18 @@ These services appeared in the capability suggestions. None is required for loca
 ## Keeping the review current
 
 At selection, before installation or upgrade, and whenever a provider changes terms, compare the installed build to the publisher's supported stable channel. Record the date, release, licence, cost evidence and any relevant advisory. Prefer actively maintained open-source tools with strong adoption and demonstrated success on this PC. Hold a candidate if the evidence is missing. After an update, repeat the relevant acceptance checks and record rollback instructions before marking it current.
+
+## Main Gateway integration checks, 19 November 2026
+
+| Integration | Installed evidence and connection status |
+|---|---|
+| Ollama | OpenClaw loaded the provider. Its loopback endpoint generated the requested sample reply using the configured local model. |
+| ACPX | Plugin loaded. OpenCode 2.2.7 answered an ACP protocol handshake. A coding handoff originating in main remains unverified. |
+| Memory Core | Plugin loaded at inventory. Live replacement timed out stopping and starting its background services. Verify recall after Gateway recovery. |
+| Browser | Native browser loaded. Earlier Gateway page opening succeeded. The latest status probe timed out during plugin replacement. |
+| IMAP | Watcher loaded with zero configured mailboxes. A provider-approved mailbox credential must be entered privately before a read or watch test. |
+| Vault | The HashiCorp Vault SecretRef plugin loaded. No secret-provider alias or local Vault listener was found. A private backend and scoped authorisation are needed for a dummy-secret lookup. Browser password autofill is a separate integration. |
+| Playwright MCP | Installed Microsoft's 0.0.86 server and matching headless Chromium in the Gateway environment. A direct MCP navigation read a public test page. OpenClaw requires exclusive offline access to register the server. |
+| SearXNG | Saved the official 2026.11.1 provider for this Gateway version. Live activation failed during service replacement. No local SearXNG endpoint, Linux distribution or container engine was found. DuckDuckGo remains selected. |
+| Whisper | Installed faster-whisper 1.2.1 in a separate environment. Reused and verified the existing base-model weights. PyAV 19 rejected the decoder's metadata_errors argument. PyAV 16.1 passed a synthetic speech test. OpenClaw saved a local-only audio CLI route. Live activation and a real chat attachment test are pending. |
+| ComfyUI | Official comfy provider installation saved. Live activation failed during service replacement. Installed the local ComfyUI 0.46.0 backend and CUDA runtime. A loopback workflow produced a sample PNG on the local GPU. Text-to-image still requires an approved checkpoint and matching workflow. |
