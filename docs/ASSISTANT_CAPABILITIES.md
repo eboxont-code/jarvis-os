@@ -29,6 +29,22 @@ Apply the [dependency review](DEPENDENCY_REVIEW.md) before selecting any provide
 | 19 | Multiple agents | Assign one owner per job, send a scoped task or rule update to another assistant, and review its authorised task conversation and result. Demonstrate usage reporting per assistant and routine. Keep unrelated private chats outside the handoff. |
 | 20 | Phone integration | Pair an authorised phone and check OS permissions for calendar, contacts, reminders, alarms, smart-home controls and location individually. Verify each supported function with a test action and confirm that revoking access takes effect. Record platform-specific limits. |
 
+## Selected Windows Gateway plugins
+
+On 19 November 2026, the installed OpenClaw 2026.11.1 plugin registry reported all seven entries below as loaded and zero repeated plugin IDs. These bundled plugins use the existing installation. This check establishes registration. Each workflow still needs its own functional test.
+
+| Plugin | Roadmap use | Scope |
+|---|---|---|
+| Workboard | Task tracking and recovery | Tracks work items, ownership and completion evidence. Works with the main agent. |
+| Memory Wiki | Durable project knowledge | Compiles reference pages. Memory Core continues to handle recall. |
+| Policy | Configuration review | Adds workspace conformance checks to Doctor. Automatic workspace repair is disabled. A project policy is needed for project-specific checks. |
+| OC Path | Documents and file workflows | Adds a CLI for addressing workspace files with oc:// references. File Transfer handles movement between devices. |
+| LLM Task | Structured data extraction | Offers a JSON workflow step. The configured completion allowlist contains only the existing local Ollama Qwen model. |
+| Code Mode QuickJS | Local computation | Supplies the QuickJS executor for Code Mode. Executor registration and a successful Code Mode job are separate checks. |
+| IMAP | Incoming mail monitoring | Loads the mailbox watcher. No account was connected. Mailbox authorisation and sender rules are prerequisites for a live test. |
+
+Browser, document extraction, GitHub public reading and ACP already have loaded plugins. The GitHub reader covers public documents and previews. Repository writes require separate access. MCP Events requires a public HTTPS callback in this build and was deferred.
+
 ## Approval rules
 
 - Reading and research within an authorised scope, and preparing private drafts, require no additional approval. Connecting an account requires the appropriate login and consent.
