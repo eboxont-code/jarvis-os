@@ -79,7 +79,7 @@ The main assistant has a workspace-capabilities skill for choosing tools and app
 | # | Area | Status and remaining setup |
 |---|---|---|
 | 1 | Mail | Available but not connected. Gmail, Outlook and iCloud sign-in pages have dashboard widgets. Private sign-in and a mailbox read are required. IMAP monitoring requires separate authorisation. |
-| 2 | Calendar and contacts | Available but not connected for browser access to calendar providers. Sign in and test an event read. Contact sync and booking links are unverified. |
+| 2 | Calendar and contacts | Installed the local-productivity calendar draft script in main. The installed copy generated and reopened timed and all-day ICS files, preserved the event time across UTC conversion, and rejected missing offsets and reversed dates. It uses the existing icalendar 7.3.0 dependency. Live provider access requires private sign-in and an event read. Contact sync and booking links are unverified. |
 | 3 | App builders | Unverified. Select an existing project and authorise its account, then verify project history, free build entitlement and linked repository before a build. |
 | 4 | Repositories | Public reader registered. Private reads, writes and CI access from main are unverified. Authorise the repository and test a disposable branch. |
 | 5 | Hosting | Unverified. An authorised project and a successful deployment-log read are needed before any approved deployment change. |
