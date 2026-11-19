@@ -10,6 +10,8 @@ The [assistant capability checklist](docs/ASSISTANT_CAPABILITIES.md) covers 20 a
 
 The [dependency review](docs/DEPENDENCY_REVIEW.md) lists installed versions, available updates, upstream activity and zero-cost options for all 20 capability areas.
 
+The [agent roster](docs/AGENTS_ROSTER.md) lists the 12 local specialists available to the main coordinator.
+
 ## Use the workspace
 
 Open **OpenClaw Chat** from the desktop, or open Companion and choose the **main** agent. The Windows installation this repository supports uses **qwen3.8:27b**. The Ollama entry in the model picker starts a direct chat. The OpenCode (ACP) entry uses the same local model for a coding session.
