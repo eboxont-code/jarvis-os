@@ -1,0 +1,7 @@
+{
+  "name": "openclaw-workspace-files",
+  "version": "1.0.2",
+  "private": true,
+  "type": "module",
+  "openclaw": { "extensions": ["./index.js"] }
+}

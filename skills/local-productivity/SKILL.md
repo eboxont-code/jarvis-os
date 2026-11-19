@@ -3,7 +3,7 @@ name: local-productivity
 description: Create and verify local spreadsheets, documents, slides, PDFs, calendar or contact files, basic images, SQLite reports and unit conversions on the Windows Gateway.
 ---
 
-Use the Gateway's private Python environment via the authorised execution tool. In Gateway PowerShell the interpreter is at `$env:USERPROFILE\.openclaw\local-productivity\Scripts\python.exe`. Confirm the interpreter exists in the execution environment before using it. Request the intended file or directory when there is no authorised input. Keep generated outputs in the assigned workspace and report their relative paths.
+For a new Word, PDF, Excel or PowerPoint attachment, call `workspace_create_file` if visible in the session. Use the returned media reference for delivery. The private Chat command `/workspacefile` accepts the same four formats. Verify the attachment before reporting delivery. Use the Gateway's private Python environment via the authorised execution tool. In Gateway PowerShell the interpreter is at `$env:USERPROFILE\.openclaw\local-productivity\Scripts\python.exe`. Confirm the interpreter exists in the execution environment before using it. Request the intended file or directory when there is no authorised input. Keep generated outputs in the assigned workspace and report their relative paths.
 
 | Task | Available library and verification |
 |---|---|

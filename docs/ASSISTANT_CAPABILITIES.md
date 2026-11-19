@@ -72,6 +72,33 @@ On 19 November 2026, the installed OpenClaw 2026.11.1 plugin registry reported a
 
 Browser, document extraction, GitHub public reading and ACP already have loaded plugins. The GitHub reader covers public documents and previews. Repository writes require separate access. MCP Events requires a public HTTPS callback in this build and was deferred.
 
+## Main chat setup on 19 November 2026
+
+The main assistant has a workspace-capabilities skill for choosing tools and applying the approval rules. Each row below describes the operation actually available or the setup still needed.
+
+| # | Area | Status and remaining setup |
+|---|---|---|
+| 1 | Mail | Available but not connected. Gmail, Outlook and iCloud sign-in pages have dashboard widgets. Private sign-in and a mailbox read are required. IMAP monitoring requires separate authorisation. |
+| 2 | Calendar and contacts | Available but not connected for browser access to calendar providers. Sign in and test an event read. Contact sync and booking links are unverified. |
+| 3 | App builders | Unverified. Select an existing project and authorise its account, then verify project history, free build entitlement and linked repository before a build. |
+| 4 | Repositories | Public reader registered. Private reads, writes and CI access from main are unverified. Authorise the repository and test a disposable branch. |
+| 5 | Hosting | Unverified. An authorised project and a successful deployment-log read are needed before any approved deployment change. |
+| 6 | Databases | Hosted access unverified. Supply an authorised read-only connection through private setup and verify a sample query. |
+| 7 | DNS and hosting | Unverified. Authorise the relevant zone or hosting panel and test a read before requesting approval for changes. |
+| 8 | Error tracking | Unverified. Select an eligible project and verify a sample event, release and alert. |
+| 9 | Files | The installed workspace-files plugin returned a valid PDF in a direct tool test. All four formats passed content checks. Main Chat attachment delivery remains unverified because the Gateway reported startup inspection in progress. Cloud editing, storage and sharing require separate authorisation. |
+| 10 | Design and media | Unverified. Local image processing libraries are present. Generative image, video, audio and design account workflows need specific tools and sample exports. |
+| 11 | Social | Public web research is available where indexed. Private timeline, bookmarks and DMs require an authorised account and a separate test. |
+| 12 | Vault | Unverified. A secure per-login handoff and masked test credential are prerequisites. Never paste secrets into the chat. |
+| 13 | Browser and computer | Connected for browser page opening. Persistent signed-in sessions and access to personal computers are separate. Windows node ownership proof is unresolved. |
+| 14 | Research and shopping | Connected for web search. Check availability on the source page. A purchase or booking needs separate approval. |
+| 15 | Calls and messaging | Unverified. No tested free calling interface or authorised messaging channel. A draft can be prepared in chat. |
+| 16 | Meetings and team chat | Unverified. An invited test meeting, consent and an authorised workspace are required. |
+| 17 | Automation | Connected for listing routines. Scheduled delivery, restart recovery and provider event triggers need separate tests. |
+| 18 | Memory and skills | Connected for Wiki access. Skills can be installed in main. Recall and revocation of a saved preference across fresh sessions need a separate test. |
+| 19 | Multiple agents | Excluded by request. Workboard is available to the main assistant for tracking tasks. |
+| 20 | iPhone integration | Unverified. Pair an authorised device and verify each exposed operation. Mail dashboard access provides no device permissions. |
+
 ## Approval rules
 
 - Reading and research within an authorised scope, and preparing private drafts, require no additional approval. Connecting an account requires the appropriate login and consent.

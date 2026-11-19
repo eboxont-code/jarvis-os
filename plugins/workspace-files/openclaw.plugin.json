@@ -1,0 +1,22 @@
+{
+  "id": "workspace-files",
+  "name": "Workspace files",
+  "contracts": { "tools": ["workspace_create_file"] },
+  "description": "Create local documents as attachments from a private OpenClaw chat command.",
+  "configSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
+  "commandAliases": [
+    {
+      "name": "workspacefile"
+    }
+  ],
+  "activation": {
+    "onStartup": true,
+    "onCommands": [
+      "workspacefile"
+    ]
+  }
+}
