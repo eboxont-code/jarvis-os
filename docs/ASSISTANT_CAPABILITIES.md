@@ -4,6 +4,33 @@ These 20 requirements extend the [OpenClaw roadmap](../REQUIREMENTS.md). OpenCla
 
 Apply the [dependency review](DEPENDENCY_REVIEW.md) before selecting any provider. The local implementation must remain free to operate. Hosted brand names below identify optional interoperability targets. Enable an operation only after verifying its free entitlement and maintained interface.
 
+## Installation status on 19 November 2026
+
+OpenClaw's Gateway successfully called key-free web search, Memory Wiki status and Workboard statistics. The [local productivity skill](../skills/local-productivity/SKILL.md) is eligible for the main agent. Its Windows Gateway Python environment passed sample file and calculation tests. Those tests ran directly inside the Gateway environment. A model-driven chat turn invoking the skill remains to be verified.
+
+| # | Area | Installed or tested | Remaining dependency or test |
+|---|---|---|---|
+| 1 | Email | Thunderbird and the OpenClaw IMAP watcher are installed. | Authorise the selected mailboxes privately. Test read, draft, monitoring and send permissions separately. A desktop login alone does not connect the watcher. |
+| 2 | Calendar and contacts | Generated and parsed a sample ICS event and vCard. | Provider calendar and contact permissions, sync and invitation approval. |
+| 3 | App building | Local OpenCode and WordPress Playground CLI are installed. | Test an end-to-end build against a selected project. A hosted builder needs its own account. |
+| 4 | Code and repositories | Git and GitHub CLI are installed. | Authorise the intended identity for GitHub CLI and verify a scoped OpenClaw coding task. |
+| 5 | Hosting | Caddy returned HTTP 200 with the expected content from a disposable loopback site. | Select a target before a real deployment and rollback test. |
+| 6 | Databases | Both the SQLite CLI and the Gateway runtime passed sample queries. | Authorise a project database and verify read-only access. |
+| 7 | Domains and WordPress | Local WordPress Playground installed and its CLI opened. | An authorised site and registrar are needed for DNS, renewal and migration checks. |
+| 8 | Error tracking | Jaeger installed. Windows application error logs were readable. | Instrument a selected app and verify a trace, release and alert. |
+| 9 | Spreadsheets and documents | Created and reopened XLSX, DOCX, PPTX and PDF samples. LibreOffice separately exported a PDF. | Verify a full reporting task from OpenClaw Chat and authorise any cloud sharing. |
+| 10 | Design and media | Krita and Kdenlive installed. Pillow passed a PNG round trip and FFmpeg processed a synthetic clip. | Verify a finished edit and evaluate local generative models separately. |
+| 11 | Social | Public research is available through web search. | Select a supported platform and authorise the account for private operations. |
+| 12 | Vault | KeePassXC installed. | Private vault setup and a dummy-credential autofill approval test. |
+| 13 | Computer and browser | Gateway-local files work. Native Windows control and browser plugins are present. | Companion reported a Gateway ownership inspection failure during reconnect. The paired Windows Node was offline at the last check. |
+| 14 | Research | Installed the official DuckDuckGo plugin for this Gateway version. An authenticated OpenClaw search returned two results. A local unit conversion passed. | Verify live provider-specific rates, travel, prices and approved booking flows. |
+| 15 | Calls and messaging | Windows Phone Link is available. | Phone pairing, device permissions and a verified zero-cost route for calls or messages. |
+| 16 | Meetings | Browser-based meeting access is an integration candidate. | Select the meeting service, authorise an invited test call and verify consent-based notes. |
+| 17 | Automation | OpenClaw returned the local scheduler inventory. | Verify firing, pause/resume and missed-run recovery using a disposable routine. |
+| 18 | Memory and skills | The main agent catalogued local-productivity as eligible. The Gateway answered wiki_status. | Verify recall and rule revocation across two native chat sessions. |
+| 19 | Multiple agents | Workboard answered a live statistics request. | Specialist agents remain removed at the operator's request. |
+| 20 | Phone | Windows Phone Link and KDE Connect are installed. | Complete device pairing and verify each supported permission. Desktop pairing alone does not register an OpenClaw iOS node. |
+
 ## Capability checklist
 
 | # | Capability | Setup and acceptance check |
@@ -55,6 +82,6 @@ Browser, document extraction, GitHub public reading and ACP already have loaded 
 
 ## Reporting connection status
 
-This checklist records requested behaviour. Connection testing is pending for these entries. A working GitHub login for maintaining this repository, for example, does not establish that the OpenClaw agent can access GitHub.
+This checklist records requested behaviour. The dated installation table above records the operations tested so far. A working GitHub login for maintaining this repository, for example, does not establish that the OpenClaw agent can access GitHub.
 
 During setup, record a result **per provider and operation** in each numbered area so a successful read cannot imply permission to write. Use **Connected** after an end-to-end test from OpenClaw, **Available but not connected** after verifying an eligible interface and identifying the missing login or setup step, or **Not possible** with the observed platform, permission or cost constraint. Until assessed, mark the item **Unverified**. Include the test date, sanitised result, remaining setup step and limits. Keep personal details and raw evidence local.
