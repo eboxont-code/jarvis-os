@@ -10,9 +10,9 @@ Windows 11 Pro, Intel Core i9-14900F (24 cores, 32 threads), 64 GB DDR5-5600, RT
 
 - Spend nothing. No paid API, subscription, credit, trial, or hosted inference.
 - Ollama at `http://127.0.0.1:11434` is the only model provider. `OLLAMA_NUM_PARALLEL=1` and `OLLAMA_MAX_LOADED_MODELS=1`.
-- Chat: `qwen3.5:9b`, `num_ctx` 32768, `num_gpu` 999, `keep_alive` 30m. All layers stay on the GPU.
-- ComfyUI owns the GPU: unload Ollama, then chat with `qwen3.5:4b`, `num_ctx` 16384, `num_gpu` 0, `num_thread` 8, `keep_alive` 5m.
-- Deep thinking the user is willing to wait for: `qwen3.8:27b`, `num_ctx` 8192, `num_gpu` -1, `num_thread` 8, `keep_alive` 5m. A few tokens per second. Not for chat. Not while ComfyUI is running. Unload it when the job ends.
+- Everyday chat, tools, and coding: `qwen3.5:9b`, `num_ctx` 32768, `num_gpu` 999, `keep_alive` 30m. All layers stay on the GPU.
+- ComfyUI owns the GPU: unload Ollama first. Queue chat and other LLM work until ComfyUI releases the GPU. Do not load another model.
+- Deep thinking the user is willing to wait for: `qwen3.8:27b`, `num_ctx` 8192, `num_gpu` -1, `num_thread` 8, `keep_alive` 5m. A few tokens per second. Not for chat. Not while ComfyUI is running. While it is loaded, queue other chat and LLM work. Unload it when the job ends.
 - Whisper uses `ggml-small` (466 MiB, about 852 MB). It may use the GPU beside the 9B model. Use `--no-gpu` and `--threads 8` while ComfyUI or the 27B model is active. Do not load `ggml-medium` or larger beside them.
 - SDXL base 1.0, fp16, 1024×1024, batch 1, 20–30 steps, `--normalvram`. No second checkpoint. Flux only as a GGUF Q4 or Q5 after Ollama is unloaded.
 - CPU offload uses 8 threads. Do not give those jobs all 32 threads.

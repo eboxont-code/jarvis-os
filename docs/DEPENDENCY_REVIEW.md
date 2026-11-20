@@ -8,11 +8,10 @@ This PC is Windows 11 Pro, an Intel Core i9-14900F (24 cores, 32 threads), 64 GB
 
 | Tag | On disk | Settings | Decision |
 |---|---|---|---|
-| `qwen3.5:9b` | 6.6–7.6 GB | `num_ctx` 32768, `num_gpu` 999, `keep_alive` 30m | Chat. Every layer on the GPU. [Library](https://ollama.com/library/qwen3.5:9b) |
-| `qwen3.5:4b` | 3.3–4.0 GB | `num_ctx` 16384, `num_gpu` 0, `num_thread` 8, `keep_alive` 5m | Chat while ComfyUI holds the GPU. If the 9B tag is missing and ComfyUI is stopped, use `num_ctx` 32768 and `num_gpu` 999 instead. [Library](https://ollama.com/library/qwen3.5:4b) |
+| `qwen3.5:9b` | 6.6–7.6 GB | `num_ctx` 32768, `num_gpu` 999, `keep_alive` 30m | Everyday chat, tools, and coding. Every layer on the GPU. [Library](https://ollama.com/library/qwen3.5:9b) |
 | `qwen3.8:27b` | about 18 GB | `num_ctx` 8192, `num_gpu` -1, `num_thread` 8, `keep_alive` 5m | Optional deep thinking. Ollama fills the 12 GB GPU and spills the rest into the 64 GB RAM. A few tokens per second. Not for chat. Not while ComfyUI is running. [Library](https://ollama.com/library/qwen3.8:27b) |
 
-`num_gpu` 999 requests every layer. `num_gpu` -1 is Ollama's dynamic split. `num_gpu` 0 keeps the model in RAM. One loaded model: `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_MAX_LOADED_MODELS=1`. `OLLAMA_MODELS` may point at the second NVMe. Confirm tools and at least 16K context with `/api/show` before the 9B tag is primary. Stable OpenClaw on this date is [2026.11.6](https://github.com/openclaw/openclaw/releases/tag/v2026.11.6).
+These are the only two models. `num_gpu` 999 requests every layer. `num_gpu` -1 is Ollama's dynamic split. One loaded model: `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_MAX_LOADED_MODELS=1`. While ComfyUI or `qwen3.8:27b` holds the GPU, queue chat and other LLM work. `OLLAMA_MODELS` may point at the second NVMe. Confirm tools and at least 16K context with `/api/show` before the 9B tag is primary. Stable OpenClaw on this date is [2026.11.6](https://github.com/openclaw/openclaw/releases/tag/v2026.11.6).
 
 ## One tool per job
 

@@ -21,15 +21,12 @@ One Ollama model is loaded at a time. Set `OLLAMA_NUM_PARALLEL=1` and `OLLAMA_MA
 
 | Role | Tag | `num_ctx` | `num_gpu` | `num_thread` | `keep_alive` |
 |---|---|---:|---:|---:|---|
-| Chat. All layers on the GPU | [`qwen3.5:9b`](https://ollama.com/library/qwen3.5:9b) | 32768 | 999 | unset | `30m` |
-| Chat while ComfyUI holds the GPU | [`qwen3.5:4b`](https://ollama.com/library/qwen3.5:4b) | 16384 | 0 | 8 | `5m` |
+| Everyday chat, tools, and coding. All layers on the GPU | [`qwen3.5:9b`](https://ollama.com/library/qwen3.5:9b) | 32768 | 999 | unset | `30m` |
 | Deep thinking only. GPU plus RAM | [`qwen3.8:27b`](https://ollama.com/library/qwen3.8:27b) | 8192 | -1 | 8 | `5m` |
 
-`qwen3.5:9b` and `qwen3.5:4b` are Apache-2.0 vision models, about 6.6–7.6 GB and 3.3–4.0 GB on disk. `num_gpu` 999 asks Ollama for every layer on the RTX 4070. After a 9B load, `/api/ps` `size_vram` must cover the loaded model. If it does not, the GPU is busy: unload and retry, or use the 4B row.
+These are the only two models. `qwen3.5:9b` is Apache-2.0, vision, about 6.6–7.6 GB on disk. `num_gpu` 999 asks Ollama for every layer on the RTX 4070. After a 9B load, `/api/ps` `size_vram` must cover the loaded model. If the GPU is busy, wait and queue the chat or LLM job. Do not load a third model.
 
-`qwen3.8:27b` is about 18 GB on disk (about 16 GB of Q4_K_M weights plus a 0.9 GB projector). `num_gpu` -1 lets Ollama fill the 12 GB GPU and spill the rest into the 64 GB RAM. Expect a few tokens per second. Use it only when the user asks for deep thinking, a background job that can wait, or another local pass after `qwen3.5:9b` failed a complex reasoning task. Never use it for ordinary chat, tool chatter, or an OpenCode loop. Never use it while ComfyUI is running. Pull it only for that job. When the job ends, unload it with `keep_alive` 0 and return chat to `qwen3.5:9b`.
-
-If `qwen3.5:9b` is missing and ComfyUI is stopped, chat may use `qwen3.5:4b` with `num_ctx` 32768, `num_gpu` 999, and `keep_alive` `30m`. The `num_gpu` 0 row is only for while ComfyUI holds the GPU.
+`qwen3.8:27b` is about 18 GB on disk (about 16 GB of Q4_K_M weights plus a 0.9 GB projector). `num_gpu` -1 lets Ollama fill the 12 GB GPU and spill the rest into the 64 GB RAM. Expect a few tokens per second. Use it only when the user asks for deep thinking, a background job that can wait, or another local pass after `qwen3.5:9b` failed a complex reasoning task. Never use it for ordinary chat, tool chatter, or an OpenCode loop. Never use it while ComfyUI is running. Pull it only for that job. While it is loaded, queue other chat and LLM work. When the job ends, unload it with `keep_alive` 0 and return to `qwen3.5:9b`.
 
 Set the provider to Ollama, **Local only**, base URL `http://127.0.0.1:11434` with no `/v1`. Before `qwen3.5:9b` is primary, `/api/show` must report tool support and at least 16K context. If it does not, say so. Do not select a cloud model.
 
@@ -41,7 +38,7 @@ openclaw models set ollama/qwen3.5:9b
 `llm-task` defaults to the 9B tag. Select `ollama/qwen3.8:27b` only under the deep-thinking rule.
 
 ```powershell
-openclaw config set plugins.entries.llm-task.llm.allowedCompletionModels '["ollama/qwen3.5:9b","ollama/qwen3.5:4b","ollama/qwen3.8:27b"]'
+openclaw config set plugins.entries.llm-task.llm.allowedCompletionModels '["ollama/qwen3.5:9b","ollama/qwen3.8:27b"]'
 openclaw config set plugins.entries.llm-task.config.defaultProvider ollama
 openclaw config set plugins.entries.llm-task.config.defaultModel qwen3.5:9b
 ```
@@ -142,7 +139,7 @@ The GPU runs one heavy job. `qwen3.5:9b` may share it with whisper `ggml-small` 
 
 Transcription uses `whisper-cli` from [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and `ggml-small.bin` (466 MiB on disk, about 852 MB in memory). That size fits beside `qwen3.5:9b`. Do not load `ggml-medium` (1.5 GiB) or a larger whisper model beside the LLM or ComfyUI. Pass `--threads 8`. Pass `--no-gpu` while ComfyUI is running or `qwen3.8:27b` is loaded. `ffmpeg` decodes files that are not 16-bit WAV. If `whisper-cli` or the small model is missing, say transcription is unavailable. Leave cloud audio providers disabled.
 
-ComfyUI stays on loopback. Unload Ollama (`keep_alive` 0) before an image. The workflow loads Stability SDXL base 1.0, file `sd_xl_base_1.0.safetensors`, fp16 ([model card](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0)). Use 1024×1024, batch size 1, 20–30 steps, and `--normalvram`. Do not pass `--highvram`. Do not load a second checkpoint in the same graph. Flux is allowed only as a GGUF Q4 or Q5 after Ollama is unloaded. Full Flux weights do not fit in 12 GB. Leave cloud mode unset. While ComfyUI holds the GPU, chat uses the 4B row above, and whisper stays on the CPU.
+ComfyUI stays on loopback. Unload Ollama (`keep_alive` 0) before an image. The workflow loads Stability SDXL base 1.0, file `sd_xl_base_1.0.safetensors`, fp16 ([model card](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0)). Use 1024×1024, batch size 1, 20–30 steps, and `--normalvram`. Do not pass `--highvram`. Do not load a second checkpoint in the same graph. Flux is allowed only as a GGUF Q4 or Q5 after Ollama is unloaded. Full Flux weights do not fit in 12 GB. Leave cloud mode unset. While ComfyUI holds the GPU, queue chat and other LLM work. Do not load another model. Whisper stays on the CPU.
 
 ```powershell
 openclaw config set plugins.entries.comfy.config.mode local

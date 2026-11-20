@@ -2,7 +2,7 @@
 
 Procedures for the main agent. Plugin ids live in [README.md](../README.md). Rules live in [REQUIREMENTS.md](../REQUIREMENTS.md). Every row is unverified until this session's tools show a result.
 
-This PC is Windows 11 Pro, an Intel Core i9-14900F (24 cores, 32 threads), 64 GB DDR5-5600, and an RTX 4070 with 12 GB (driver 610.60). About 1.5 TB is free on the fast NVMe. Chat is `qwen3.5:9b` fully on the GPU (`num_ctx` 32768, `num_gpu` 999, `keep_alive` 30m). While ComfyUI holds the GPU, chat is `qwen3.5:4b` on the CPU (`num_ctx` 16384, `num_gpu` 0, `num_thread` 8). `qwen3.8:27b` (`num_ctx` 8192, `num_gpu` -1, `num_thread` 8) is the slow GPU-plus-RAM model for deep thinking only, never during ComfyUI and never for ordinary chat.
+This PC is Windows 11 Pro, an Intel Core i9-14900F (24 cores, 32 threads), 64 GB DDR5-5600, and an RTX 4070 with 12 GB (driver 610.60). About 1.5 TB is free on the fast NVMe. Everyday chat, tools, and coding use `qwen3.5:9b` fully on the GPU (`num_ctx` 32768, `num_gpu` 999, `keep_alive` 30m). `qwen3.8:27b` (`num_ctx` 8192, `num_gpu` -1, `num_thread` 8) is the slow GPU-plus-RAM model for deep thinking only, never during ComfyUI and never for ordinary chat. While ComfyUI or the 27B model holds the GPU, queue chat and other LLM work.
 
 | # | Job | Do this | Missing |
 |---|---|---|---|
@@ -15,7 +15,7 @@ This PC is Windows 11 Pro, an Intel Core i9-14900F (24 cores, 32 threads), 64 GB
 | 7 | DNS | Read a zone the user opened. Apply a change only after a tier-3 yes. | Say DNS is not connected. |
 | 8 | Errors | Read the local log or trace the user points at. | Say no error tracker is connected. |
 | 9 | Files | `workspace_create_file` for a new DOCX, PDF, XLSX, or PPTX. `document-extract` to read one. Reopen the file and check the contents. | Say that tool is absent. |
-| 10 | Images | Unload Ollama first. `image_generate` on local ComfyUI: SDXL base 1.0 fp16, 1024×1024, batch 1, 20–30 steps, `--normalvram`. Flux only as a GGUF Q4 or Q5. Chat during the job is `qwen3.5:4b` with `num_gpu` 0. | Say `comfy` is not connected. |
+| 10 | Images | Unload Ollama first. `image_generate` on local ComfyUI: SDXL base 1.0 fp16, 1024×1024, batch 1, 20–30 steps, `--normalvram`. Flux only as a GGUF Q4 or Q5. Queue chat and other LLM work until the GPU is free. | Say `comfy` is not connected. |
 | 11 | Social | `web_search` for public posts. Send a post or DM only after a tier-3 yes that includes the exact text. | Say search is unavailable. |
 | 12 | Secrets | Tell the user to type the secret into the provider page. Keep it out of chat, screenshots, and logs. | `vault` stays disabled. |
 | 13 | Desktop | Follow [WINDOWS_COMPUTER_CONTROL.md](WINDOWS_COMPUTER_CONTROL.md). Playwright for DOM. `computer` for windows. | Name which of the two is absent. |

@@ -21,4 +21,4 @@ Use a tool only when this session lists it. Keep outputs in the assigned workspa
 
 The productivity interpreter, when present, is `$env:USERPROFILE\.openclaw\local-productivity\Scripts\python.exe`. Confirm that path before using it. Calendar JSON on stdin needs string fields `title`, `start`, and `end`. Timed values are ISO 8601 with a UTC offset. All-day values are dates and the end date is exclusive.
 
-Image generation is `image_generate` through local ComfyUI, not Pillow. Unload Ollama first. SDXL base 1.0 fp16, 1024×1024, batch 1, 20–30 steps, `--normalvram`. Chat during that job is `qwen3.5:4b` with `num_gpu` 0. Speech synthesis is `tts` through `tts-local-cli`.
+Image generation is `image_generate` through local ComfyUI, not Pillow. Unload Ollama first. SDXL base 1.0 fp16, 1024×1024, batch 1, 20–30 steps, `--normalvram`. Queue chat and other LLM work until the GPU is free. Speech synthesis is `tts` through `tts-local-cli`.

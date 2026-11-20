@@ -2,9 +2,8 @@
 
 This PC is Windows 11 Pro, an Intel Core i9-14900F (24 cores, 32 threads),
 64 GB DDR5-5600, and an RTX 4070 with 12 GB (driver 610.60). About 1.5 TB is
-free on the fast NVMe. A pass requires qwen3.5:9b, the chat model that stays
-fully on the GPU. qwen3.5:4b and qwen3.8:27b are optional and do not affect
-this result.
+free on the fast NVMe. A pass requires qwen3.5:9b, the only everyday model.
+qwen3.8:27b is the optional deep-thinking model and does not affect this result.
 """
 import json
 import os
