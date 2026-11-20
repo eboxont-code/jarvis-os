@@ -1,3 +1,5 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # OpenJarvis front-door bridge — 18 November 2026
 
 This is dated implementation and execution evidence. **MASTER_TODO.md remains the sole priority/status authority.** Read its complete latest version and root AGENTS.md before continuing. Do not infer current readiness from this document or old chat history.
@@ -11,7 +13,7 @@ After the upgrade documentation, the user supplied current Companion tray/Connec
 
 This document is a dated execution/handoff record, not a second status tracker. Read the complete latest [AGENTS.md](../AGENTS.md), [MASTER_TODO.md](../MASTER_TODO.md) and [JARVIS_BOOT.md](../JARVIS_BOOT.md) on main first. Then read this whole record, [startup/rollback](AUTOSTART_READINESS.md), [autostart continuation](CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md) and the original handoffs required by the user: [18 November](CONTINUATION_HANDOFF_2026-11-18.md), [12 November](OPENCLAW_OPENCODE_OLLAMA_HANDOFF_2026-11-12.md), [read-only MCP](OPENJARVIS_READONLY_MCP_ADAPTER.md). Older instructions about waiting indefinitely for an official repair are superseded by the current master/user instruction; preservation, zero spend and exact-action approval boundaries still apply.
 
-**Last completed implementation checkpoint:** [81e87ac](https://github.com/eboxont-code/jarvis-os/commit/81e87ac124e8c542fc1eb9d53ec5d7c49b0a5f5b). All33 committed files were fetched from main and compared exactly after publication. This handoff-only follow-up does not rerun health tests or change the computer. Treat all process IDs/health timestamps below as historical.
+**Last completed implementation checkpoint:** [81e87ac](https://github.com/private-archive/jarvis-os/commit/81e87ac124e8c542fc1eb9d53ec5d7c49b0a5f5b). All33 committed files were fetched from main and compared exactly after publication. This handoff-only follow-up does not rerun health tests or change the computer. Treat all process IDs/health timestamps below as historical.
 
 **Exact next master item:** the unchecked PARTIAL item beginning **Startup acceptance: Make the four installed applications automatically connected and ready after Windows sign-in** in Integration Phase H. Resume its fresh read-only diagnosis first. Latest recorded Node probe was ready=false, while the bounded coding bridge passed. Do not rebuild the bridge, replay its failing fixtures, start another coordinator, rerun installers or enable the plugin again.
 
@@ -19,16 +21,16 @@ This document is a dated execution/handoff record, not a second status tracker. 
 
 1. Confirm authenticated access to this private repository/main and actual authorised Windows access. A GitHub link transfers instructions/source, not computer access, GitHub credentials or blanket authority. If either access is absent, state which is missing; never fabricate machine checks.
 2. Collect current boot time, running process identities, listeners8000/11434/18789 and native qualified Gateway ownership proof. Read the existing runtime's startup-last.json and runtime-health.json privately; compare boot IDs, heartbeat age and actual watchdog process. The last snapshot's watchdog22932 is not a reusable target PID.
-3. Verify native OpenJarvis GUI attachment, local health and model inventory; preserve all conversations. Verify current isolated-account identity before using the recorded T3-P2 paths. Do not display raw configurations, environment values, command lines containing credentials or private job prompts.
+3. Verify native OpenJarvis GUI attachment, local health and model inventory; preserve all conversations. Verify current isolated-account identity before using the recorded isolated-account paths. Do not display raw configurations, environment values, command lines containing credentials or private job prompts.
 4. Inspect bridge jobs for unfinished state, owned Code processes and jobs/unsettled.json. If shutdown is uncertain, stop submitting work and verify it; never delete claims/latches to retry.
 5. Use only the existing reviewed read-only probe after confirming its file/source and current account. These commands do not start/restart apps or submit inference. The qualified launcher currently is:
 
 ```powershell
 $jarvisClawctl = "$env:LOCALAPPDATA\Microsoft\WindowsApps\OpenClawFoundation.OpenClawGateway_rfcbke2p71se2\clawctl.exe"
 & $jarvisClawctl gateway-service status --json
-& $jarvisClawctl pwsh --command '& C:\Python314\python.exe C:\Users\T3-P2\Shared\jarvis-startup-20261118\isolated_readiness_probe.py health'
-& $jarvisClawctl pwsh --command '& C:\Python314\python.exe C:\Users\T3-P2\Shared\jarvis-startup-20261118\isolated_readiness_probe.py node'
-& $jarvisClawctl pwsh --command '& C:\Python314\python.exe C:\Users\T3-P2\Shared\jarvis-startup-20261118\isolated_readiness_probe.py connections'
+& $jarvisClawctl pwsh --command '& C:\Python314\python.exe C:\Users\isolated-account\Shared\jarvis-startup-20261118\isolated_readiness_probe.py health'
+& $jarvisClawctl pwsh --command '& C:\Python314\python.exe C:\Users\isolated-account\Shared\jarvis-startup-20261118\isolated_readiness_probe.py node'
+& $jarvisClawctl pwsh --command '& C:\Python314\python.exe C:\Users\isolated-account\Shared\jarvis-startup-20261118\isolated_readiness_probe.py connections'
 ```
 
 The connections probe initialises/closes the existing ACP protocol and calls exactly three read-only adapter tools; it does not create a coding session or run a model. If the account/path/installed command differs or is absent, inventory the supported installation; do not fabricate missing files or override runtime paths. Report selected safe status facts, not raw credentials/configuration.
@@ -93,7 +95,7 @@ The user separately approved moving the existing Gateway from Windows-reserved p
 - Host checkout/backend: `%USERPROFILE%\OpenJarvis`, existing `.venv\Scripts\python.exe` (3.13). Desktop1.0.5: `%LOCALAPPDATA%\OpenJarvis\openjarvis-desktop.exe`.
 - Runtime owner: `%USERPROFILE%\Documents\Codex\jarvis-os-runtime`; existing Python314 and login shortcut JARVIS AI Stack. The earlier project/prompt controller is distinct and its acceptance remains separate.
 - Host addon: `jarvis-os-runtime\frontdoor\frontdoor.py`, `backend_bootstrap.py`, adjacent non-secret `frontdoor.json` with the current qualified clawctl path and Shared root.
-- Current isolated account: T3-P2, Shared root `C:\Users\T3-P2\Shared\jarvis-frontdoor-20261118`. Verify the account through the qualified installed clawctl status before assuming it still exists.
+- Current isolated account: isolated-account, Shared root `C:\Users\isolated-account\Shared\jarvis-frontdoor-20261118`. Verify the account through the qualified installed clawctl status before assuming it still exists.
 - Gateway/MSIX2026.11.1/2026.11.100.0; supported qualified alias is under `%LOCALAPPDATA%\Microsoft\WindowsApps\OpenClawFoundation.OpenClawGateway_rfcbke2p71se2\clawctl.exe`.
 - OpenCode worker2.2.7: use the **existing configured ACP command** read in memory from the isolated OpenClaw `plugins.entries.acpx.config.agents.opencode.command`. Do not invent a runtime path or download a missing one. Host desktop2.2.6 is a separate existing app/profile.
 - Existing Ollama0.40.16 on loopback11434, four original models plus the local context alias. The coordinator uses existing qwen3.8:27b; Code uses the no-download16K local alias described above. The four original models remain intact.

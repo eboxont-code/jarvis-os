@@ -1,7 +1,9 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # OpenClaw / OpenCode / Ollama integration handoff — 12 November 2026
 
 **Project:** JARVIS OS  
-**Repository:** `eboxont-code/jarvis-os`  
+**Repository:** `private-archive/jarvis-os`  
 **Purpose:** Preserve the verified Windows integration state and the exact unresolved blocker so a later session can resume without repeating the discovery work.  
 **Status:** PARTIAL — browser ACP path works; native Windows Companion Node handoff remains blocked.
 
@@ -15,7 +17,7 @@ The current split is:
 
 | Component / path | Observed state |
 |---|---|
-| Ollama local endpoint | Reachable at `127.0.0.1:11434` from the isolated T3-P2 runtime |
+| Ollama local endpoint | Reachable at `127.0.0.1:11434` from the isolated isolated-account runtime |
 | Qwen 27B local inference | Passed a direct OpenCode prompt and returned `READY` |
 | OpenCode ACP server | Initialization and `session/new` succeeded; the model selector advertised all four local tags |
 | OpenClaw browser Control UI → ACPX → OpenCode → Ollama | Fresh browser chat ACP session returned `READY` |
@@ -55,7 +57,7 @@ The Windows installed-apps listing separately showed an entry named OpenClaw Com
 
 These observations suggest an older registered install entry may coexist with the newer unpackaged/developer app that was running, but the active executable path has **not** yet been matched to the registered uninstall entry. Do not uninstall either copy until the running process path and package identity are confirmed.
 
-### OpenCode in the isolated T3-P2 runtime
+### OpenCode in the isolated isolated-account runtime
 
 - OpenCode CLI version: `2.2.7`.
 - Global config file: `%USERPROFILE%\.config\opencode\opencode.jsonc`.
@@ -138,7 +140,7 @@ Keep these existing schedules unchanged while troubleshooting the Companion conn
 
 These are the changes that were actually applied, not merely proposed:
 
-1. In the T3-P2 OpenCode profile, created/updated `opencode.jsonc` with local Ollama primary model `ollama/qwen3.8:27b`, small model `ollama/qwen3.5:4b`, provider allowlist `["ollama"]`, and local Ollama base URL `http://127.0.0.1:11434/v1`. A backup named `opencode.jsonc.backup-20261111-205320` was created first.
+1. In the isolated-account OpenCode profile, created/updated `opencode.jsonc` with local Ollama primary model `ollama/qwen3.8:27b`, small model `ollama/qwen3.5:4b`, provider allowlist `["ollama"]`, and local Ollama base URL `http://127.0.0.1:11434/v1`. A backup named `opencode.jsonc.backup-20261111-205320` was created first.
 2. In OpenClaw's model registry, set Qwen 27B `contextTokens` and Ollama `num_ctx` to `65536`. A backup copy of `openclaw.json` named `openclaw.json.before-context-65536-20261111.bak` was requested before these settings were changed.
 3. In OpenClaw ACPX config, set the OpenCode command to the verified OpenCode executable path and applied args `["acp"]` using a structured config patch. The dry-run validation succeeded before the patch was applied.
 4. Closed the old failed ACP session and created fresh sessions for testing. The latest browser ACP session returned `READY`.
@@ -149,7 +151,7 @@ No Gateway MSIX or Companion package was installed, upgraded, downgraded or remo
 
 ### Verified
 
-- OpenCode 2.2.7 in T3-P2 discovers the local Ollama models.
+- OpenCode 2.2.7 in isolated-account discovers the local Ollama models.
 - Direct OpenCode CLI local inference with Qwen 27B returned `READY`.
 - Direct OpenCode ACP initialization and session creation exposed the local model catalogue.
 - OpenClaw's browser Control UI successfully spawned OpenCode via ACPX and received `READY` from the local model.
@@ -181,7 +183,7 @@ No Gateway MSIX or Companion package was installed, upgraded, downgraded or remo
 The two Windows shells are different and must not be confused:
 
 - Normal host shell: `PS C:\Users\<user>>` — `clawctl` commands run here.
-- Isolated OpenClaw shell: `[openclaw T3-P2] ...>` — `openclaw`, `node`, `npm` and the T3-P2 OpenCode installation run here; `clawctl` is not on its PATH.
+- Isolated OpenClaw shell: `[openclaw isolated-account] ...>` — `openclaw`, `node`, `npm` and the isolated-account OpenCode installation run here; `clawctl` is not on its PATH.
 
 Useful read-only checks already proven:
 
@@ -222,11 +224,11 @@ This section records the later Windows checks and the additional OpenJarvis repa
 
 ### OpenJarvis source/build evidence supplied separately
 
-These records concern the existing local `C:\Users\Boxont\OpenJarvis` checkout and a separate temporary repair-build copy. They are included for continuity; they do **not** mean the OpenJarvis code or compiled desktop binaries were committed to this repository.
+These records concern the existing local `C:\Users\the operator\OpenJarvis` checkout and a separate temporary repair-build copy. They are included for continuity; they do **not** mean the OpenJarvis code or compiled desktop binaries were committed to this repository.
 
 1. **Hidden-console patch attempt, 8 November 2026:** the repair log records backups of the existing Tauri source and desktop EXE, SHA-256 values `A728EB029A7CAD8C7658A982AAA55BEB798AAD79CB2668444CEF2DFC0CF25F4F` (source) and `085244CCEFF72B00AC05F50515036481C58B5640A03C04340C0BCF0DB6AF2D0C` (EXE). The attempted source patch added `CREATE_NO_WINDOW` to the shared managed child-process launcher (four call sites, affecting helper launches such as `uv.exe` and `ollama.exe`, not the desktop window). The first build attempt failed and the log says the original source was restored and verified.
 2. **Second hidden-console attempt:** a second log shows the same backups and patch, then a Cargo offline build. A separate captured Cargo stdout file reports `Compiling openjarvis-desktop v1.0.2` followed by `Finished release profile [optimized] target(s) in 49.66s`. The available log set does not confirm a final installed executable hash, a successful launch of the patched executable, or a verified no-console runtime. Treat this as a successful Cargo compilation record only, not a verified repair/release.
-3. **Separate repair build copy:** `OpenJarvis-Repair-493725251.log` records the frontend TypeScript/Vite stage succeeding (`3509 modules transformed`), but the native Rust build failed in `web_atoms v0.2.5` build script with Windows error code `5` (`Access is denied`). That attempt used a separate `C:\Users\Boxont\Desktop\OpenJarvis-Repair-Build-493725251` path and did not produce a verified installer. Do not conflate this with the normal OpenJarvis source checkout.
+3. **Separate repair build copy:** `OpenJarvis-Repair-493725251.log` records the frontend TypeScript/Vite stage succeeding (`3509 modules transformed`), but the native Rust build failed in `web_atoms v0.2.5` build script with Windows error code `5` (`Access is denied`). That attempt used a separate `C:\Users\the operator\Desktop\OpenJarvis-Repair-Build-493725251` path and did not produce a verified installer. Do not conflate this with the normal OpenJarvis source checkout.
 4. No new OpenJarvis installer or MSI was verified in these logs. The current local source tree is known to contain custom/dirty changes and must be preserved. No `git reset`, `git clean`, bulk staging, overwrite or forced push was performed in this session.
 
 ### Updated exact next actions
@@ -277,7 +279,7 @@ This section records public upstream evidence checked after the Windows snapshot
 The process/version query returned:
 
 - OpenClaw.Tray.WinUI.exe, PID 4776.
-- Executable: C:\Users\Boxont\AppData\Local\OpenClawTray\OpenClaw.Tray.WinUI.exe.
+- Executable: C:\Users\the operator\AppData\Local\OpenClawTray\OpenClaw.Tray.WinUI.exe.
 - File version: 2026.11.1.0.
 
 The Companion About screenshot independently shows:
@@ -300,8 +302,8 @@ The broad process command also encountered Get-Item error "Cannot bind argument 
 The user's latest clawctl status output reports:
 
 - Session: running.
-- Agent: T3-P2.
-- Shared folder: C:\Users\T3-P2\Shared.
+- Agent: isolated-account.
+- Shared folder: C:\Users\isolated-account\Shared.
 - Runtime: Node.js 24.22.1.
 - Gateway: running on port 50368.
 - Activation: none pending.
@@ -658,7 +660,7 @@ The patch is a candidate based on upstream main commit above. It has **not** bee
 
 ### Exact current boundary
 
-The linked GitHub identity is `eboxont-code`. Upstream packaging repository metadata explicitly reports `pull=true`, `push=false`; a branch creation attempt returned HTTP 403. A comment could be posted on the related Companion issue, but no upstream branch or PR can be created from the current permission set. No local Windows machine access or package build was available in this session.
+The linked GitHub identity is `private-archive`. Upstream packaging repository metadata explicitly reports `pull=true`, `push=false`; a branch creation attempt returned HTTP 403. A comment could be posted on the related Companion issue, but no upstream branch or PR can be created from the current permission set. No local Windows machine access or package build was available in this session.
 
 No local Gateway/Companion files, processes, installations, settings, agent data, tokens or pairings were changed. The technical-details screenshot confirms populated permissions/capabilities but still only shows the generic error; it does not prove the exact local GatewayRecord listener count at the failing sample.
 

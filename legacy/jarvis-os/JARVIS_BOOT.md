@@ -1,33 +1,29 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # JARVIS — Portable Session Bootstrap
 
 Use this file only when your AI tool does not automatically load repository instruction files.
 
 **Copy/paste this prompt into the AI session:**
 
-You are now working on Project JARVIS in the private GitHub repository `eboxont-code/jarvis-os`.
+You are working in the OpenClaw workspace. The files in this legacy folder describe a wiped install.
 
-1. Open and read the complete `AGENTS.md`.
-2. Open and read the complete `MASTER_TODO.md`. Do not rely on memory, summaries or partial snippets.
-3. Confirm the repository and branch you are using, and fetch the latest version before editing.
-4. Identify the current milestone, dependencies, next eligible task and acceptance criteria.
-5. Mark exactly one task `WORKING` in `MASTER_TODO.md` before implementation.
+1. Open and read the repository root `AGENTS.md`.
+2. Open and read the repository root `README.md` fresh-install guide. Nothing is installed yet.
+3. Open and read the repository root `REQUIREMENTS.md` checklist.
+4. Leave this archived `MASTER_TODO.md` unread as a status authority.
+5. Install from the fresh-install guide before marking any task started.
 6. Work one task at a time unless I explicitly authorise a batch.
 7. Respect the $0 additional-expenditure rule, Windows-first policy, OpenJarvis preservation rules and security/approval boundaries.
-8. Only mark a task `[x] VERIFIED` after real tests pass and evidence is recorded. Otherwise mark it `PARTIAL` or `BLOCKED` and state the next action.
-9. Before finishing, update the phase/live status and dated Execution Log in `MASTER_TODO.md`, commit/synchronise it if authorised, then read it back from GitHub to verify.
+8. Record new status in the repository root `REQUIREMENTS.md` after a real test passes.
+9. Leave the archived execution log in this folder unchanged.
 10. Tell me what changed, what was actually tested, what remains and the next task.
 
 If you cannot access the private repository or edit its master file, say so clearly. Do not pretend you read or updated anything.
 
 ## Continue without previous chat context
 
-Start from the latest master and the handoff's **Start here when continuing with another AI** section. The bounded coding bridge passed at81e87ac; the next recorded priority is fresh read-only diagnosis of Companion Node/startup and actual normal reboot/sign-in acceptance. Do not rebuild/re-enable the working bridge or repeat its already-consumed Gateway restart approval. Read [its self-contained implementation/execution handoff](docs/OPENJARVIS_FRONTDOOR_2026-11-18.md) immediately after the complete agent instructions and master. It contains source links, current paths, permission boundaries, failures, approved port migration, acceptance evidence and exact continuation/rollback. Do not treat generated code or an old health snapshot as a completed four-app chat workflow.
-
-After the complete latest agent instructions and master, read [the self-contained autostart handoff](docs/CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md) and [startup mechanism/rollback](docs/AUTOSTART_READINESS.md). They link implementation, sanitized attempt evidence, installed paths, authorisation boundaries and exact post-reboot checks. The master remains the sole priority/status authority.
-
-When the user returns after restarting, collect fresh boot time and startup evidence before opening apps, relaunching the worker or reconnecting Companion. An old ready snapshot is not new-boot acceptance. Earlier handoffs are historical; their official-repair wait gate and unregistered-MCP block are superseded by current master evidence.
-
-The installed **JARVIS AI Stack** login launcher is distinct from the older **JARVIS Project Session** repository/prompt controller below. Do not rerun startup installation or change application settings to begin a continuation. Prompt-controller acceptance is not proven by app-autostart acceptance.
+Start from the repository root `README.md`. The handoffs in this folder describe a wiped install. Install OpenClaw, Ollama, and OpenCode from that guide before opening any archived startup note.
 
 ## Recorded setup upgrades
 

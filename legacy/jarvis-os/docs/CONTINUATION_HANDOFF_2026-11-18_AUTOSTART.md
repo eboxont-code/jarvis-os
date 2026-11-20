@@ -1,3 +1,5 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # Context-free continuation handoff — automatic four-app startup
 
 > **Later 1.0.5 desktop repair:** read [the verified native attach repair](OPENJARVIS_DESKTOP_ATTACH_2026-11-18.md) after the complete latest master. The port conflict came from a two-second native health timeout versus Windows localhost fallback. Child-scoped IPv4, fast attach preflight and bounded catalogue retries now pass actual GUI chat/reopen and full runtime checks; earlier blocked/API-only statements remain historical. Actual new Windows reboot acceptance is still pending.
@@ -24,7 +26,7 @@ On continuation, do not open apps, run the launcher again, reconnect Companion, 
 - [Existing three-tool adapter design](OPENJARVIS_READONLY_MCP_ADAPTER.md)
 - [Adapter implementation](../runtime/openjarvis_readonly_mcp_adapter.py)
 - [Earlier controlled/manual recovery procedure](RESTART_RECOVERY.md)
-- Master implementation/evidence commit: [3b7a4ec](https://github.com/eboxont-code/jarvis-os/commit/3b7a4eccc3a657ce6064fde202e8fef3957567bb). Source/docs were read back remotely through 297c332 before that master update.
+- Master implementation/evidence commit: [3b7a4ec](https://github.com/private-archive/jarvis-os/commit/3b7a4eccc3a657ce6064fde202e8fef3957567bb). Source/docs were read back remotely through 297c332 before that master update.
 
 The old [18 November handoff](CONTINUATION_HANDOFF_2026-11-18.md) and [12 November handoff](OPENCLAW_OPENCODE_OLLAMA_HANDOFF_2026-11-12.md) preserve historical failure evidence. Their blanket official-repair wait gate, unregistered-MCP statement and ENOENT-only continuation boundary have been superseded by the current master. Do not revive those obsolete gates.
 
@@ -32,21 +34,21 @@ The old [18 November handoff](CONTINUATION_HANDOFF_2026-11-18.md) and [12 Novemb
 
 | Component | Last verified location |
 |---|---|
-| Stable startup workspace | C:\Users\Boxont\Documents\Codex\jarvis-os-runtime |
+| Stable startup workspace | C:\Users\the operator\Documents\Codex\jarvis-os-runtime |
 | Startup shortcut | %APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\JARVIS AI Stack.lnk |
 | Shortcut target / argument | C:\Python314\pythonw.exe / quoted stable-workspace start_ai_stack.py |
 | Existing Python | C:\Python314\python.exe and pythonw.exe |
-| Ollama desktop | C:\Users\Boxont\AppData\Local\Programs\Ollama\ollama app.exe |
-| OpenJarvis desktop | C:\Users\Boxont\AppData\Local\OpenJarvis\openjarvis-desktop.exe |
-| Companion | C:\Users\Boxont\AppData\Local\OpenClawTray\OpenClaw.Tray.WinUI.exe |
-| OpenCode desktop | C:\Users\Boxont\AppData\Local\Programs\ai.opencode.desktop\OpenCode.exe |
-| Qualified official CLI | C:\Users\Boxont\AppData\Local\Microsoft\WindowsApps\OpenClawFoundation.OpenClawGateway_rfcbke2p71se2\clawctl.exe |
-| Last isolated Shared workspace | C:\Users\T3-P2\Shared |
+| Ollama desktop | C:\Users\the operator\AppData\Local\Programs\Ollama\ollama app.exe |
+| OpenJarvis desktop | C:\Users\the operator\AppData\Local\OpenJarvis\openjarvis-desktop.exe |
+| Companion | C:\Users\the operator\AppData\Local\OpenClawTray\OpenClaw.Tray.WinUI.exe |
+| OpenCode desktop | C:\Users\the operator\AppData\Local\Programs\ai.opencode.desktop\OpenCode.exe |
+| Qualified official CLI | C:\Users\the operator\AppData\Local\Microsoft\WindowsApps\OpenClawFoundation.OpenClawGateway_rfcbke2p71se2\clawctl.exe |
+| Last isolated Shared workspace | C:\Users\isolated-account\Shared |
 | Installed isolated startup probe | Shared\jarvis-startup-20261118\isolated_readiness_probe.py |
 | Existing approved MCP adapter | Shared\jarvis-readonly-mcp-20261118\openjarvis_readonly_mcp_adapter.py |
 | Runtime snapshot | stable-workspace\startup-last.json |
 | Private installation/rollback bookkeeping | stable-workspace\installation.json and backups\dated-folder |
-| Local safe evidence/deliverables | C:\Users\Boxont\Documents\Codex\2026-11-18\github-plugin-github-openai-curated-remote\outputs\JARVIS-Autostart |
+| Local safe evidence/deliverables | C:\Users\the operator\Documents\Codex\2026-11-18\github-plugin-github-openai-curated-remote\outputs\JARVIS-Autostart |
 
 The current manifest contains installed paths. Inspect only needed metadata, never dump active configs/bookkeeping or backups. Determine the actual isolated session using the official CLI; do not hard-code an old profile if it changes. Preserve every installation and both OpenCode account contexts.
 

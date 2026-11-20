@@ -1,3 +1,5 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # JARVIS — Mandatory Agent Instructions
 
 This repository is the control centre and source of truth for Project JARVIS.
@@ -18,32 +20,18 @@ The full policy is in Section 0 of MASTER_TODO.md. It is binding on every agent,
 When there is any uncertainty about cost, default to DO NOT INSTALL / DO NOT ACTIVATE until verified. Never optimise for "low cost"; optimise for zero additional cost.
 
 ## Mandatory startup
-Before doing project work, read the **entire** root `MASTER_TODO.md`. Do not rely on a summary, old chat history, cached context or a partial excerpt.
+Before doing project work, read the repository root `AGENTS.md`, the fresh-install guide in the repository root `README.md`, and the checklist in the repository root `REQUIREMENTS.md`. This folder is an archive of a wiped install. Leave its checkboxes and handoffs as history.
 
-Treat a user request such as "launch JARVIS", "start JARVIS", "continue JARVIS", "let's go" or "what's next" as a request to resume the project workflow unless the user clearly means launching the installed desktop application.
-
-At the beginning of every JARVIS work session:
-1. Confirm that the working repository is `eboxont-code/jarvis-os` (or a local clone of it).
-2. Read the complete, latest `MASTER_TODO.md` from the current branch. Refresh from GitHub `main` when connected; never overwrite newer remote changes with stale content.
-3. Read any relevant implementation documentation and nested agent instructions for the task.
-4. Identify the current milestone, its dependencies, the next eligible task and its acceptance test.
-5. Select one task at a time unless the user explicitly authorises a batch of independent tasks.
-6. Before changing project code, update the relevant master checklist item to **WORKING** and synchronise that change to the repository when write access is available.
-7. Briefly tell the user what task is active and what evidence will count as completion.
-
-If the repository or master file cannot be accessed, say so and ask for access or the file. Never pretend it was read.
-
-## Continuation without prior chat history
-
-For context-free continuation of the bounded OpenJarvis → OpenClaw → OpenCode → same-chat bridge and the remaining native startup work, read [the front-door implementation and execution handoff](docs/OPENJARVIS_FRONTDOOR_2026-11-18.md) after the complete latest master. It records installed source/paths, scoped grants, failed and successful evidence, the approved Gateway port migration and rollback. Current MASTER_TODO status takes precedence over all dated snapshots; no old all-four-ready claim verifies the current boot. The bridge does not grant full Windows control or an automatic GitHub writer. The handoff's Start here section identifies the exact remaining master item, fresh read-only commands, source/evidence map and consumed approval ledger. The coding pass at81e87ac is established evidence; Companion Node and actual reboot/sign-in readiness remain incomplete until the current master says otherwise.
-
-After reading the complete current master, read [the 18 November autostart handoff](docs/CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md) and [startup implementation/rollback](docs/AUTOSTART_READINESS.md) for Windows startup or four-app integration continuation. The handoff contains installed locations, safe evidence links, known failures and the exact observation-first reboot acceptance procedure. It is dated evidence, not another status authority.
-
-Older handoffs retain superseded wait gates and historical unregistered/blocked MCP statements. Follow the current master; do not revive those as present policy. A historical ready=true snapshot does not verify a new boot. On a post-reboot continuation, inspect the new boot time, snapshot and existing processes before launching/reconnecting anything. The installed JARVIS AI Stack startup worker and the older JARVIS Project Session controller are separate; do not rerun either installer or alter saved configuration simply to resume this project. The older controller's live prompt-loading acceptance remains separate and unverified.
+At the beginning of a work session:
+1. Confirm nothing in this legacy folder is treated as installed, paired, or running.
+2. Follow the fresh-install guide until the step you are asked to do is actually finished.
+3. Record new status in the repository root `REQUIREMENTS.md`.
+4. Select one task at a time unless a batch is authorised.
+5. Tell the user what is still to install, enable, or connect.
 
 ## Full Windows computer control — core requirement
 
-Full visual and programmatic Windows desktop control is a mandatory core capability, not an optional enhancement. Read and follow `docs/WINDOWS_COMPUTER_CONTROL.md` together with Phase 6 of `MASTER_TODO.md` before implementing desktop-control work.
+Full visual and programmatic Windows desktop control is a mandatory core capability, not an optional enhancement. Read Phase 6 of the repository root `REQUIREMENTS.md` and `docs/WINDOWS_COMPUTER_CONTROL.md` at the repository root before implementing desktop-control work. The copy of that design under this legacy folder is archived.
 
 - Filesystem, shell/PowerShell, process execution or Playwright/browser DOM access alone do not count as desktop control.
 - Inspect the exact installed OpenJarvis version and current local source/tool registry before integrating. Current upstream MCP documentation is not proof that the installed desktop build supports identical configuration.
@@ -56,7 +44,7 @@ Full visual and programmatic Windows desktop control is a mandatory core capabil
 - Never mark desktop control VERIFIED until the OpenJarvis-to-Windows end-to-end tests and security boundaries in Phase 6 and tests T20/T21 pass.
 
 ## Master checklist is authoritative
-- `MASTER_TODO.md` is the single source of truth for scope, priority, status, dependencies, acceptance criteria and next actions.
+- This archived `MASTER_TODO.md` is not the live checklist. The repository root `REQUIREMENTS.md` is the checklist, and the repository root `README.md` is the fresh-install guide.
 - Do not create competing TODO files, private shadow checklists or an alternative project status.
 - Keep the master file current in the same repository.
 - Respect its $0 budget, Windows-first policy, existing OpenJarvis preservation rules, security model and verification requirements.

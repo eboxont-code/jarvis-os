@@ -1,6 +1,8 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # OpenJarvis front-door adapter
 
-Implementation and operational records only. The root MASTER_TODO.md is the sole project-status authority. Read the dated front-door handoff before deployment; scripts contain this machine's verified paths and are not portable installers.
+Implementation notes from a wiped install. The repository root `REQUIREMENTS.md` is the checklist. These scripts are not a current installer.
 
 Ordinary greetings/questions retain native OpenJarvis chat. Explicit coding requests route through the approved local OpenClaw Gateway job-ID-only delegate to installed OpenCode ACP and local Ollama; verified file/test receipts return to the same chat. Other bridge requests use one restricted model coordinator, which remains slow/unreliable. `/local ` explicitly uses original Jarvis; client-tool requests retain their native route. See the dated handoff for the actual GUI167s edit/test pass, active Stop/recovery pass and remaining Companion/reboot limitations. The router is bounded lexical routing, not unrestricted semantic task planning.
 

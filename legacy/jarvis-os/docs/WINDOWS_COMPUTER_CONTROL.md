@@ -1,9 +1,11 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # JARVIS — Full Windows Computer Control
 
 **Status:** CORE REQUIREMENT — design contract recorded; implementation NOT STARTED  
 **Platform:** Windows 11 first; Windows 10 where supported  
 **Budget:** $0 additional expenditure — non-negotiable  
-**Foundation:** Existing OpenJarvis installation, extended without replacing it  
+**Foundation:** Still to install. Follow the repository root fresh-install guide. This copy is archived.  
 **Authoritative task status:** \`MASTER_TODO.md\`, Phase 6  
 **Purpose:** Deliver real, visual and programmatic interaction with the signed-in Windows desktop.
 

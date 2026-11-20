@@ -1,3 +1,5 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # Automatic readiness of the existing Windows AI stack
 
 > **Later bridge/port migration:** read [the current front-door handoff](OPENJARVIS_FRONTDOOR_2026-11-18.md) and latest master first. A later observed Windows boot reserved50368; the user-approved Gateway move to18789 passes native listener ownership proof. Current Companion Node startup acceptance has failed, so earlier all-four-ready snapshots below are historical. Do not restore the reserved port or infer reboot readiness from backend health.

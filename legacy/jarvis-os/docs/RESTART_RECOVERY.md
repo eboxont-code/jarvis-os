@@ -1,3 +1,5 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # Existing Windows stack: restart and recovery procedure
 
 Project status and acceptance evidence belong only in `MASTER_TODO.md`.
