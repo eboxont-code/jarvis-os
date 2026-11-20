@@ -1,9 +1,9 @@
 ---
 name: mail-in-chat
-description: Start or resume Gmail, Outlook and iCloud Mail setup from native OpenClaw Chat using the existing browser tool. Use when asked to connect or open mail or calendars.
+description: Connect Gmail, Outlook or iCloud Mail from native OpenClaw Chat after the browser plugin is enabled. Use when asked to connect or open mail or calendars.
 ---
 
-Take the actions from the current conversation. In the main session's Dashboard, reuse the saved browser widgets `workspace-mail-gmail`, `workspace-mail-outlook` and `workspace-mail-icloud`. These are live Agent browser pages within the OpenClaw Control UI. To create one in another session, use the dashboard tool with action `widget_put`, the corresponding name, provider title, pluginKind `browser:dashboard`, props containing the official URL below, and size `full`. Offer to show the Browser side panel for a temporary view. Use the browser tool's `dashboard` selector to address the same widget after sign-in. Avoid sending the operator to a separate mail client.
+Take the actions from the current conversation. Enable the `browser` plugin before this skill can open a page. In the main session's Dashboard, create browser widgets named `workspace-mail-gmail`, `workspace-mail-outlook` and `workspace-mail-icloud` when those pages are needed. Create each one with the dashboard tool action `widget_put`, the corresponding name, provider title, pluginKind `browser:dashboard`, props containing the official URL below, and size `full`. Offer to show the Browser side panel for a temporary view. Use the browser tool's `dashboard` selector to address the same widget after sign-in. Avoid sending the operator to a separate mail client.
 
 | Provider | Mail | Calendar |
 |---|---|---|

@@ -3,7 +3,7 @@
 **Status:** Mandatory capability. Full application matrix pending.
 **Platform:** Windows 11 first; Windows 10 where supported
 **Budget:** $0 additional expenditure — non-negotiable
-**Foundation:** OpenClaw Gateway and its paired Windows Companion
+**Foundation:** OpenClaw Gateway and Windows Companion, both still to install and pair. Follow the [fresh-install guide](../README.md).
 **Authoritative task status:** [REQUIREMENTS.md](../REQUIREMENTS.md), Phase 6
 **Purpose:** Deliver real, visual and programmatic interaction with the signed-in Windows desktop.
 
@@ -153,15 +153,15 @@ Clipboard reads can expose passwords, tokens and personal data. Apply least priv
 
 ## 5. OpenClaw integration
 
-### 5.1 Installed OpenClaw capabilities
+### 5.1 OpenClaw capabilities after install
 
-Inspect the installed Gateway and Companion first. Record which paired Node commands are advertised, approved and effective. Reuse a native command when it passes the relevant application and permission tests. Evaluate an additional adapter only for missing capabilities.
+Install the Gateway and Companion first. Pair the Windows node as part of that setup. If the Gateway runs in an isolated session, give the main Windows user write access to the Gateway config, or CLI writes hang with `file lock timeout`. Record which node commands are advertised, approved and effective. Use a native command when it passes the relevant application and permission tests. Evaluate an additional adapter only for missing capabilities.
 
 ### 5.2 Transport preference
 
-1. Prefer **stdio MCP** if the installed OpenClaw build supports it. OpenClaw launches the local tool process and exchanges protocol messages over stdin/stdout. This avoids opening a network listener.
+1. Prefer **stdio MCP** when the installed OpenClaw build supports it. OpenClaw launches the local tool process and exchanges protocol messages over stdin/stdout. This avoids opening a network listener.
 2. If a separate HTTP service is technically required, bind only to `127.0.0.1`, require strong local authentication, validate the Origin header, reject remote-interface binding and defend against DNS-rebinding access.
-3. If MCP cannot be supported safely in the installed build, use an equivalent supported OpenClaw native tool or plugin integration behind the same adapter contract. Do not modify OpenClaw core until an external extension is shown to be insufficient.
+3. If MCP cannot be supported safely in that build, use an equivalent supported OpenClaw native tool or plugin integration behind the same adapter contract. Do not modify OpenClaw core until an external extension is shown to be insufficient.
 
 For stdio MCP, stdout must contain protocol messages only; send diagnostic logs to stderr. Keep credentials out of prompts, command-line arguments and source control.
 
@@ -261,7 +261,7 @@ Initial candidates for evaluation:
 - FlaUI: .NET Windows UI automation wrapper; upstream repository identifies MIT licensing.
 - Tesseract: local OCR engine; upstream documentation identifies Apache 2.0 licensing.
 - Windows Graphics Capture: local Windows capture APIs, subject to Windows support and capture permission/indicator behaviour.
-- OpenClaw MCP: use the installed build's supported interface; do not introduce a paid hosted service.
+- OpenClaw MCP: after install, use that build's supported interface. Introduce no paid hosted service.
 
 These are evaluation candidates, not proof of installation, compatibility or zero-cost operation. Recheck licensing and dependencies at the exact version selected. No cloud computer-use provider, paid OCR/vision API, paid MCP service, API credits or subscription may be introduced.
 
@@ -279,4 +279,4 @@ These are evaluation candidates, not proof of installation, compatibility or zer
 
 ## Acceptance status
 
-The native Node answered a device-status request. Full desktop control requires the application and failure tests above from native OpenClaw Chat.
+Desktop control is still to do. Install OpenClaw, pair the Windows node, and then run the application and failure tests above from OpenClaw Chat. No device-status result is on record for this install.

@@ -1,17 +1,18 @@
 # OpenClaw Workspace requirements
 
-OpenClaw owns the conversation and coordinates work. The Windows Companion connects the paired PC to the Gateway. Ollama supplies inference on loopback. OpenCode handles delegated coding through ACP. The workspace must run on the existing PC with zero additional software or service expenditure.
+OpenClaw owns the conversation and coordinates work. Install the Windows Companion and pair it with the Gateway during setup. Ollama supplies inference on loopback. OpenCode handles delegated coding through ACP. The workspace runs on this PC with zero additional software or service expenditure.
 
-## Verified baseline and next milestones
+Setup has not been started. Follow the [fresh-install guide](README.md) in order. Leave every box unchecked until that step is done on the PC.
 
-| Capability | Evidence and remaining work |
-|---|---|
-| Local model | Ollama lists `qwen3.8:27b`. The live picker exposes it through Ollama and OpenCode ACP. No smaller model is required. Verify a timed reply through native OpenClaw Chat. |
-| Gateway and Windows Node | The workspace status tool verifies the model tag, running service, authenticated health and paired Node. A native `device.status` call previously succeeded after reconnecting. Test unattended sign-in with the current OpenClaw startup entries. |
-| Coding | OpenCode is configured for local Qwen. Verify edits, tests, cancellation and a result returned to native OpenClaw Chat in a disposable project. |
-| Windows and browser control | Verify a saved note reopened through Explorer and a downloaded report from a local browser form, then complete the five-application desktop matrix. Prior experiments used a retired host. |
+- [ ] Install OpenClaw (latest stable, 2026.11.5 or newer).
+- [ ] Install Ollama and pull `qwen3.8:27b`.
+- [ ] Install OpenCode via acpx.
+- [ ] Enable only the plugins listed in the fresh-install guide, and disable the paid or duplicate plugins listed there.
+- [ ] Add the free local tools listed in the fresh-install guide.
+- [ ] Connect one delivery channel or set `commands.ownerAllowFrom` so heartbeat and cron can deliver.
+- [ ] Verify with `openclaw gateway status`, `openclaw plugins list`, and `openclaw mcp list`.
 
-The checkboxes below track acceptance for the current OpenClaw architecture. An unchecked requirement can have working components. Check it when evidence covers the whole stated requirement. Keep operational evidence local and publish only a sanitised result.
+The checkboxes below track acceptance for the OpenClaw architecture. Check one when evidence covers the whole stated requirement. Keep operational evidence local and publish only a sanitised result.
 
 ## Assistant setup requirements
 
@@ -172,11 +173,12 @@ If a feature requires payment:
 
 The objective is maximum practical AI capability for $0 in additional software and service expenditure. Never sacrifice the zero-cost requirement without explicit user authorisation. A feature that is unavailable for free must be honestly identified as unavailable, not disguised as completed functionality.
 
-### Preserve the existing installation
-- [ ] Preserve the installed OpenClaw profiles, pairing, user data and workspace customisations.
-- [ ] Do not reinstall or replace working components without a demonstrated technical reason.
-- [ ] Never run destructive Git cleanup/reset commands against the existing dirty working tree.
-- [ ] Never overwrite configuration, databases or user data without a recoverable backup.
+### Fresh install on this PC
+- [ ] Follow the [fresh-install guide](README.md) before treating any component as available.
+- [ ] Install OpenClaw, Ollama, OpenCode, the keep-list plugins and the free local tools as new steps.
+- [ ] Give the main Windows user write access to the Gateway config. An isolated Gateway session that withholds that write access makes CLI writes hang with `file lock timeout`.
+- [ ] Keep Git history intact. Ask before any cleanup or reset of the working tree.
+- [ ] Back up configuration, databases and user data, and confirm the copy can be restored, before overwriting them.
 - [ ] Prefer custom agents, tools, skills, MCP integrations, adapters and external extensions.
 - [ ] Keep OpenClaw custom functionality separate from upstream files wherever practical.
 - [ ] Establish rollback checkpoints before substantial changes.
@@ -201,7 +203,7 @@ The objective is maximum practical AI capability for $0 in additional software a
 
 ### Execution discipline
 
-**User rule — 18 November 2026 (supersedes the earlier blanket official-repair wait gate):** Do not wait solely for an official release before progressing the integration. Pursue supported, bounded, reversible diagnostics and repairs using the existing installations, with real acceptance evidence. The user explicitly revoked the previous wait-for-official-repair prerequisite and authorised proceeding with the prepared temporary supported-CLI MCP discovery test. This does not authorise spending, model downloads, credential exposure, ownership/security bypasses, missing-runtime-file fabrication, runtime-path overrides, profile switching, Gateway/Companion restart/reset/reinstall, ACL/security changes or elevated/destructive actions. Those existing boundaries remain; request specific approval for a concrete action if one becomes necessary. Keep any unresolved native Node task BLOCKED on its actual technical failure, rather than a blanket waiting policy. Dated handoffs/execution entries preserve earlier rules as history; this current directive takes precedence.
+**Current setup rule:** Start from the [fresh-install guide](README.md). Install OpenClaw 2026.11.5 or newer, then Ollama with `qwen3.8:27b`, then OpenCode via acpx. Archived handoffs are a wiped install, so they are not a running system and they do not block new work. Stay inside the zero-cost and local-Ollama rules. Ask before credential exposure, ownership or security changes, ACL edits, or elevated and destructive actions. If the Gateway runs in an isolated session, give the main user write access to the config, or CLI writes hang with `file lock timeout`.
 - [ ] Work from this master checklist at the start and end of each work session.
 - [ ] Work in dependency order, one meaningful milestone at a time.
 - [ ] Batch related operations to reduce repetitive user work.
@@ -258,7 +260,7 @@ OpenClaw must distinguish:
 - [ ] Create dependency and integration maps.
 - [ ] Finalise implementation sequencing.
 
-**Acceptance:** The existing installation and customisations are understood sufficiently to extend without damaging working functionality.
+**Acceptance:** The fresh installation is inventoried well enough to extend it, including OpenClaw version, model tag, enabled plugins and local tool list.
 
 ## PHASE 1 — Safe foundation
 
@@ -283,17 +285,17 @@ OpenClaw must distinguish:
 - [ ] Ensure local development services bind to localhost by default.
 
 ### Local inference — first functional milestone
-- [ ] Identify existing Ollama installation.
-- [ ] Record the installed Ollama model catalogue and the active 27B default.
+- [ ] Install Ollama and pull `qwen3.8:27b`.
+- [ ] Record the Ollama model catalogue and set `qwen3.8:27b` as the default.
 - [ ] Prepare bounded local-inference test package.
 - [ ] Run direct Ollama inference test.
 - [ ] Verify a real model response.
-- [ ] Run OpenClaw inference through its actual installed runtime/CLI.
+- [ ] Run OpenClaw inference through the installed runtime and CLI.
 - [ ] Verify OpenClaw receives a real response from the local model.
 - [ ] Record exact model identifier, latency, errors and resource use.
-- [ ] Select first known-good local inference configuration.
+- [ ] Select the first known-good local inference configuration.
 
-**Acceptance:** Existing OpenClaw remains recoverable and a real local model response is demonstrated through the actual OpenClaw runtime. A direct Ollama response alone does not satisfy the integration test.
+**Acceptance:** OpenClaw can be reinstalled from the fresh-install guide, and a real local model response is demonstrated through the OpenClaw runtime. A direct Ollama response alone does not satisfy the integration test.
 
 ## PHASE 2 — Local intelligence engine
 
@@ -500,7 +502,7 @@ The technical design and implementation/test contract are maintained in [WINDOWS
 - [ ] Store screenshots locally and attach timestamps, display/window identity and dimensions to evidence.
 - [ ] Implement local OCR with word/line geometry and confidence where supported.
 - [ ] Evaluate built-in Windows OCR and a free local engine such as Tesseract; verify installation, language data, licensing and actual accuracy before selection.
-- [ ] Integrate an already-installed or separately verified zero-cost local vision model for visual context, ambiguous layouts and controls that expose poor accessibility metadata.
+- [ ] Install and test a zero-cost local vision model for visual context, ambiguous layouts and controls that expose poor accessibility metadata.
 - [ ] Route visual tasks only to models that are actually installed and tested; no cloud vision fallback.
 - [ ] Combine screenshot, UIA tree and OCR evidence; preserve disagreement and confidence rather than inventing a control target.
 - [ ] Mask or exclude passwords, authentication codes, financial details and other secrets from screenshots, OCR output, prompts and logs by default.
@@ -762,12 +764,12 @@ Implementation detail, adapter comparison, tool contract and test procedure: [do
 
 ---
 
-## 4. User-facing experience across the installed applications
+## 4. User-facing experience
 
 
-Use OpenClaw Companion and Chat as the primary interface.
+Use OpenClaw Companion and Chat as the primary interface after the [fresh-install guide](README.md).
 
-- [ ] Keep OpenClaw as the existing direct desktop AI workspace.
+- [ ] Install OpenClaw as the direct desktop AI workspace.
 - [ ] Use the OpenClaw Control UI as the initial view of coordinated agent tasks and sessions, if its local setup and security checks pass.
 - [ ] Use OpenCode's own interface/session for software-development work when direct developer interaction is needed.
 - [ ] Make task progress, agent ownership, tool use, changed files, research sources, approvals, errors, verification status and deliverables visible in the relevant application.
@@ -900,12 +902,12 @@ Read AGENTS.md and this checklist at session start. Select one eligible task unl
 
 ## Delivery sequence
 
-1. Prove native Chat inference, including two timed replies, cancellation and a useful error if Ollama is unavailable. Verify the current startup path at a normal Windows sign-in.
+1. Prove native Chat inference, including two timed replies, cancellation and a useful error if Ollama is unavailable. Verify startup at a normal Windows sign-in after OpenClaw is installed.
 2. Complete an OpenCode ACP task in a disposable repository. Return changed paths, verifier exit code and test results to the originating OpenClaw session.
-3. Compare Windows UI Automation, pywinauto and FlaUI on the same desktop tasks. Exercise a browser form and verified download with Playwright and an installed browser. Record which adapters cover which applications.
+3. Compare Windows UI Automation, pywinauto and FlaUI on the same desktop tasks. Exercise a browser form and verified download with Playwright and a browser. Record which adapters cover which applications.
 4. Exercise Git checkpoints and restore representative source, configuration and data into a separate directory. Compare hashes.
-5. Inspect existing OpenClaw session storage before extending local task history. Test search, retention, restart recovery and redaction. Show per-connection health, task owner, progress, last successful check and failure reason in the native interface.
+5. After install, inspect OpenClaw session storage before extending local task history. Test search, retention, restart recovery and redaction. Show per-connection health, task owner, progress, last check and failure reason in the native interface.
 
 ## Project boundaries and migration coverage
 
-The archived master supplies the operating rules (section 0), integration gates (0A), operating cycle (1), roadmap (3), user interface, permissions and mobile requirements (4–6), acceptance tests (8), task records (9) and session protocol (12–13). The architecture and baseline above replace the historical inventory, diagrams, queue and live status (2, 7, 10–11). The archived execution log (14) remains historical evidence. The old GUI bridge, backend watchdog and port migration are retired implementations. Their user-facing requirements survive as native Chat, verified delegation, responsiveness, recovery and sign-in tests.
+The archived master under `legacy/jarvis-os/` keeps an old copy of the operating rules, roadmap and execution log. It describes a wiped install. This file is the checklist to follow, and [README.md](README.md) is the install guide. The old GUI bridge, backend watchdog and port migration are retired implementations. Their user-facing requirements survive as native Chat, delegation, responsiveness, recovery and sign-in tests.

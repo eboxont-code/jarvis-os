@@ -1,10 +1,12 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # JARVIS Project Controller — Windows
 
 > **Current OpenJarvis front-door integration:** read [the dated bridge handoff](../docs/OPENJARVIS_FRONTDOOR_2026-11-18.md) after the complete latest master. Its project-owned addon, coordinator and guarded coding worker are distinct from this older prompt controller. Current Gateway port is18789 after the approved migration; previous50368 snapshots are historical. Full current startup/native acceptance remains in the sole master.
 
-> This older repository/prompt controller is separate from the installed **JARVIS AI Stack** login startup. For ready-after-reboot continuation, read the [autostart handoff](../docs/CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md) and [startup/rollback documentation](../docs/AUTOSTART_READINESS.md) after the complete latest master. Do not rerun this controller installer or alter OpenJarvis configuration to verify existing app autostart. The controller prompt-loading test below remains a separate acceptance item.
+> This older prompt controller is archived with the wiped install. Follow the repository root fresh-install guide. Leave this controller uninstalled.
 
-The controller connects the private eboxont-code/jarvis-os master checklist to the installed OpenJarvis configuration without editing or replacing the OpenJarvis source checkout.
+The notes below describe how this controller used to attach a checklist to OpenJarvis. OpenJarvis is not part of the fresh install.
 
 ## What it does
 
@@ -21,7 +23,7 @@ All Git subprocesses have a 45-second timeout. Git credential prompts are disabl
 
 Clone the private repository to a stable location. The example uses %USERPROFILE%\jarvis-os:
 
-    git clone https://github.com/eboxont-code/jarvis-os.git "$HOME\jarvis-os"
+    git clone https://github.com/private-archive/jarvis-os.git "$HOME\jarvis-os"
     Set-Location "$HOME\jarvis-os"
     powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\runtime\Install-JARVIS-ProjectController.ps1
 
@@ -75,7 +77,7 @@ The controller itself uses local PowerShell and Git plus the existing GitHub rem
 
 - No paid service, API, subscription, token purchase or cloud inference is used.
 - No GitHub token is embedded in scripts. Git uses the user's existing credential manager.
-- No changes are made to the existing C:\Users\Boxont\OpenJarvis source repository.
+- No changes are made to the existing C:\Users\the operator\OpenJarvis source repository.
 - The only OpenJarvis config change is a backed-up system_prompt_path setting. A non-empty inline system_prompt or a different existing system_prompt_path causes the launcher to stop rather than overwrite custom instructions.
 - The controller cannot guarantee that every generic AI chat automatically has GitHub or local shell access. The OpenJarvis agent must have permission to execute the status helper; otherwise it must report the limitation and use an available connected GitHub capability or mark the task blocked.
 - The first live prompt-load test on the installed Windows desktop app remains outstanding. Creating these files is not proof of a working runtime integration.

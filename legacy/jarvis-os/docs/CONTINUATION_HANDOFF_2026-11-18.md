@@ -1,14 +1,16 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # JARVIS Continuation Handoff — 2026-11-18
 
 > **Historical snapshot — superseded for current continuation.** Read the complete current [master](../MASTER_TODO.md), then [the later autostart continuation handoff](CONTINUATION_HANDOFF_2026-11-18_AUTOSTART.md). The official-repair wait gate, unregistered MCP and ENOENT-only block below are earlier evidence, not current instructions. The user revoked the blanket wait gate; real MCP/ACP/native checks and an unattended stopped-stack startup subsequently passed. Actual Windows reboot/sign-in acceptance remains governed by the latest master. The original record below is preserved intact as history.
 
 > **Purpose:** allow a new authorised AI session to continue the JARVIS project without relying on private chat history.
 >
-> **Authority:** [MASTER_TODO.md](../MASTER_TODO.md) remains the sole project plan and status authority. This document is a dated evidence and handoff record, not a competing checklist. Follow [AGENTS.md](../AGENTS.md) first.
+> **Authority:** This handoff is archived. The repository root `README.md` is the fresh-install guide and the repository root `REQUIREMENTS.md` is the checklist. Follow the root `AGENTS.md` first.
 
 ## Mandatory safe session start
 
-1. Confirm the repository is `eboxont-code/jarvis-os` and refresh `main`.
+1. Confirm the repository is `private-archive/jarvis-os` and refresh `main`.
 2. Read the **complete current** `AGENTS.md`, `MASTER_TODO.md`, and relevant linked documentation. Do not treat this dated handoff as newer authority.
 3. Perform fresh, read-only checks of process, endpoint, model, and config state. Do not assume a process, port, or local workspace from this record still exists.
 4. Select only the next eligible master task, mark it **WORKING** before changing project code, and leave no stale WORKING item at the end.
@@ -64,8 +66,8 @@ Relevant recorded commits:
 
 ### OpenCode
 
-- CLI observed at `C:\Users\Boxont\AppData\Roaming\npm\opencode.ps1`; version reporting was `2.2.6` in the last direct check, while earlier project evidence records `2.2.7` in the T3-P2 session. Recheck rather than reconcile by modifying anything.
-- `C:\Users\Boxont\.config\opencode\opencode.json` contained only the local Ollama provider at `http://127.0.0.1:11434/v1`, primary `qwen3.8:27b`, small model `qwen3.5:4b`; no configured cloud provider or cloud credential was found.
+- CLI observed at `C:\Users\the operator\AppData\Roaming\npm\opencode.ps1`; version reporting was `2.2.6` in the last direct check, while earlier project evidence records `2.2.7` in the isolated-account session. Recheck rather than reconcile by modifying anything.
+- `C:\Users\the operator\.config\opencode\opencode.json` contained only the local Ollama provider at `http://127.0.0.1:11434/v1`, primary `qwen3.8:27b`, small model `qwen3.5:4b`; no configured cloud provider or cloud credential was found.
 - A bounded text-only local prompt returned `OPENCODE_LOCAL_OK` with exit 0. It did not auto-approve tools, files, or network work.
 
 ### OpenClaw
@@ -75,9 +77,9 @@ Relevant recorded commits:
 - The native Node issue remained open upstream as OpenClaw Windows Node issue #1691. Treat an official reviewed stable repair as the prerequisite for any retry.
 - With explicit temporary-test approval, static CLI help showed `openclaw mcp add` supports stdio command/arguments/tool include/approval and supports probing/reload/unset.
 - The attempted non-persistent discovery of the repository read-only adapter was rejected before saving because OpenClaw tried to spawn:
-  `C:\Users\T3-P2\AppData\Local\OpenClawGatewayMSIX\agent-node\node-v24.22.1-win-x64\node.exe`
+  `C:\Users\isolated-account\AppData\Local\OpenClawGatewayMSIX\agent-node\node-v24.22.1-win-x64\node.exe`
   and received `ENOENT`.
-- The active OpenClaw CLI resolved `C:\Users\T3-P2\.openclaw\openclaw.json`, an isolated T3-P2 profile. A read-only `openclaw mcp list` reported no managed server config there. Do not modify that profile to bridge the gap.
+- The active OpenClaw CLI resolved `C:\Users\isolated-account\.openclaw\openclaw.json`, an isolated isolated-account profile. A read-only `openclaw mcp list` reported no managed server config there. Do not modify that profile to bridge the gap.
 
 ## Protected-config integrity evidence
 
@@ -119,7 +121,7 @@ Until then, the next eligible work is limited to the non-destructive inventory/i
 
 ## Local-workspace caution
 
-A prior incomplete local clone at `C:\Users\Boxont\Documents\Codex\2026-11-15\referenced-chatgpt-conversation-this-is-an\work\jarvis-os` was intentionally preserved after the clone did not finish. It is not an authoritative checkout and must not be reused, repaired, or deleted without a fresh read-only inspection and user direction. The GitHub repository is the current authoritative project record.
+A prior incomplete local clone at `C:\Users\the operator\Documents\Codex\2026-11-15\referenced-chatgpt-conversation-this-is-an\work\jarvis-os` was intentionally preserved after the clone did not finish. It is not an authoritative checkout and must not be reused, repaired, or deleted without a fresh read-only inspection and user direction. The GitHub repository is the current authoritative project record.
 
 ## What this handoff records
 

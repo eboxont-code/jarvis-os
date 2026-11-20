@@ -4,100 +4,141 @@ These 20 requirements extend the [OpenClaw roadmap](../REQUIREMENTS.md). OpenCla
 
 Apply the [dependency review](DEPENDENCY_REVIEW.md) before selecting any provider. The local implementation must remain free to operate. Hosted brand names below identify optional interoperability targets. Enable an operation only after verifying its free entitlement and maintained interface.
 
-## Installation status on 19 November 2026
+Nothing below is installed, enabled, connected, or tested. Complete the [fresh-install guide](../README.md) first. The plugin ids there are the ones to enable and the ones to leave disabled.
 
-OpenClaw's Gateway successfully called key-free web search, Memory Wiki status and Workboard statistics. The [local productivity skill](../skills/local-productivity/SKILL.md) is eligible for the main agent. Its Windows Gateway Python environment passed sample file and calculation tests. Those tests ran directly inside the Gateway environment. A model-driven chat turn invoking the skill remains to be verified.
+## Setup still to do
 
-| # | Area | Installed or tested | Remaining dependency or test |
-|---|---|---|---|
-| 1 | Email | Thunderbird and the OpenClaw IMAP watcher are installed. | Authorise the selected mailboxes privately. Test read, draft, monitoring and send permissions separately. A desktop login alone does not connect the watcher. |
-| 2 | Calendar and contacts | Generated and parsed a sample ICS event and vCard. | Provider calendar and contact permissions, sync and invitation approval. |
-| 3 | App building | Local OpenCode and WordPress Playground CLI are installed. | Test an end-to-end build against a selected project. A hosted builder needs its own account. |
-| 4 | Code and repositories | Git and GitHub CLI are installed. | Authorise the intended identity for GitHub CLI and verify a scoped OpenClaw coding task. |
-| 5 | Hosting | Caddy returned HTTP 200 with the expected content from a disposable loopback site. | Select a target before a real deployment and rollback test. |
-| 6 | Databases | Both the SQLite CLI and the Gateway runtime passed sample queries. | Authorise a project database and verify read-only access. |
-| 7 | Domains and WordPress | Local WordPress Playground installed and its CLI opened. | An authorised site and registrar are needed for DNS, renewal and migration checks. |
-| 8 | Error tracking | Jaeger installed. Windows application error logs were readable. | Instrument a selected app and verify a trace, release and alert. |
-| 9 | Spreadsheets and documents | Created and reopened XLSX, DOCX, PPTX and PDF samples. LibreOffice separately exported a PDF. | Verify a full reporting task from OpenClaw Chat and authorise any cloud sharing. |
-| 10 | Design and media | Krita and Kdenlive installed. Pillow passed a PNG round trip and FFmpeg processed a synthetic clip. | Verify a finished edit and evaluate local generative models separately. |
-| 11 | Social | Public research is available through web search. | Select a supported platform and authorise the account for private operations. |
-| 12 | Vault | KeePassXC installed. | Private vault setup and a dummy-credential autofill approval test. |
-| 13 | Computer and browser | Gateway-local files work. Native Windows control and browser plugins are present. | Companion reported a Gateway ownership inspection failure during reconnect. The paired Windows Node was offline at the last check. |
-| 14 | Research | Installed the official DuckDuckGo plugin for this Gateway version. An authenticated OpenClaw search returned two results. A local unit conversion passed. | Verify live provider-specific rates, travel, prices and approved booking flows. |
-| 15 | Calls and messaging | Windows Phone Link is available. | Phone pairing, device permissions and a verified zero-cost route for calls or messages. |
-| 16 | Meetings | Browser-based meeting access is an integration candidate. | Select the meeting service, authorise an invited test call and verify consent-based notes. |
-| 17 | Automation | OpenClaw returned the local scheduler inventory. | Verify firing, pause/resume and missed-run recovery using a disposable routine. |
-| 18 | Memory and skills | The main agent catalogued local-productivity as eligible. The Gateway answered wiki_status. | Verify recall and rule revocation across two native chat sessions. |
-| 19 | Multiple agents | Workboard answered a live statistics request. | Specialist agents remain removed at the operator's request. |
-| 20 | Phone | Windows Phone Link and KDE Connect are installed. | Complete device pairing and verify each supported permission. Desktop pairing alone does not register an OpenClaw iOS node. |
+- [ ] Email — enable `imap`. Connect each selected mailbox privately. Test read, draft, monitoring and send permissions separately.
+- [ ] Calendar and contacts — connect a local Nextcloud CalDAV calendar. Generate a sample ICS event and vCard, then test sync and invitation approval.
+- [ ] App building — install OpenCode via acpx. Test an end-to-end build against a selected local project.
+- [ ] Code and repositories — install Git. Enable `github`. Connect the intended identity and verify a scoped OpenClaw coding task.
+- [ ] Hosting — serve a disposable loopback site with a free local server such as Caddy, then select a target before any real deployment and rollback test.
+- [ ] Databases — install a local SQLite tool and run a sample query. Connect a project database with read-only access before any write.
+- [ ] Domains and WordPress — install local WordPress Playground when a site test is needed. DNS, renewal and migration checks wait for an authorised site.
+- [ ] Error tracking — start with local Windows application logs. Connect a zero-cost tracker only after a sample trace, release and alert are defined.
+- [ ] Spreadsheets and documents — install LibreOffice. Create and reopen sample XLSX, DOCX, PPTX and PDF files from OpenClaw Chat.
+- [ ] Design and media — install FFmpeg, Krita and Kdenlive when those jobs are needed, and install ComfyUI with SDXL base 1.0. This PC has a 12 GB RTX 4070. Flux needs a quantised version.
+- [ ] Social — enable `duckduckgo` and install SearXNG for public research. Connect an account only for a later private operation, and only on a free route.
+- [ ] Vault — install KeePassXC and enable `vault`. Set up a private vault and test autofill with a dummy credential.
+- [ ] Computer and browser — enable `browser` and `device-pair`. Install `@playwright/mcp`. Pair the Windows node.
+- [ ] Research — enable `duckduckgo` and `web-readability`. Install SearXNG. Run one search from OpenClaw after those steps.
+- [ ] Calls and messaging — connect one delivery channel, or set `commands.ownerAllowFrom`, so heartbeat and cron can deliver.
+- [ ] Meetings — choose a meeting service and connect an invited test call before any notes.
+- [ ] Automation — after a delivery route exists, create one disposable routine and test firing, pause, resume and missed-run recovery.
+- [ ] Memory and skills — enable `memory-core` and `memory-wiki`. Test recall and rule revocation across two new chat sessions.
+- [ ] Multiple agents — enable `workboard` for the main assistant. Add a specialist only when a job needs a separate owner.
+- [ ] Phone — install KDE Connect. Pair a device and test each permission. Desktop pairing does not register an OpenClaw phone node.
 
 ## Capability checklist
 
 | # | Capability | Setup and acceptance check |
 |---|---|---|
-| 1 | Email | Authorise each selected inbox separately (e.g. Gmail, Outlook, iCloud or Hostinger). Search and summarise a thread with a PDF invoice, save a reply in the correct mailbox, and test labels, sorting, archive, trash and spam/promotion cleanup on sample mail. Monitor bills, verification notices, job replies and selected senders. Keep codes out of summaries. Apply the send and deletion rules below. |
-| 2 | Calendar and contacts | Connect an authorised Google, Outlook or iCloud calendar and address book. Resolve a test contact, find a free slot, then create, move and cancel a test event. Verify booking-link management if a service such as Calendly is connected. Ask before changes that affect other people. |
-| 3 | App builders | Select the account and existing Lovable, Replit or equivalent project. Compare project history and revision with the linked repository, detect an active build and wait for it before submitting a prompt. Verify the result in the same project. Automatic approvals cover build plans only. Secret access, payment and publishing fall outside that permission. |
-| 4 | Code and repositories | Scope GitHub or another provider to selected repositories. Read commits, branches, PRs, issues and CI. Test lint, build and tests before pushing a fix, merging a clean PR or closing a superseded PR with a note. Honour main-branch protection. Prohibit force pushes, resets and history rewrites. Use local OpenCode for large jobs. A separately authorised remote worker requires a zero-cost environment and a scoped handoff. |
-| 5 | Hosting and deployment | Connect a selected host such as Vercel, Railway, Render or Firebase. Trace a deployment from commit to build logs, runtime errors and live revision. Test the approval flow for environment variables, domain changes, redeploy and rollback. Redact values from evidence. |
+| 1 | Email | Connect each selected inbox separately (for example Gmail, Outlook, iCloud or Hostinger). Search and summarise a thread with a PDF invoice, save a reply in the correct mailbox, and test labels, sorting, archive, trash and spam cleanup on sample mail. Monitor bills, verification notices, job replies and selected senders. Keep codes out of summaries. Apply the send and deletion rules below. |
+| 2 | Calendar and contacts | Connect an authorised calendar and address book, with local Nextcloud CalDAV as the local option. Resolve a test contact, find a free slot, then create, move and cancel a test event. Verify booking-link management if a free booking service is connected. Ask before changes that affect other people. |
+| 3 | App builders | Select the local OpenCode project. Compare project history and revision with the linked repository, detect an active build and wait for it before submitting a prompt. Verify the result in the same project. Automatic approvals cover build plans only. Secret access, payment and publishing fall outside that permission. |
+| 4 | Code and repositories | Connect GitHub or another free provider to selected repositories. Read commits, branches, PRs, issues and CI. Test lint, build and tests before pushing a fix, merging a clean PR or closing a superseded PR with a note. Honour main-branch protection. Prohibit force pushes, resets and history rewrites. Use local OpenCode for large jobs. A separately authorised remote worker requires a zero-cost environment and a scoped handoff. |
+| 5 | Hosting and deployment | Prefer a site served on this PC. A hosted target such as a free Vercel, Railway, Render or Firebase project is optional and stays outside the critical path. Trace a deployment from commit to build logs, runtime errors and live revision. Test the approval flow for environment variables, domain changes, redeploy and rollback. Redact values from evidence. |
 | 6 | Databases | With a read-only role, list projects and tables, identify the database used by a running site, run a sample SELECT and review security and performance advisories. Require explicit approval for migrations, schema changes and destructive SQL. Verify against disposable data. |
-| 7 | Domains, DNS and web hosting | Connect the selected registrar or hosting panel. Inspect mail, verification and site records, renewals, expiry, billing, SSL, site health, speed and errors. Test a domain connection, WordPress update/security check and host migration on a test site. Confirm DNS and production changes before applying them. |
+| 7 | Domains, DNS and web hosting | Connect a registrar or hosting panel for a zero-cost test. Inspect mail, verification and site records, renewals, expiry, billing, SSL, site health, speed and errors. Test a domain connection, WordPress update and host migration on a test site. Confirm DNS and production changes before applying them. |
 | 8 | Error tracking | Connect a zero-cost error tracker such as a self-hosted instance. Trigger a sample crash, locate its stack trace, identify the release and verify delivery of a test alert. |
 | 9 | Spreadsheets, documents and files | Produce an editable spreadsheet with formulas and charts, a tracker, document, PDF and slide deck. Extract sample data from a PDF, table and image. Reopen and update a saved report or dashboard from a persistent local library. Test optional Sheets, Docs, Drive, OneDrive or Dropbox access, approved sharing and email delivery separately. |
-| 10 | Design and media | Verify local image generation and editing, then produce a short video with edited footage, narration, captions and music. Test an optional design-tool import/export (e.g. Figma, Canva, Picsart or Adobe) where free access allows it. Use free assets and locally generated graphics. Purchased design credits conflict with the project budget. |
-| 11 | Social media | Search public posts, profiles, trends and news where public access permits. Separately authorise the user's account to read its timeline, bookmarks and DMs. Preview the exact post or DM and obtain approval before sending. |
-| 12 | Vault and secure input | Use a password manager such as Bitwarden or 1Password if eligible, with approval per login. Test masked entry and autofill using dummy credentials, address, contact and test-card data. Keep passwords, card numbers, codes, tokens and keys out of chat, screenshots and logs. Use private input or user handoff for 2FA. Bind purchase approval to the specific order. |
-| 13 | Computer and browser | Use the paired Windows node for persistent scripts, tool installation and PDF, CSV, spreadsheet, Word, slide, chart and ZIP output. Test an isolated signed-in browser profile across two jobs using a sample application or settings form. Pause before final submission unless authorised. Hand CAPTCHA and passkey challenges to the user. Obtain approval each time for commands or transfers on a personal computer. A persistent remote computer is optional and subject to the zero-cost gate. |
+| 10 | Design and media | Install local image generation and editing, then produce a short video with edited footage, narration, captions and music. Test an optional design-tool import or export where free access allows it. Use free assets and locally generated graphics. Purchased design credits conflict with the project budget. |
+| 11 | Social media | Search public posts, profiles, trends and news where public access permits. Separately connect the account to read its timeline, bookmarks and DMs. Preview the exact post or DM and obtain approval before sending. |
+| 12 | Vault and secure input | Install KeePassXC and enable `vault`. A hosted manager is optional and only if its free tier stays free. Test masked entry and autofill using dummy credentials, address, contact and test-card data. Keep passwords, card numbers, codes, tokens and keys out of chat, screenshots and logs. Use private input or user handoff for 2FA. Bind purchase approval to the specific order. |
+| 13 | Computer and browser | After the Windows node is paired, use it for persistent scripts, tool installation and PDF, CSV, spreadsheet, Word, slide, chart and ZIP output. Test an isolated signed-in browser profile across two jobs using a sample application or settings form. Pause before final submission unless authorised. Hand CAPTCHA and passkey challenges to the user. Obtain approval each time for commands or transfers on a personal computer. A persistent remote computer is optional and subject to the zero-cost gate. |
 | 14 | Research and shopping | Compare current products, prices, hotels, flights and restaurants, and retrieve hours, maps, weather and news. Record source and retrieval time for changing facts. Check currency, time-zone and unit conversions and calculations. Preview the complete order or booking and obtain explicit confirmation. |
-| 15 | Phone and messaging | Where an authorised zero-cost calling interface exists, test a call to a consenting recipient before calling a business. Relay a live question to the user and return the approved answer. Draft SMS and app messages, preview recipient and content, then obtain approval to send. |
-| 16 | Meetings and team chat | With an invited test meeting on Meet, Zoom or Teams, verify joining, permitted note-taking and posting in meeting chat when requested. Check participant consent before capture or transcription. Test Slack, Teams, Otter or Fireflies separately if selected and eligible. |
-| 17 | Automation | Create a one-off reminder, a recurring routine at a specified local time, and an email, GitHub or webhook trigger. Verify the time zone, deduplication and recovery after restart. List, edit, pause, resume and run a routine on demand. Scheduled runs inherit the same approval rules. |
-| 18 | Memory and skills | Save a standing preference, an approval rule with its scope, and a reusable step-by-step playbook locally. Retrieve them in a new authorised assistant session. Change or revoke a rule and verify the next run sees the update. Keep secrets in the vault. |
+| 15 | Phone and messaging | Where a zero-cost calling interface is connected, test a call to a consenting recipient before calling a business. Relay a live question to the user and return the approved answer. Draft SMS and app messages, preview recipient and content, then obtain approval to send. |
+| 16 | Meetings and team chat | With an invited test meeting, verify joining, permitted note-taking and posting in meeting chat when requested. Check participant consent before capture or transcription. Test a team-chat or notes service separately if one is selected and eligible at zero cost. |
+| 17 | Automation | Create a one-off reminder, a recurring routine at a specified local time, and an email, GitHub or webhook trigger. Verify the time zone, deduplication and recovery after restart. List, edit, pause, resume and run a routine on demand. Scheduled runs inherit the same approval rules. Heartbeat and cron need one connected delivery channel or `commands.ownerAllowFrom`. |
+| 18 | Memory and skills | Save a standing preference, an approval rule with its scope, and a reusable step-by-step playbook locally. Retrieve them in a new assistant session. Change or revoke a rule and verify the next run sees the update. Keep secrets in the vault. |
 | 19 | Multiple agents | Assign one owner per job, send a scoped task or rule update to another assistant, and review its authorised task conversation and result. Demonstrate usage reporting per assistant and routine. Keep unrelated private chats outside the handoff. |
 | 20 | Phone integration | Pair an authorised phone and check OS permissions for calendar, contacts, reminders, alarms, smart-home controls and location individually. Verify each supported function with a test action and confirm that revoking access takes effect. Record platform-specific limits. |
 
-## Selected Windows Gateway plugins
+## Plugins to enable
 
-On 19 November 2026, the installed OpenClaw 2026.11.1 plugin registry reported all seven entries below as loaded and zero repeated plugin IDs. These bundled plugins use the existing installation. This check establishes registration. Each workflow still needs its own functional test.
+Enable only these. One tool per job. Commands and the matching disable list are in the [fresh-install guide](../README.md).
 
-| Plugin | Roadmap use | Scope |
-|---|---|---|
-| Workboard | Task tracking and recovery | Tracks work items, ownership and completion evidence. Works with the main agent. |
-| Memory Wiki | Durable project knowledge | Compiles reference pages. Memory Core continues to handle recall. |
-| Policy | Configuration review | Adds workspace conformance checks to Doctor. Automatic workspace repair is disabled. A project policy is needed for project-specific checks. |
-| OC Path | Documents and file workflows | Adds a CLI for addressing workspace files with oc:// references. File Transfer handles movement between devices. |
-| LLM Task | Structured data extraction | Offers a JSON workflow step. The configured completion allowlist contains only the existing local Ollama Qwen model. |
-| Code Mode QuickJS | Local computation | Supplies the QuickJS executor for Code Mode. Executor registration and a successful Code Mode job are separate checks. |
-| IMAP | Incoming mail monitoring | Loads the mailbox watcher. No account was connected. Mailbox authorisation and sender rules are prerequisites for a live test. |
+- [ ] Enable `ollama` — local inference through Ollama.
+- [ ] Enable `acpx` — OpenCode coding sessions.
+- [ ] Enable `memory-core` — recall.
+- [ ] Enable `memory-wiki` — durable project pages.
+- [ ] Enable `workboard` — task tracking for the main agent.
+- [ ] Enable `policy` — configuration review. Leave automatic workspace repair off until a project policy exists.
+- [ ] Enable `oc-path` — `oc://` paths for workspace files.
+- [ ] Enable `llm-task` — JSON workflow steps, allowlisted to local `qwen3.8:27b` only.
+- [ ] Enable `code-mode-quickjs` — local QuickJS execution.
+- [ ] Enable `imap` — mailbox watcher. Connect a mailbox separately.
+- [ ] Enable `github` — repository reads. Connect write access separately.
+- [ ] Enable `browser` — local browser tool.
+- [ ] Enable `document-extract` — local document text.
+- [ ] Enable `file-transfer` — file movement between devices.
+- [ ] Enable `canvas` — local canvas output.
+- [ ] Enable `duckduckgo` — key-free web search.
+- [ ] Enable `web-readability` — readable page text.
+- [ ] Enable `device-pair` — pair the Windows node.
+- [ ] Enable `tts-local-cli` — local text to speech.
+- [ ] Enable `talk-voice` — local voice.
+- [ ] Enable `vault` — secret references. Connect KeePassXC separately.
 
-Browser, document extraction, GitHub public reading and ACP already have loaded plugins. The GitHub reader covers public documents and previews. Repository writes require separate access. MCP Events requires a public HTTPS callback in this build and was deferred.
+## Plugins to leave disabled
 
-## Main chat setup on 19 November 2026
+Paid providers and duplicates. Disable each one. Do not enable a second plugin for a job the keep list already covers.
 
-The main assistant has a workspace-capabilities skill for choosing tools and applying the approval rules. Each row below describes the operation actually available or the setup still needed.
+- [ ] Disable `openai`
+- [ ] Disable `google`
+- [ ] Disable `xai`
+- [ ] Disable `anthropic`
+- [ ] Disable `alibaba`
+- [ ] Disable `minimax`
+- [ ] Disable `nvidia`
+- [ ] Disable `together`
+- [ ] Disable `huggingface`
+- [ ] Disable `microsoft-foundry`
+- [ ] Disable `github-copilot`
+- [ ] Disable `copilot-proxy`
+- [ ] Disable `opencode-go`
+- [ ] Disable `openrouter`
+- [ ] Disable `clawrouter`
+- [ ] Disable `litellm`
+- [ ] Disable `lmstudio`
+- [ ] Disable `vllm`
+- [ ] Disable `sglang`
+- [ ] Disable `fal`
+- [ ] Disable `kie`
+- [ ] Disable `runway`
+- [ ] Disable `azure-speech`
+- [ ] Disable `elevenlabs`
+- [ ] Disable `microsoft`
+- [ ] Disable `deepgram`
+- [ ] Disable `senseaudio`
+- [ ] Disable `active-memory`
+- [ ] Disable `cua-computer`
+- [ ] Disable `linux-node`
 
-| # | Area | Status and remaining setup |
-|---|---|---|
-| 1 | Mail | Available but not connected. Gmail, Outlook and iCloud sign-in pages have dashboard widgets. Private sign-in and a mailbox read are required. IMAP monitoring requires separate authorisation. |
-| 2 | Calendar and contacts | Installed the local-productivity calendar draft script in main. The installed copy generated and reopened timed and all-day ICS files, preserved the event time across UTC conversion, and rejected missing offsets and reversed dates. It uses the existing icalendar 7.3.0 dependency. Live provider access requires private sign-in and an event read. Contact sync and booking links are unverified. |
-| 3 | App builders | Unverified. Select an existing project and authorise its account, then verify project history, free build entitlement and linked repository before a build. |
-| 4 | Repositories | Public reader registered. Private reads, writes and CI access from main are unverified. Authorise the repository and test a disposable branch. |
-| 5 | Hosting | Unverified. An authorised project and a successful deployment-log read are needed before any approved deployment change. |
-| 6 | Databases | Hosted access unverified. Supply an authorised read-only connection through private setup and verify a sample query. |
-| 7 | DNS and hosting | Unverified. Authorise the relevant zone or hosting panel and test a read before requesting approval for changes. |
-| 8 | Error tracking | Unverified. Select an eligible project and verify a sample event, release and alert. |
-| 9 | Files | The installed workspace-files plugin returned a valid PDF in a direct tool test. All four formats passed content checks. Main Chat attachment delivery remains unverified because the Gateway reported startup inspection in progress. Cloud editing, storage and sharing require separate authorisation. |
-| 10 | Design and media | Unverified. Local image processing libraries are present. Generative image, video, audio and design account workflows need specific tools and sample exports. |
-| 11 | Social | Public web research is available where indexed. Private timeline, bookmarks and DMs require an authorised account and a separate test. |
-| 12 | Vault | Unverified. A secure per-login handoff and masked test credential are prerequisites. Never paste secrets into the chat. |
-| 13 | Browser and computer | Connected for browser page opening. Persistent signed-in sessions and access to personal computers are separate. Windows node ownership proof is unresolved. |
-| 14 | Research and shopping | Connected for web search. Check availability on the source page. A purchase or booking needs separate approval. |
-| 15 | Calls and messaging | Unverified. No tested free calling interface or authorised messaging channel. A draft can be prepared in chat. |
-| 16 | Meetings and team chat | Unverified. An invited test meeting, consent and an authorised workspace are required. |
-| 17 | Automation | Connected for listing routines. Scheduled delivery, restart recovery and provider event triggers need separate tests. |
-| 18 | Memory and skills | Connected for Wiki access. Skills can be installed in main. Recall and revocation of a saved preference across fresh sessions need a separate test. |
-| 19 | Multiple agents | Excluded by request. Workboard is available to the main assistant for tracking tasks. |
-| 20 | iPhone integration | Unverified. Pair an authorised device and verify each exposed operation. Mail dashboard access provides no device permissions. |
+## Main chat setup
+
+Every area is still to connect. The [local productivity skill](../skills/local-productivity/SKILL.md) and the [workspace capabilities skill](../skills/workspace-capabilities/SKILL.md) are source in this repository. Install their tools before relying on them in chat.
+
+- [ ] Mail — enable `imap` and connect one mailbox. Sign-in stays on the provider page.
+- [ ] Calendar and contacts — connect Nextcloud CalDAV, or another free calendar, and read one event.
+- [ ] App builders — install OpenCode via acpx and run one local build.
+- [ ] Repositories — enable `github` and connect the repository used for a disposable branch.
+- [ ] Hosting — read one deployment log, or serve one loopback site, before any change.
+- [ ] Databases — open one read-only SQLite file and run a sample query.
+- [ ] DNS and hosting — connect a zone or panel only when a read test is ready.
+- [ ] Error tracking — connect a zero-cost project and read one sample event.
+- [ ] Files — install LibreOffice and the document tools, then create one file from chat.
+- [ ] Design and media — install ComfyUI with SDXL base 1.0, plus FFmpeg. Flux needs a quantised build on the 12 GB RTX 4070.
+- [ ] Social — enable `duckduckgo` and install SearXNG before any public research from chat.
+- [ ] Vault — install KeePassXC, enable `vault`, and run a dummy-secret lookup.
+- [ ] Browser and computer — enable `browser`, install `@playwright/mcp`, and pair the Windows node.
+- [ ] Research and shopping — enable `web-readability` and run one search. A purchase or booking needs a separate approval.
+- [ ] Calls and messaging — connect one delivery channel or set `commands.ownerAllowFrom`.
+- [ ] Meetings and team chat — connect an invited test meeting before notes or transcription.
+- [ ] Automation — list routines only after the scheduler is installed, then test one disposable run.
+- [ ] Memory and skills — enable `memory-core` and `memory-wiki`, then save and revoke one preference across two sessions.
+- [ ] Multiple agents — enable `workboard` for the main assistant.
+- [ ] Phone integration — install KDE Connect and pair one device.
 
 ## Approval rules
 
@@ -109,6 +150,6 @@ The main assistant has a workspace-capabilities skill for choosing tools and app
 
 ## Reporting connection status
 
-This checklist records requested behaviour. The dated installation table above records the operations tested so far. A working GitHub login for maintaining this repository, for example, does not establish that the OpenClaw agent can access GitHub.
+This checklist records requested behaviour. The setup lists above are still to do. A working login for maintaining this repository does not mean the OpenClaw agent can use that service.
 
-During setup, record a result **per provider and operation** in each numbered area so a successful read cannot imply permission to write. Use **Connected** after an end-to-end test from OpenClaw, **Available but not connected** after verifying an eligible interface and identifying the missing login or setup step, or **Not possible** with the observed platform, permission or cost constraint. Until assessed, mark the item **Unverified**. Include the test date, sanitised result, remaining setup step and limits. Keep personal details and raw evidence local.
+During setup, record a result **per provider and operation** in each numbered area so a successful read cannot imply permission to write. Use **Connected** after an end-to-end test from OpenClaw, **Available but not connected** after verifying an eligible interface and identifying the missing login or setup step, or **Not possible** with the observed platform, permission or cost constraint. Until that test, mark the item **Unverified**. Include the test date, sanitised result, remaining setup step and limits. Keep personal details and raw evidence local.

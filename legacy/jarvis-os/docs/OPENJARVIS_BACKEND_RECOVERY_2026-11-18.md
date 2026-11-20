@@ -1,3 +1,5 @@
+> **Archived wiped install.** This file is not current setup. The Windows install it describes has been removed. Nothing here is installed, enabled, connected, configured, paired, running, or done. Checked boxes, version numbers, and pairing notes below are historical and do not apply. Follow the fresh-install guide in the repository root `README.md`, and use the root `REQUIREMENTS.md` as the checklist.
+
 # OpenJarvis backend recovery — 18 November 2026
 
 This is implementation/evidence documentation, not another project tracker.
@@ -29,7 +31,7 @@ That observation establishes a concrete blocking path; it does not prove every
 earlier listener exit had the same cause.
 
 Backed up and hash-verified the complete existing
-C:\Users\Boxont\OpenJarvis\src\openjarvis\server\connectors_router.py before editing.
+C:\Users\the operator\OpenJarvis\src\openjarvis\server\connectors_router.py before editing.
 Only _connector_summary and list_connectors changed, verified by AST comparison:
 
 - Connector listing is now a regular FastAPI def route, so the installed FastAPI
@@ -97,7 +99,7 @@ backend or explicitly requested bootstrap can be recovered after confirmed failu
 An OS-held lock prevents duplicate watchdogs.
 
 The current-state file is:
-C:\Users\Boxont\Documents\Codex\jarvis-os-runtime\runtime-health.json
+C:\Users\the operator\Documents\Codex\jarvis-os-runtime\runtime-health.json
 
 It contains a timestamp, watchdog PID, boolean/phase, boot identifier, bounded
 event history and retry times. It contains no raw logs, config values, prompts or

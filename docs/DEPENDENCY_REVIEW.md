@@ -1,22 +1,31 @@
 # Free and maintained software review
 
-Reviewed 18 November 2026 for the active OpenClaw workspace on Windows. This review covers the core runtime, the roadmap's principal local tool candidates, and all 20 requested capability areas. Archived JARVIS code is outside the active stack.
+Software to install for a fresh OpenClaw workspace on Windows. Nothing in this review is installed, enabled, or connected yet. Follow the [fresh-install guide](../README.md). This review covers the core runtime, the roadmap's local tool candidates, and all 20 capability areas. Archived material under `legacy/jarvis-os/` is outside the active stack.
 
-## Installed runtime
+Rules for every row: zero additional cost, local first, Ollama only, and no paid cloud inference.
 
-| Component | Installed | Upstream comparison and decision |
+## Install these
+
+| Component | Install | Notes |
 |---|---|---|
-| Gateway | OpenClaw CLI 2026.11.1 inside Store package 2026.11.100.0 | Core release 2026.11.5 is newer. WinGet listed no newer Store package. The Store package and bundled CLI use different numbering. Track the supported Windows channel. [Core releases](https://github.com/openclaw/openclaw/releases) |
-| Companion | 2026.11.1 | WinGet offered 2026.11.3, matching the Windows project's latest release. Update available. [Windows releases](https://github.com/openclaw/openclaw-windows-node/releases) |
-| Ollama | 0.40.16 | Matches the latest published stable release checked. Local inference uses the existing PC. [Releases](https://github.com/ollama/ollama/releases) |
-| Qwen | qwen3.8:27b, local ID aaee06c39dcf | Matches the registry's llama.cpp variant on the tag page. Local and registry licence both report Apache 2.0. [Model and licence](https://ollama.com/library/qwen3.8:27b) |
-| OpenCode CLI | 2.2.6 | Official v2 package @opencode/cli reported 2.3.2 as latest. Update available. The separate opencode-ai package tracks v1. Use the v2 channel for this install. [Publisher instructions](https://opencode.ai/product) · [v2 registry](https://registry.npmjs.org/@opencode%2fcli/latest) |
+| OpenClaw | Latest stable, 2026.11.5 or newer | Windows Companion or the PowerShell installer, then `openclaw gateway install`. Confirm with `openclaw --version`. [Install](https://docs.openclaw.ai/install/) · [Windows](https://docs.openclaw.ai/platforms/windows/) · [Core releases](https://github.com/openclaw/openclaw/releases) · [Windows releases](https://github.com/openclaw/openclaw-windows-node/releases) |
+| Ollama | Current stable build | Local inference on this PC. [Releases](https://github.com/ollama/ollama/releases) |
+| Model | `ollama pull qwen3.8:27b` | The only inference model for chat and OpenCode. [Model and licence](https://ollama.com/library/qwen3.8:27b) |
+| OpenCode | Current `@opencode/cli`, through acpx | `openclaw plugins install @openclaw/acpx`, then enable `acpx`. Point it at local Ollama only. Leave `opencode-ai` and `opencode-go` unused. [Publisher instructions](https://opencode.ai/product) · [ACP setup](https://docs.openclaw.ai/tools/acp-agents-setup) |
 
-The live read-only status tool passed model presence, Gateway service state, authenticated health and paired Node connectivity. Native chat inference, ACP task completion and upgrade regression tests require separate evidence. No software was upgraded during this review.
+If Windows Hub runs the Gateway in an isolated session, give the main Windows user write access to the Gateway config. Without that write access, CLI writes hang with `file lock timeout`.
 
-## Project activity and adoption
+- [ ] Install OpenClaw 2026.11.5 or newer and the Gateway service.
+- [ ] Install Ollama and pull `qwen3.8:27b`.
+- [ ] Install OpenCode via acpx and leave cloud providers unset.
+- [ ] Enable the keep-list plugins and disable the paid or duplicate plugins in the fresh-install guide.
+- [ ] Run `openclaw gateway status`, `openclaw plugins list`, and `openclaw mcp list`.
 
-GitHub repository metadata retrieved on the review date. Stars measure interest and provide a tie-breaker. A repository push can be automated. Before using any candidate, check substantive changes on its maintained branch, compatible releases, security notices and the exact licence for the shipped build and model. A project with infrequent releases needs evidence of ongoing support. Exclude archived, superseded and unsupported projects from new installations.
+The read-only status tool `python tools/check_workspace.py` is for after those steps. It checks the model tag, Gateway service, authenticated health and a paired Windows node. Expect it to fail until those pieces are installed and paired.
+
+## Upstream activity
+
+GitHub repository metadata below is an upstream snapshot from 18 November 2026, not a local inventory. Stars measure interest and provide a tie-breaker. Before installing any candidate, recheck its maintained branch, compatible release, security notices and the exact licence. Exclude archived, superseded and unsupported projects.
 
 | Upstream | Licence reported by GitHub | Stars | Last push (UTC) |
 |---|---|---:|---|
@@ -51,38 +60,50 @@ GitHub repository metadata retrieved on the review date. Stars measure interest 
 | [mastodon/mastodon](https://github.com/mastodon/mastodon) | AGPL-3.0 | 50,595 | 2026-11-18 |
 | [go-gitea/gitea](https://github.com/go-gitea/gitea) | MIT | 59,151 | 2026-11-18 |
 
-Reject the archived [opencode-ai/opencode repository](https://github.com/opencode-ai/opencode). The maintained coding agent comes from [Anomaly](https://github.com/anomalyco/opencode). For ACP, establish which backend is installed before choosing an update. FlaUI shows a longer interval since its last push than pywinauto. Keep both as candidates until release support and Windows application coverage are verified.
+Reject the archived [opencode-ai/opencode repository](https://github.com/opencode-ai/opencode). The maintained coding agent comes from [Anomaly](https://github.com/anomalyco/opencode). Install OpenCode through acpx, and leave `opencode-go` disabled. FlaUI shows a longer interval since its last push than pywinauto. Keep both as candidates until release support and Windows application coverage are checked on this PC.
 
 ## Decisions for the 20 requested capabilities
 
-These are implementation choices to evaluate. Existing Windows and hardware are assumed. A local option avoids a service fee but still needs a compatibility and resource test.
+These are the zero-cost routes to install or connect. They are still to do.
 
 | # | Capability | Zero-cost route and limits |
 |---|---|---|
-| 1 | Email | Use supported mailbox protocols or free API access to an authorised free inbox. Exclude paid mailbox provisioning and verify attachment and monitoring quotas. |
-| 2 | Calendar and contacts | Evaluate local calendars and CalDAV/CardDAV with a local Nextcloud instance. Hosted booking links remain optional. |
-| 3 | App building | Build existing projects locally with OpenCode and Git. A builder account needs demonstrably free repeat builds and access to the existing project. |
+| 1 | Email | Use supported mailbox protocols or free API access to an authorised free inbox. Enable `imap`. Exclude paid mailbox provisioning and verify attachment and monitoring quotas. |
+| 2 | Calendar and contacts | Connect local CalDAV and CardDAV with a local Nextcloud instance. Hosted booking links remain optional. |
+| 3 | App building | Build projects locally with OpenCode and Git. A builder account needs demonstrably free repeat builds. |
 | 4 | Code and repositories | Local Git and OpenCode are the default. Use GitHub for repository operations within the free plan. Run builds locally. Exclude metered runners and cloud agents. |
-| 5 | Hosting and deploys | Serve on the existing PC. A free service that sleeps or loses files cannot satisfy persistent hosting. Render documents both behaviours. [Free compute limits](https://render.com/docs/free) |
+| 5 | Hosting and deploys | Serve on this PC. A free service that sleeps or loses files cannot satisfy persistent hosting. Render documents both behaviours. [Free compute limits](https://render.com/docs/free) |
 | 6 | Databases | Use local SQLite where suitable. Hosted SQL needs an explicit zero-cost quota and a tested local recovery path. |
-| 7 | Domains, DNS and hosting | Test locally with local names and WordPress. Registration, renewal and paid host migration services are excluded. An existing domain is optional. |
+| 7 | Domains, DNS and hosting | Test locally with local names and WordPress. Registration, renewal and paid host migration services are excluded. A domain is optional. |
 | 8 | Error tracking | Begin with local logs and release IDs. Evaluate a local error tracker after checking its distribution licence and storage requirements. |
-| 9 | Documents and files | Use local LibreOffice and a persistent local directory. Cloud sharing requires workload-specific quota and permission checks. |
-| 10 | Design and media | Evaluate local ComfyUI and FFmpeg. Check model, asset, font and codec rights separately. Exclude paid credits. |
+| 9 | Documents and files | Install local LibreOffice and use a persistent local directory. Cloud sharing requires workload-specific quota and permission checks. |
+| 10 | Design and media | Install local ComfyUI with SDXL base 1.0, and install FFmpeg. This PC has a 12 GB RTX 4070. Flux needs a quantised version. Check model, asset, font and codec rights separately. Exclude paid credits. |
 | 11 | Social media | Use public pages or supported, free, authorised APIs. Mastodon is a candidate for compatible accounts. Paid API-only operations are unavailable. |
-| 12 | Vault and logins | Evaluate local KeePassXC with per-login approval. Exclude paid vault features and test with dummy data. |
-| 13 | Computer and browser | Use the existing Windows Node, native UI Automation and local Playwright. A hosted computer is outside the baseline. |
-| 14 | Research and shopping | Evaluate local SearXNG and free public sources. Use local calculation and conversion tools. Paid feeds and search APIs are excluded. |
-| 15 | Calls and messaging | Draft locally. App-to-app calls on a free service may qualify. Calls to telephone numbers and SMS remain unavailable unless their exact route has verified zero charges. |
+| 12 | Vault and logins | Install local KeePassXC and enable `vault`, with per-login approval. Exclude paid vault features and test with dummy data. |
+| 13 | Computer and browser | Pair the Windows node, use native UI Automation, and install local Playwright MCP (`@playwright/mcp`). A hosted computer is outside the baseline. |
+| 14 | Research and shopping | Install local SearXNG (Docker) and use free public sources, plus the `duckduckgo` plugin. Use local calculation and conversion tools. Paid feeds and search APIs are excluded. |
+| 15 | Calls and messaging | Draft locally. Connect one delivery channel or set `commands.ownerAllowFrom` so heartbeat and cron can deliver. Calls to telephone numbers and SMS stay out until their exact route has verified zero charges. |
 | 16 | Meetings and team chat | Evaluate local Jitsi for controlled meetings. Joining a third-party meeting, capturing audio or sending chat requires a supported free interface and permission. |
 | 17 | Automation | Use local scheduling and a persistent task store. Accept events via supported free interfaces. Test restart recovery and missed runs. |
-| 18 | Memory and skills | Store preferences, skills and revocations locally in versioned files or SQLite. No external memory service required. |
-| 19 | Multiple agents | Evaluate local OpenClaw and ACP workers sharing Ollama. Measure concurrency on this PC. Paid inference or agent orchestration is excluded. |
-| 20 | Phone integration | Evaluate KDE Connect and local Home Assistant for supported devices. Test location, alarms and permissions individually. Exclude subscriptions, new hardware and paid relays. |
+| 18 | Memory and skills | Enable `memory-core` and `memory-wiki`. Store preferences, skills and revocations locally in versioned files or SQLite. Leave `active-memory` disabled. |
+| 19 | Multiple agents | Use local OpenClaw and one ACP worker sharing Ollama. Measure concurrency on this PC. Paid inference or agent orchestration is excluded. |
+| 20 | Phone integration | Install KDE Connect. Local Home Assistant is a later candidate for supported devices. Test location, alarms and permissions individually. Exclude subscriptions, new hardware and paid relays. |
+
+## Free local tools still to add
+
+- [ ] Install Playwright MCP (`@playwright/mcp`) and register it as a local stdio server.
+- [ ] Install SearXNG with Docker.
+- [ ] Install whisper.cpp.
+- [ ] Install ComfyUI and download SDXL base 1.0. On this 12 GB RTX 4070, Flux needs a quantised version.
+- [ ] Install KeePassXC.
+- [ ] Install FFmpeg.
+- [ ] Install LibreOffice.
+- [ ] Connect Nextcloud CalDAV.
+- [ ] Install KDE Connect.
 
 ## Hosted provider screening
 
-These services appeared in the capability suggestions. None is required for local operation. The links below are official provider references checked during review. A public page cannot establish the user's billing settings, actual workload or connector access. Before enabling a particular operation, verify the enduring free entitlement, API eligibility, storage and usage ceilings, hard stop at quota, and absence of a payment requirement. Reject trial-only access, automatic overages and any route whose cost remains uncertain.
+These services appeared in the capability suggestions. None is required for local operation. The links below are official provider references. A public page cannot establish billing settings, actual workload or connector access. Before enabling a particular operation, verify the enduring free entitlement, API eligibility, storage and usage ceilings, hard stop at quota, and absence of a payment requirement. Reject trial-only access, automatic overages and any route whose cost remains uncertain.
 
 | Provider and source | Review outcome |
 |---|---|
@@ -91,9 +112,8 @@ These services appeared in the capability suggestions. None is required for loca
 | [iCloud](https://support.apple.com/en-us/108047) | Provider page reached. Exact operation and account entitlement unverified. |
 | [Hostinger Mail and hosting](https://www.hostinger.com/pricing) | Provider page reached. Exact operation and account entitlement unverified. |
 | [Calendly](https://calendly.com/pricing) | Provider page reached. Exact operation and account entitlement unverified. |
-| [Lovable](https://lovable.dev/pricing) | Provider page reached. Exact operation and account entitlement unverified. |
 | [Replit](https://replit.com/pricing) | Provider page reached. Exact operation and account entitlement unverified. |
-| [GitHub](https://github.com/pricing) | Repository access is in use. Metered compute, storage and premium products are outside the approved workflow. |
+| [GitHub](https://github.com/pricing) | Free repository hosting can be used. Connect assistant access separately. Metered compute, storage and premium products are outside the approved workflow. |
 | [Vercel](https://vercel.com/docs/plans/hobby) | Provider page reached. Exact operation and account entitlement unverified. |
 | [Railway](https://railway.com/pricing) | Provider page reached. Exact operation and account entitlement unverified. |
 | [Render](https://render.com/docs/free) | Free compute sleeps after 15 idle minutes and has ephemeral local storage. Exclude for persistent workloads. |
@@ -116,19 +136,17 @@ These services appeared in the capability suggestions. None is required for loca
 
 ## Keeping the review current
 
-At selection, before installation or upgrade, and whenever a provider changes terms, compare the installed build to the publisher's supported stable channel. Record the date, release, licence, cost evidence and any relevant advisory. Prefer actively maintained open-source tools with strong adoption and demonstrated success on this PC. Hold a candidate if the evidence is missing. After an update, repeat the relevant acceptance checks and record rollback instructions before marking it current.
+At selection, before installation or upgrade, and whenever a provider changes terms, compare the candidate build with the publisher's supported stable channel. Record the date, release, licence, cost evidence and any relevant advisory. Prefer actively maintained open-source tools with strong adoption. Hold a candidate if the evidence is missing. After an update, repeat the relevant acceptance checks and record rollback instructions before marking it current.
 
-## Main Gateway integration checks, 19 November 2026
+## Local integrations still to install
 
-| Integration | Installed evidence and connection status |
-|---|---|
-| Ollama | OpenClaw loaded the provider. Its loopback endpoint generated the requested sample reply using the configured local model. |
-| ACPX | Plugin loaded. OpenCode 2.2.7 answered an ACP protocol handshake. A coding handoff originating in main remains unverified. |
-| Memory Core | Plugin loaded at inventory. Live replacement timed out stopping and starting its background services. Verify recall after Gateway recovery. |
-| Browser | Native browser loaded. Earlier Gateway page opening succeeded. The latest status probe timed out during plugin replacement. |
-| IMAP | Watcher loaded with zero configured mailboxes. A provider-approved mailbox credential must be entered privately before a read or watch test. |
-| Vault | The HashiCorp Vault SecretRef plugin loaded. No secret-provider alias or local Vault listener was found. A private backend and scoped authorisation are needed for a dummy-secret lookup. Browser password autofill is a separate integration. |
-| Playwright MCP | Installed Microsoft's 0.0.86 server and matching headless Chromium in the Gateway environment. A direct MCP navigation read a public test page. OpenClaw requires exclusive offline access to register the server. |
-| SearXNG | Saved the official 2026.11.1 provider for this Gateway version. Live activation failed during service replacement. No local SearXNG endpoint, Linux distribution or container engine was found. DuckDuckGo remains selected. |
-| Whisper | Installed faster-whisper 1.2.1 in a separate environment. Reused and verified the existing base-model weights. PyAV 19 rejected the decoder's metadata_errors argument. PyAV 16.1 passed a synthetic speech test. OpenClaw saved a local-only audio CLI route. Live activation and a real chat attachment test are pending. |
-| ComfyUI | Official comfy provider installation saved. Live activation failed during service replacement. Installed the local ComfyUI 0.46.0 backend and CUDA runtime. A loopback workflow produced a sample PNG on the local GPU. Text-to-image still requires an approved checkpoint and matching workflow. |
+- [ ] Ollama — install it, pull `qwen3.8:27b`, and enable the `ollama` plugin. Ask for one sample reply on loopback.
+- [ ] acpx — install `@openclaw/acpx`, enable `acpx`, and point OpenCode at local Ollama only. A coding handoff from chat is a separate test.
+- [ ] Memory Core and Memory Wiki — enable `memory-core` and `memory-wiki`. Test recall after the Gateway is up.
+- [ ] Browser — enable `browser`. Open one page from chat.
+- [ ] IMAP — enable `imap`. Connect a mailbox before any read or watch test.
+- [ ] Vault — enable `vault` and install KeePassXC. A dummy-secret lookup is a separate test.
+- [ ] Playwright MCP — install `@playwright/mcp` and confirm it with `openclaw mcp list`.
+- [ ] SearXNG — install it with Docker on loopback. Enable `duckduckgo` as the bundled search plugin. Add no second hosted search provider.
+- [ ] whisper.cpp — install it and transcribe one local sample.
+- [ ] ComfyUI — install it and download SDXL base 1.0. On this 12 GB RTX 4070, use a quantised Flux build if Flux is required.
