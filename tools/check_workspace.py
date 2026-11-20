@@ -21,7 +21,7 @@ def main():
 
     def ollama():
         with opener.open("http://127.0.0.1:11434/api/tags", timeout=5) as response:
-            return any(row.get("name") == "qwen3.8:27b" for row in json.load(response)["models"])
+            return any(row.get("name") == "qwen3.5:9b" for row in json.load(response)["models"])
 
     def rpc(method):
         return cli_json([ctl, "pwsh", "--command", "openclaw gateway call " + method + " --json --timeout 15000"])
@@ -30,7 +30,7 @@ def main():
         return any(n.get("paired") and n.get("connected") for n in rpc("node.list")["nodes"])
 
     checks = [
-        ("Ollama has qwen3.8:27b", ollama),
+        ("Ollama has qwen3.5:9b", ollama),
         ("Gateway service running", lambda: cli_json([ctl, "gateway-service", "status", "--json"])["gateway"]["state"] == "running"),
         ("Authenticated Gateway health", lambda: rpc("health").get("ok") is True),
         ("Paired Windows Node online", node_online),

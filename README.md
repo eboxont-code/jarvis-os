@@ -1,195 +1,185 @@
-# OpenClaw Workspace
+# OpenClaw agent
 
-A local Windows AI workspace. OpenClaw is the assistant, Ollama serves one local model on the same PC, and OpenCode is the coding backend through ACP. This PC is a fresh install. Nothing in this guide is installed, enabled, connected, configured, paired, or running yet.
+You run on this Windows PC. Inference is local Ollama only. Coding is OpenCode through ACP. Nothing below is installed or verified. Checked against docs.openclaw.ai, the Ollama library, and each tool's repository on 2026-11-20. Stable OpenClaw is 2026.11.6. Leave betas unused.
 
-The rules for every step are in [REQUIREMENTS.md](REQUIREMENTS.md): zero additional cost, local first, Ollama only, and no paid cloud inference.
+The GPU is a 12 GB RTX 4070. Use one tool per job. Pass one plugin id per enable or disable. A multi-id call stops at the first failure, so later ids never run.
 
-## Fresh install
+```powershell
+openclaw plugins enable <id>
+openclaw plugins disable <id>
+openclaw plugins install clawhub:<package>
+openclaw mcp add <name> --command <exe> --arg <arg>
+```
 
-Work through these steps in order on Windows. Leave each box unchecked until that step is finished on the PC.
+`openclaw plugins install clawhub:<package>` is the install form on the stable release. Enable the id only after install. If `plugins.allow` is set, it may contain only the keep ids below.
 
-### 1. Install OpenClaw
+## Model
 
-Install the latest stable OpenClaw, **2026.11.5 or newer**.
+Primary: [`qwen3.5:9b`](https://ollama.com/library/qwen3.5:9b). Fallback: [`qwen3.5:4b`](https://ollama.com/library/qwen3.5:4b). Both are Apache-2.0 Qwen3.5 vision models. The 9B publish is about 6.6–7.6 GB (Q4_K_M weights plus a vision projector). The 4B publish is about 3.3–4.0 GB.
 
-- [ ] Install OpenClaw Companion from the latest stable [Windows Hub release](https://github.com/openclaw/openclaw-windows-node/releases) (`OpenClawCompanion-Setup-x64.exe`), or install the CLI:
+[`qwen3.8:27b`](https://ollama.com/library/qwen3.8:27b) is a real tag. Its Q4_K_M weights are about 16 GB plus a 0.9 GB projector, published as an 18 GB download, so it does not reside in 12 GB. Leave that tag unused.
 
-~~~powershell
-iwr -useb https://openclaw.ai/install.ps1 | iex
+Set the provider to Ollama, **Local only**, base URL `http://127.0.0.1:11434` with no `/v1`. Then:
+
+```powershell
+ollama pull qwen3.5:9b
+openclaw models set ollama/qwen3.5:9b
+```
+
+Pull `qwen3.5:4b` only when the 9B tag is absent or ComfyUI is using the GPU. Before either tag is the primary, `/api/show` must report tool support and at least 16K context. OpenClaw will not keep a model that fails that check. If neither tag qualifies, say so. Do not select a cloud model.
+
+`llm-task` completions stay on those two refs:
+
+```powershell
+openclaw config set plugins.entries.llm-task.llm.allowedCompletionModels '["ollama/qwen3.5:9b","ollama/qwen3.5:4b"]'
+openclaw config set plugins.entries.llm-task.config.defaultProvider ollama
+openclaw config set plugins.entries.llm-task.config.defaultModel qwen3.5:9b
+```
+
+Setup: [Ollama](https://docs.openclaw.ai/providers/ollama/setup). Releases: [2026.11.6](https://github.com/openclaw/openclaw/releases/tag/v2026.11.6).
+
+## Plugins to enable
+
+Bundled ids, one command each. Skip an id that `openclaw plugins list` already shows as enabled.
+
+`ollama` `memory-core` `memory-wiki` `workboard` `policy` `oc-path` `llm-task` `code-mode-quickjs` `imap` `github` `browser` `document-extract` `file-transfer` `web-readability` `device-pair` `tts-local-cli` `talk-voice` `cua-computer`
+
+Install these three, then enable the id:
+
+```powershell
+openclaw plugins install clawhub:@openclaw/acpx
+openclaw plugins enable acpx
+openclaw plugins install clawhub:@openclaw/searxng-plugin
+openclaw plugins enable searxng
+openclaw plugins install clawhub:@openclaw/comfy-provider
+openclaw plugins enable comfy
+```
+
+| Id | Call it for |
+|---|---|
+| `ollama` | Every chat, tool, and vision turn |
+| `acpx` | Coding sessions. Agent id `opencode` only |
+| `memory-core` | `memory_search` and `memory_get` |
+| `memory-wiki` | Durable project pages |
+| `workboard` | Task owner and status for the main agent |
+| `policy` | Doctor checks. Leave automatic repair off |
+| `oc-path` | `oc://` workspace paths |
+| `llm-task` | One JSON completion with no tools |
+| `code-mode-quickjs` | Local QuickJS |
+| `imap` | Watch a mailbox after the user connects it |
+| `github` | Public repository reads |
+| `browser` | Open a page or a sign-in handoff |
+| `document-extract` | Text from a local attachment |
+| `file-transfer` | Files on a paired node |
+| `web-readability` | Readable text after a fetch |
+| `device-pair` | Pair a node |
+| `tts-local-cli` | Local speech command |
+| `talk-voice` | Which local voice is selected |
+| `cua-computer` | The `computer` tool on Windows |
+| `searxng` | `web_search` against loopback SearXNG |
+| `comfy` | `image_generate` on a local ComfyUI |
+
+Inventory: [plugins](https://docs.openclaw.ai/plugins/plugin-inventory). Install syntax: [install](https://docs.openclaw.ai/cli/plugins/install).
+
+## Plugins to leave disabled
+
+Disable a listed id only when `openclaw plugins list` shows it. One id per command. Do not install any other provider.
+
+Cloud or paid inference, speech, image, and video: `openai` `google` `xai` `anthropic` `qwen` `alibaba` `minimax` `nvidia` `together` `huggingface` `microsoft-foundry` `github-copilot` `copilot-proxy` `openrouter` `clawrouter` `litellm` `fal` `kie` `runway` `azure-speech` `elevenlabs` `microsoft` `deepgram` `senseaudio`
+
+Other local inference runtimes: `lmstudio` `vllm` `sglang` `llama-cpp` `omlx`
+
+Other coding or memory paths: `opencode` `opencode-go` `active-memory`
+
+Wrong host or unused here: `linux-node` `canvas` `crabbox` `onepassword` `vault`
+
+`vault` is the HashiCorp Vault SecretRef plugin. Leave it disabled. It does not talk to a desktop password manager. `canvas` targets paired macOS panels. `opencode` is the hosted OpenCode model provider. The coding plugin is `acpx`.
+
+Do not install `duckduckgo`, Brave, Exa, Tavily, Firecrawl, or Perplexity. SearXNG is the only search provider. If `duckduckgo` is installed and enabled, disable it.
+
+## Tools you call
+
+| Job | Call | If it is missing |
+|---|---|---|
+| Web search | `web_search` via `searxng` at `http://127.0.0.1:8888` | Say search is unavailable. [SearXNG plugin](https://docs.openclaw.ai/tools/searxng-search) |
+| Page DOM | Playwright MCP server `playwright` | Say browser automation is unavailable |
+| Sign-in page | `browser` | Say the browser tool is unavailable |
+| Desktop | `computer` after `cua-computer` is enabled | Say desktop control is unavailable. [Computer use](https://docs.openclaw.ai/nodes/computer-use) |
+| Speech to text | inbound audio through `whisper-cli` | Say transcription is unavailable. [Audio](https://docs.openclaw.ai/nodes/audio) |
+| Speech | `tts` through `tts-local-cli` | Say speech is unavailable |
+| Images | `image_generate` through local `comfy` | Say image generation is unavailable. [ComfyUI](https://docs.openclaw.ai/providers/comfy) |
+| New office file | `workspace_create_file` | Say file creation is unavailable |
+| Read a document | `document-extract` | Say extraction is unavailable |
+| Calendar draft | `skills/local-productivity` script | Say the draft script is unavailable |
+
+Playwright is the DOM tool. The `browser` tool is the sign-in handoff. The `computer` tool is the Windows desktop. Do not drive one job through two of them.
+
+```powershell
+openclaw mcp add playwright --command npx --arg -y --arg @playwright/mcp@latest
+openclaw mcp list
+```
+
+[MCP](https://docs.openclaw.ai/tools/mcp). [Playwright MCP](https://github.com/microsoft/playwright-mcp). If `npx` is missing, say so.
+
+```powershell
+openclaw config set tools.web.search.provider searxng
+openclaw config set plugins.entries.searxng.config.webSearch.baseUrl "http://127.0.0.1:8888"
+```
+
+The loopback server is `docker run -d -p 8888:8080 searxng/searxng` from [searxng/searxng](https://github.com/searxng/searxng). If that port is closed, say search is unavailable.
+
+Transcription uses `whisper-cli` from [whisper.cpp](https://github.com/ggml-org/whisper.cpp) only when no cloud audio provider has credentials. Leave those providers disabled so auto-detect can reach the local binary. `ffmpeg` is the decoder for files that are not 16-bit WAV. If either binary is missing, say transcription is unavailable. Do not configure Groq, OpenAI, Deepgram, or another hosted transcriber.
+
+ComfyUI stays on loopback. The image workflow loads Stability SDXL base 1.0, file `sd_xl_base_1.0.safetensors` ([model card](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0)). Flux is allowed only as a GGUF Q4 or Q5 checkpoint that fits in 12 GB. Full Flux weights are larger than this GPU. Leave cloud mode unset.
+
+```powershell
+openclaw config set plugins.entries.comfy.config.mode local
+openclaw config set plugins.entries.comfy.config.baseUrl "http://127.0.0.1:8188"
+```
+
+Image generation and `qwen3.5:9b` share the GPU. When a picture is the job, use the 4B fallback for chat until ComfyUI releases the GPU.
+
+## Coding
+
+Install the current `@opencode/cli`. Leave the archived `opencode-ai` package unused. Point OpenCode at Ollama and deny every other provider ([models](https://opencode.ai/docs/models/), [policies](https://opencode.ai/docs/policies/)):
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "ollama/qwen3.5:9b",
+  "policies": [
+    { "action": "provider.use", "resource": "*", "effect": "deny" },
+    { "action": "provider.use", "resource": "ollama", "effect": "allow" }
+  ]
+}
+```
+
+```powershell
+openclaw config set acp.backend acpx
+openclaw config set acp.defaultAgent opencode
+openclaw config set acp.allowedAgents '["opencode"]'
+openclaw config set plugins.entries.acpx.config.probeAgent opencode
+```
+
+Spawn agent id `opencode` only. [ACP setup](https://docs.openclaw.ai/tools/acp-agents-setup). Health checks default to `codex` when `allowedAgents` is empty, so set `probeAgent` to `opencode` before `/acp doctor`.
+
+## Delivery and secrets
+
+Cron and owner-only commands need `commands.ownerAllowFrom` or a paired channel owner. Ask the user for that id in the session. Never write it into this repository. If it is unset, say scheduled delivery is unavailable.
+
+Keep passwords, tokens, card numbers, and codes out of chat, screenshots, and logs. The user types them into the provider page or a local secret store. Do not ask for them.
+
+## Check
+
+```powershell
 openclaw --version
-~~~
-
-- [ ] Confirm `openclaw --version` prints 2026.11.5 or newer.
-- [ ] Install the Gateway service:
-
-~~~powershell
-openclaw gateway install
-~~~
-
-Windows Hub can run the native Gateway in an isolated session, separate from the interactive Windows user. Give the main Windows user write access to that Gateway config. An isolated session that keeps the config to itself makes CLI writes hang with `file lock timeout`.
-
-Install notes: [Windows](https://docs.openclaw.ai/platforms/windows/) and [Install](https://docs.openclaw.ai/install/). Release list: [openclaw/openclaw](https://github.com/openclaw/openclaw/releases).
-
-### 2. Install Ollama and pull the local model
-
-- [ ] Install Ollama from [ollama.com/download](https://ollama.com/download).
-- [ ] Pull the local model `qwen3.8:27b`:
-
-~~~powershell
-ollama pull qwen3.8:27b
-~~~
-
-- [ ] Enable the Ollama provider for this Gateway, local only, and select `qwen3.8:27b`:
-
-~~~powershell
-openclaw onboard
-~~~
-
-In onboarding, choose Ollama and **Local only**. The model page is [qwen3.8:27b](https://ollama.com/library/qwen3.8:27b). Provider notes: [Ollama setup](https://docs.openclaw.ai/providers/ollama/setup).
-
-### 3. Install OpenCode via acpx
-
-- [ ] Install the current OpenCode v2 CLI, package `@opencode/cli`. Publisher notes: [opencode.ai/product](https://opencode.ai/product).
-- [ ] Install the ACP backend `@openclaw/acpx` (enable it with the keep list in the next step):
-
-~~~powershell
-npm install -g @opencode/cli
-openclaw plugins install @openclaw/acpx
-~~~
-
-- [ ] Point OpenCode at local Ollama only (`http://127.0.0.1:11434`) and the model `qwen3.8:27b`. Leave every cloud provider unset.
-
-Use the maintained `@opencode/cli` package. Leave the archived `opencode-ai` package uninstalled, and leave the `opencode-go` plugin disabled in the next step. ACP notes: [ACP agents setup](https://docs.openclaw.ai/tools/acp-agents-setup).
-
-### 4. Enable only the plugins to keep
-
-Keep one tool per job. Enable the plugins in the first list. Leave the plugins in the second list disabled: they are paid providers or duplicates of a plugin already in the keep list.
-
-`openclaw plugins enable` and `openclaw plugins disable` accept several ids and stop at the first failure. Start the Gateway again after these changes so they load. If `plugins.allow` is set, list only the keep ids.
-
-- [ ] Enable `ollama`
-- [ ] Enable `acpx`
-- [ ] Enable `memory-core`
-- [ ] Enable `memory-wiki`
-- [ ] Enable `workboard`
-- [ ] Enable `policy`
-- [ ] Enable `oc-path`
-- [ ] Enable `llm-task`
-- [ ] Enable `code-mode-quickjs`
-- [ ] Enable `imap`
-- [ ] Enable `github`
-- [ ] Enable `browser`
-- [ ] Enable `document-extract`
-- [ ] Enable `file-transfer`
-- [ ] Enable `canvas`
-- [ ] Enable `duckduckgo`
-- [ ] Enable `web-readability`
-- [ ] Enable `device-pair`
-- [ ] Enable `tts-local-cli`
-- [ ] Enable `talk-voice`
-- [ ] Enable `vault`
-
-~~~powershell
-openclaw plugins enable ollama acpx memory-core memory-wiki workboard policy oc-path llm-task code-mode-quickjs imap github browser document-extract file-transfer canvas duckduckgo web-readability device-pair tts-local-cli talk-voice vault
-~~~
-
-Leave these disabled (paid or duplicate):
-
-- [ ] Disable `openai`
-- [ ] Disable `google`
-- [ ] Disable `xai`
-- [ ] Disable `anthropic`
-- [ ] Disable `alibaba`
-- [ ] Disable `minimax`
-- [ ] Disable `nvidia`
-- [ ] Disable `together`
-- [ ] Disable `huggingface`
-- [ ] Disable `microsoft-foundry`
-- [ ] Disable `github-copilot`
-- [ ] Disable `copilot-proxy`
-- [ ] Disable `opencode-go`
-- [ ] Disable `openrouter`
-- [ ] Disable `clawrouter`
-- [ ] Disable `litellm`
-- [ ] Disable `lmstudio`
-- [ ] Disable `vllm`
-- [ ] Disable `sglang`
-- [ ] Disable `fal`
-- [ ] Disable `kie`
-- [ ] Disable `runway`
-- [ ] Disable `azure-speech`
-- [ ] Disable `elevenlabs`
-- [ ] Disable `microsoft`
-- [ ] Disable `deepgram`
-- [ ] Disable `senseaudio`
-- [ ] Disable `active-memory`
-- [ ] Disable `cua-computer`
-- [ ] Disable `linux-node`
-
-~~~powershell
-openclaw plugins disable openai google xai anthropic alibaba minimax nvidia together huggingface microsoft-foundry github-copilot copilot-proxy opencode-go openrouter clawrouter litellm lmstudio vllm sglang fal kie runway azure-speech elevenlabs microsoft deepgram senseaudio active-memory cua-computer linux-node
-~~~
-
-### 5. Add the free local tools
-
-Add these on the same PC. Each one is still to install or connect. Skip a second tool that does the same job as one already in this list.
-
-- [ ] Install the Playwright MCP server `@playwright/mcp` and register it as a local stdio MCP server.
-- [ ] Install SearXNG with Docker and serve it on loopback. Project: [searxng/searxng](https://github.com/searxng/searxng).
-- [ ] Install whisper.cpp. Project: [ggml-org/whisper.cpp](https://github.com/ggml-org/whisper.cpp).
-- [ ] Install ComfyUI and download SDXL base 1.0. Project: [Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI). This PC has a 12 GB RTX 4070. Flux needs a quantised version.
-- [ ] Install KeePassXC for the local vault. Project: [keepassxc](https://github.com/keepassxreboot/keepassxc).
-- [ ] Install FFmpeg. Project: [FFmpeg](https://github.com/FFmpeg/FFmpeg).
-- [ ] Install LibreOffice. Project: [LibreOffice](https://github.com/LibreOffice/core).
-- [ ] Connect a local Nextcloud CalDAV calendar. Project: [nextcloud/server](https://github.com/nextcloud/server).
-- [ ] Install KDE Connect. Project: [kdeconnect-kde](https://github.com/KDE/kdeconnect-kde).
-
-### 6. Connect one delivery channel or set commands.ownerAllowFrom
-
-Heartbeat and cron need one owner route before they can deliver. Store the owner id on the PC. Keep it out of this repository.
-
-- [ ] Connect one delivery channel and allow the owner identity on that channel, or set `commands.ownerAllowFrom` to that owner identity:
-
-~~~powershell
-openclaw config set commands.ownerAllowFrom '["channel:OWNER"]'
-~~~
-
-Replace `channel:OWNER` with the real channel and owner id while editing the local config.
-
-### 7. Verify
-
-- [ ] Check the Gateway, the plugin lists, and the MCP servers:
-
-~~~powershell
 openclaw gateway status
 openclaw plugins list
 openclaw mcp list
-~~~
-
-`openclaw plugins list` should show the keep list enabled and the paid or duplicate list disabled. `openclaw mcp list` should show the local MCP servers added above, including `@playwright/mcp` once that step is done.
-
-## Features and requirements
-
-The [active roadmap](REQUIREMENTS.md) covers all 14 delivery phases, integration gates A–H and acceptance tests T01–T31. Those items are still to do.
-
-The [assistant capability checklist](docs/ASSISTANT_CAPABILITIES.md) covers 20 areas, including email, hosting, secure input and phone integration. Each entry is a setup step and an acceptance check.
-
-The [dependency review](docs/DEPENDENCY_REVIEW.md) lists the software to install, upstream projects and zero-cost options for all 20 capability areas.
-
-## After the guide
-
-Open **OpenClaw Chat**, or open Companion and choose the **main** agent. The model to select is **qwen3.8:27b**. The Ollama entry in the model picker is the direct chat. The OpenCode (ACP) entry uses the same local model for a coding session.
-
-This repository contains a read-only status tool. It needs Python 3 on Windows, the OpenClaw Gateway package with its qualified clawctl alias, and Ollama on its default loopback port. Run it from the repository root in PowerShell after the install steps that those checks depend on:
-
-~~~powershell
+openclaw models list --provider ollama
 python tools/check_workspace.py
-~~~
+```
 
-The tool checks that Ollama lists `qwen3.8:27b`, that the Windows Gateway service is up, that authenticated Gateway health succeeds, and that a Windows node is paired and connected. It prints one result per check and returns exit code 1 if any check fails. Until those steps are done, a failing check is the expected result. The tool does not change configuration. To test inference, send a short prompt in OpenClaw Chat and wait for its answer.
+`tools/check_workspace.py` is read-only. It passes only when Ollama lists `qwen3.5:9b`, the Gateway service is running, authenticated health succeeds, and a Windows node is paired. Until then it exits 1. That failure is the expected result on this fresh PC.
 
-Pair the Windows node from Companion when Gateway setup asks for it. Approve the new device request from the Gateway host. A passing status check only shows connectivity. Model downloads, live credentials, chat histories, and machine-specific configuration stay on the local PC.
-
-## Project history
-
-The previous project's tracked files are preserved under `legacy/jarvis-os/` as an archive of a wiped install. Its launchers, version numbers, pairing notes, and installation instructions are retired. Use this guide and [REQUIREMENTS.md](REQUIREMENTS.md).
+Capability choices: [docs/ASSISTANT_CAPABILITIES.md](docs/ASSISTANT_CAPABILITIES.md). Why these tools: [docs/DEPENDENCY_REVIEW.md](docs/DEPENDENCY_REVIEW.md). Desktop calls: [docs/WINDOWS_COMPUTER_CONTROL.md](docs/WINDOWS_COMPUTER_CONTROL.md). Rules: [REQUIREMENTS.md](REQUIREMENTS.md).
