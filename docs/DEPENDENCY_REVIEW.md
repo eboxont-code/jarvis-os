@@ -2,15 +2,17 @@
 
 Checked 2026-11-20. Nothing is installed. [README.md](../README.md) is the list you enable. This file is why.
 
+This PC is Windows 11 Pro, an Intel Core i9-14900F (24 cores, 32 threads), 64 GB DDR5-5600, and an RTX 4070 with 12 GB (driver 610.60). About 1.5 TB is free on the fast NVMe.
+
 ## Model
 
-| Tag | Decision |
-|---|---|
-| `qwen3.5:9b` | Primary. Apache-2.0, vision, about 6.6–7.6 GB on disk. Fits a 12 GB RTX 4070 and leaves room for context. [Library](https://ollama.com/library/qwen3.5:9b) |
-| `qwen3.5:4b` | Fallback. Same family and licence, about 3.3–4.0 GB. Use it when the 9B tag is absent or ComfyUI holds the GPU. [Library](https://ollama.com/library/qwen3.5:4b) |
-| `qwen3.8:27b` | Rejected for this GPU. Real tag, about 18 GB on disk (about 16 GB of Q4_K_M weights plus a 0.9 GB projector). It cannot reside in 12 GB. [Library](https://ollama.com/library/qwen3.8:27b) |
+| Tag | On disk | Settings | Decision |
+|---|---|---|---|
+| `qwen3.5:9b` | 6.6–7.6 GB | `num_ctx` 32768, `num_gpu` 999, `keep_alive` 30m | Chat. Every layer on the GPU. [Library](https://ollama.com/library/qwen3.5:9b) |
+| `qwen3.5:4b` | 3.3–4.0 GB | `num_ctx` 16384, `num_gpu` 0, `num_thread` 8, `keep_alive` 5m | Chat while ComfyUI holds the GPU. If the 9B tag is missing and ComfyUI is stopped, use `num_ctx` 32768 and `num_gpu` 999 instead. [Library](https://ollama.com/library/qwen3.5:4b) |
+| `qwen3.8:27b` | about 18 GB | `num_ctx` 8192, `num_gpu` -1, `num_thread` 8, `keep_alive` 5m | Optional deep thinking. Ollama fills the 12 GB GPU and spills the rest into the 64 GB RAM. A few tokens per second. Not for chat. Not while ComfyUI is running. [Library](https://ollama.com/library/qwen3.8:27b) |
 
-Confirm tools and at least 16K context with `/api/show` before a tag becomes primary. OpenClaw discovery requires both. Stable OpenClaw on this date is [2026.11.6](https://github.com/openclaw/openclaw/releases/tag/v2026.11.6).
+`num_gpu` 999 requests every layer. `num_gpu` -1 is Ollama's dynamic split. `num_gpu` 0 keeps the model in RAM. One loaded model: `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_MAX_LOADED_MODELS=1`. `OLLAMA_MODELS` may point at the second NVMe. Confirm tools and at least 16K context with `/api/show` before the 9B tag is primary. Stable OpenClaw on this date is [2026.11.6](https://github.com/openclaw/openclaw/releases/tag/v2026.11.6).
 
 ## One tool per job
 
@@ -23,9 +25,9 @@ Confirm tools and at least 16K context with `/api/show` before a tag becomes pri
 | Page DOM | Playwright MCP | A second browser-automation server |
 | Sign-in | `browser` | — |
 | Desktop | `cua-computer` (`computer`) | pywinauto, FlaUI, and cloud computer sessions |
-| Speech to text | `whisper-cli` | Deepgram, OpenAI, Groq, and other hosted audio providers |
+| Speech to text | `whisper-cli` with `ggml-small` (466 MiB, about 852 MB) | `ggml-medium` and larger beside the LLM or ComfyUI; Deepgram, OpenAI, Groq, and other hosted audio providers |
 | Speech | `tts-local-cli` | `azure-speech`, `elevenlabs`, `microsoft`, `deepgram` |
-| Images | `comfy` local, SDXL base 1.0 | `fal`, `kie`, `runway`, Comfy cloud, full-precision Flux |
+| Images | `comfy` local, SDXL base 1.0 fp16, 1024×1024, batch 1, `--normalvram` | `fal`, `kie`, `runway`, Comfy cloud, `--highvram`, a second checkpoint, full-precision Flux |
 | Recall | `memory-core` | `active-memory` |
 | Pages | `memory-wiki` | — |
 | Tasks | `workboard` | A second tracker |
@@ -37,11 +39,11 @@ Confirm tools and at least 16K context with `/api/show` before a tag becomes pri
 
 `vault` stays off because it expects HashiCorp Vault, which this agent does not call.
 
-SDXL base 1.0 is the image default ([model card](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0)). A Flux checkpoint is allowed only as a GGUF Q4 or Q5 that fits beside the desktop. [ComfyUI provider](https://docs.openclaw.ai/providers/comfy).
+SDXL base 1.0 fp16 is the image default ([model card](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0)): 1024×1024, batch 1, 20–30 steps, `--normalvram`, one checkpoint. Unload Ollama first. A Flux checkpoint is allowed only as a GGUF Q4 or Q5 after that unload. [ComfyUI provider](https://docs.openclaw.ai/providers/comfy). Whisper `ggml-small` may share the GPU with `qwen3.5:9b` only. CPU offload and whisper use 8 threads on this 24-core CPU.
 
 ## Not verified from this session
 
 - A live `openclaw plugins enable` on Windows. The syntax is the published CLI: one id, and `clawhub:` installs.
-- The VRAM reading while `qwen3.5:9b` is loaded at 32K context. The decision uses the published file size, which fits. A loaded-context measurement is still required on the PC.
+- A live `/api/ps` reading for `qwen3.5:9b` at `num_ctx` 32768. The published file size fits in 12 GB. Confirm `size_vram` after the first load on this PC.
 - Whether `/api/show` on the pulled 9B tag advertises tools. Do not keep it as primary if it does not.
 - The `clawctl.exe` path inside `tools/check_workspace.py`. It targets the Store Gateway package name already in that file.
