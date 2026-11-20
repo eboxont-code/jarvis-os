@@ -1,15 +1,17 @@
 ---
 name: local-model-check
-description: After Ollama is installed, diagnose slow or missing local OpenClaw replies by checking the Ollama version, tags and model residency on the Windows PC.
+description: Check loopback Ollama for qwen3.5:9b, the 4B fallback, and which model is loaded. Use when a reply is missing or slow.
 ---
 
-Use this for a local model timeout, missing model or a quick inference-service check. Use the authorised local PowerShell tool in the Gateway environment. Read the three loopback endpoints separately so a failed check does not hide the others.
+Read the three loopback endpoints separately. One failure must not hide the others.
 
-~~~powershell
+```powershell
 $base = 'http://127.0.0.1:11434/api'
 (Invoke-RestMethod "$base/version" -TimeoutSec 5).version
 (Invoke-RestMethod "$base/tags" -TimeoutSec 5).models | Select-Object name, size
 (Invoke-RestMethod "$base/ps" -TimeoutSec 5).models | Select-Object name, size_vram, expires_at
-~~~
+```
 
-Report whether the endpoint answered, whether `qwen3.8:27b` is present, and which model is loaded. Empty residency can be normal after idle time. These reads check service availability only. Report any failed request or unavailable tool. If Ollama is missing, say so and point to the fresh-install guide in the repository README. Leave downloads, settings and service restarts to a separate user request.
+Report whether the port answered, whether `qwen3.5:9b` is present, and whether `qwen3.5:4b` is present. Name the loaded model. Empty residency after idle time is normal. The primary tag is `qwen3.5:9b`. Use `qwen3.5:4b` only when the 9B tag is absent or ComfyUI is using the GPU. `qwen3.8:27b` does not fit this 12 GB GPU.
+
+These calls only read the service. If the port is closed, say Ollama is not running and point at the model section of README.md. Leave pulls and restarts for a separate user request.
