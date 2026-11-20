@@ -1,4 +1,9 @@
-"""Create a private, single-event calendar attachment from JSON on stdin."""
+"""Create a private, single-event calendar attachment from JSON on stdin.
+
+This PC is Windows 11 Pro, an Intel Core i9-14900F (24 cores, 32 threads),
+64 GB DDR5-5600, and an RTX 4070 with 12 GB (driver 610.60). About 1.5 TB is
+free on the fast NVMe. This script does not use the GPU.
+"""
 import json
 import sys
 from datetime import date, datetime, timezone

@@ -2,6 +2,8 @@
 
 You do not have desktop control until `cua-computer` is enabled and the `computer` tool is in this session. Full rules: [REQUIREMENTS.md](../REQUIREMENTS.md). Plugin ids: [README.md](../README.md).
 
+This PC is Windows 11 Pro, an Intel Core i9-14900F (24 cores, 32 threads), 64 GB DDR5-5600, and an RTX 4070 with 12 GB (driver 610.60). About 1.5 TB is free on the fast NVMe. Read screenshots with `qwen3.5:9b` on the GPU (`num_ctx` 32768, `num_gpu` 999). Do not send them through `qwen3.8:27b`. If ComfyUI holds the GPU, stop desktop vision until Ollama is unloaded and the 9B chat model is back. Playwright does not need the GPU.
+
 ## Which tool
 
 | The user asked for | Call |

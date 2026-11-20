@@ -2,7 +2,9 @@
 
 You run on this Windows PC. Inference is local Ollama only. Coding is OpenCode through ACP. Nothing below is installed or verified. Checked against docs.openclaw.ai, the Ollama library, and each tool's repository on 2026-11-20. Stable OpenClaw is 2026.11.6. Leave betas unused.
 
-The GPU is a 12 GB RTX 4070. Use one tool per job. Pass one plugin id per enable or disable. A multi-id call stops at the first failure, so later ids never run.
+This PC is Windows 11 Pro, an Intel Core i9-14900F (24 cores, 32 threads), 64 GB DDR5-5600, and an RTX 4070 with 12 GB (driver 610.60). About 1.5 TB is free on the fast NVMe.
+
+Use one tool per job. Pass one plugin id per enable or disable. A multi-id call stops at the first failure, so later ids never run.
 
 ```powershell
 openclaw plugins enable <id>
@@ -15,23 +17,31 @@ openclaw mcp add <name> --command <exe> --arg <arg>
 
 ## Model
 
-Primary: [`qwen3.5:9b`](https://ollama.com/library/qwen3.5:9b). Fallback: [`qwen3.5:4b`](https://ollama.com/library/qwen3.5:4b). Both are Apache-2.0 Qwen3.5 vision models. The 9B publish is about 6.6–7.6 GB (Q4_K_M weights plus a vision projector). The 4B publish is about 3.3–4.0 GB.
+One Ollama model is loaded at a time. Set `OLLAMA_NUM_PARALLEL=1` and `OLLAMA_MAX_LOADED_MODELS=1`. `OLLAMA_MODELS` may point at a folder on the second NVMe before the first pull. Do not invent that path.
 
-[`qwen3.8:27b`](https://ollama.com/library/qwen3.8:27b) is a real tag. Its Q4_K_M weights are about 16 GB plus a 0.9 GB projector, published as an 18 GB download, so it does not reside in 12 GB. Leave that tag unused.
+| Role | Tag | `num_ctx` | `num_gpu` | `num_thread` | `keep_alive` |
+|---|---|---:|---:|---:|---|
+| Chat. All layers on the GPU | [`qwen3.5:9b`](https://ollama.com/library/qwen3.5:9b) | 32768 | 999 | unset | `30m` |
+| Chat while ComfyUI holds the GPU | [`qwen3.5:4b`](https://ollama.com/library/qwen3.5:4b) | 16384 | 0 | 8 | `5m` |
+| Deep thinking only. GPU plus RAM | [`qwen3.8:27b`](https://ollama.com/library/qwen3.8:27b) | 8192 | -1 | 8 | `5m` |
 
-Set the provider to Ollama, **Local only**, base URL `http://127.0.0.1:11434` with no `/v1`. Then:
+`qwen3.5:9b` and `qwen3.5:4b` are Apache-2.0 vision models, about 6.6–7.6 GB and 3.3–4.0 GB on disk. `num_gpu` 999 asks Ollama for every layer on the RTX 4070. After a 9B load, `/api/ps` `size_vram` must cover the loaded model. If it does not, the GPU is busy: unload and retry, or use the 4B row.
+
+`qwen3.8:27b` is about 18 GB on disk (about 16 GB of Q4_K_M weights plus a 0.9 GB projector). `num_gpu` -1 lets Ollama fill the 12 GB GPU and spill the rest into the 64 GB RAM. Expect a few tokens per second. Use it only when the user asks for deep thinking, a background job that can wait, or another local pass after `qwen3.5:9b` failed a complex reasoning task. Never use it for ordinary chat, tool chatter, or an OpenCode loop. Never use it while ComfyUI is running. Pull it only for that job. When the job ends, unload it with `keep_alive` 0 and return chat to `qwen3.5:9b`.
+
+If `qwen3.5:9b` is missing and ComfyUI is stopped, chat may use `qwen3.5:4b` with `num_ctx` 32768, `num_gpu` 999, and `keep_alive` `30m`. The `num_gpu` 0 row is only for while ComfyUI holds the GPU.
+
+Set the provider to Ollama, **Local only**, base URL `http://127.0.0.1:11434` with no `/v1`. Before `qwen3.5:9b` is primary, `/api/show` must report tool support and at least 16K context. If it does not, say so. Do not select a cloud model.
 
 ```powershell
 ollama pull qwen3.5:9b
 openclaw models set ollama/qwen3.5:9b
 ```
 
-Pull `qwen3.5:4b` only when the 9B tag is absent or ComfyUI is using the GPU. Before either tag is the primary, `/api/show` must report tool support and at least 16K context. OpenClaw will not keep a model that fails that check. If neither tag qualifies, say so. Do not select a cloud model.
-
-`llm-task` completions stay on those two refs:
+`llm-task` defaults to the 9B tag. Select `ollama/qwen3.8:27b` only under the deep-thinking rule.
 
 ```powershell
-openclaw config set plugins.entries.llm-task.llm.allowedCompletionModels '["ollama/qwen3.5:9b","ollama/qwen3.5:4b"]'
+openclaw config set plugins.entries.llm-task.llm.allowedCompletionModels '["ollama/qwen3.5:9b","ollama/qwen3.5:4b","ollama/qwen3.8:27b"]'
 openclaw config set plugins.entries.llm-task.config.defaultProvider ollama
 openclaw config set plugins.entries.llm-task.config.defaultModel qwen3.5:9b
 ```
@@ -128,16 +138,16 @@ openclaw config set plugins.entries.searxng.config.webSearch.baseUrl "http://127
 
 The loopback server is `docker run -d -p 8888:8080 searxng/searxng` from [searxng/searxng](https://github.com/searxng/searxng). If that port is closed, say search is unavailable.
 
-Transcription uses `whisper-cli` from [whisper.cpp](https://github.com/ggml-org/whisper.cpp) only when no cloud audio provider has credentials. Leave those providers disabled so auto-detect can reach the local binary. `ffmpeg` is the decoder for files that are not 16-bit WAV. If either binary is missing, say transcription is unavailable. Do not configure Groq, OpenAI, Deepgram, or another hosted transcriber.
+The GPU runs one heavy job. `qwen3.5:9b` may share it with whisper `ggml-small` only. ComfyUI and `qwen3.8:27b` each need the GPU alone. CPU offload and whisper use 8 threads, the performance cores on this i9-14900F. Do not set those jobs to 32 threads.
 
-ComfyUI stays on loopback. The image workflow loads Stability SDXL base 1.0, file `sd_xl_base_1.0.safetensors` ([model card](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0)). Flux is allowed only as a GGUF Q4 or Q5 checkpoint that fits in 12 GB. Full Flux weights are larger than this GPU. Leave cloud mode unset.
+Transcription uses `whisper-cli` from [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and `ggml-small.bin` (466 MiB on disk, about 852 MB in memory). That size fits beside `qwen3.5:9b`. Do not load `ggml-medium` (1.5 GiB) or a larger whisper model beside the LLM or ComfyUI. Pass `--threads 8`. Pass `--no-gpu` while ComfyUI is running or `qwen3.8:27b` is loaded. `ffmpeg` decodes files that are not 16-bit WAV. If `whisper-cli` or the small model is missing, say transcription is unavailable. Leave cloud audio providers disabled.
+
+ComfyUI stays on loopback. Unload Ollama (`keep_alive` 0) before an image. The workflow loads Stability SDXL base 1.0, file `sd_xl_base_1.0.safetensors`, fp16 ([model card](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0)). Use 1024×1024, batch size 1, 20–30 steps, and `--normalvram`. Do not pass `--highvram`. Do not load a second checkpoint in the same graph. Flux is allowed only as a GGUF Q4 or Q5 after Ollama is unloaded. Full Flux weights do not fit in 12 GB. Leave cloud mode unset. While ComfyUI holds the GPU, chat uses the 4B row above, and whisper stays on the CPU.
 
 ```powershell
 openclaw config set plugins.entries.comfy.config.mode local
 openclaw config set plugins.entries.comfy.config.baseUrl "http://127.0.0.1:8188"
 ```
-
-Image generation and `qwen3.5:9b` share the GPU. When a picture is the job, use the 4B fallback for chat until ComfyUI releases the GPU.
 
 ## Coding
 
@@ -161,7 +171,7 @@ openclaw config set acp.allowedAgents '["opencode"]'
 openclaw config set plugins.entries.acpx.config.probeAgent opencode
 ```
 
-Spawn agent id `opencode` only. [ACP setup](https://docs.openclaw.ai/tools/acp-agents-setup). Health checks default to `codex` when `allowedAgents` is empty, so set `probeAgent` to `opencode` before `/acp doctor`.
+Spawn agent id `opencode` only. OpenCode stays on `ollama/qwen3.5:9b`. One generation at a time, because `OLLAMA_NUM_PARALLEL` is 1. [ACP setup](https://docs.openclaw.ai/tools/acp-agents-setup). Health checks default to `codex` when `allowedAgents` is empty, so set `probeAgent` to `opencode` before `/acp doctor`.
 
 ## Delivery and secrets
 

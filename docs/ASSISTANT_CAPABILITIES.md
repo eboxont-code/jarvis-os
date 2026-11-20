@@ -2,24 +2,26 @@
 
 Procedures for the main agent. Plugin ids live in [README.md](../README.md). Rules live in [REQUIREMENTS.md](../REQUIREMENTS.md). Every row is unverified until this session's tools show a result.
 
+This PC is Windows 11 Pro, an Intel Core i9-14900F (24 cores, 32 threads), 64 GB DDR5-5600, and an RTX 4070 with 12 GB (driver 610.60). About 1.5 TB is free on the fast NVMe. Chat is `qwen3.5:9b` fully on the GPU (`num_ctx` 32768, `num_gpu` 999, `keep_alive` 30m). While ComfyUI holds the GPU, chat is `qwen3.5:4b` on the CPU (`num_ctx` 16384, `num_gpu` 0, `num_thread` 8). `qwen3.8:27b` (`num_ctx` 8192, `num_gpu` -1, `num_thread` 8) is the slow GPU-plus-RAM model for deep thinking only, never during ComfyUI and never for ordinary chat.
+
 | # | Job | Do this | Missing |
 |---|---|---|---|
 | 1 | Mail | Use `imap` after a mailbox is connected. Search and draft first. Send or delete only after a tier-3 yes. | Say `imap` is not connected. Sign-in uses the `browser` tool and the mail-in-chat skill. |
 | 2 | Calendar | Run the local-productivity draft script. It writes an ICS file and does not invite anyone. | Say the draft script is unavailable. |
-| 3 | Build | Hand the repo to ACP agent `opencode`. Wait for the diff and the test exit code. | Say `acpx` is not enabled. |
+| 3 | Build | Hand the repo to ACP agent `opencode` on `qwen3.5:9b`. One Ollama generation at a time. Wait for the diff and the test exit code. | Say `acpx` is not enabled. |
 | 4 | GitHub | Use `github` for public reads. Push, merge, and close only inside the authorised repo, with tests run. No force-push and no history rewrite. | Say GitHub writes are not authorised. |
 | 5 | Hosting | Read logs or serve a loopback file the user already asked to serve. | Say deployment is not available at zero cost. |
 | 6 | Database | Open SQLite read-only. Writes use a disposable file. | Say no database tool is connected. |
 | 7 | DNS | Read a zone the user opened. Apply a change only after a tier-3 yes. | Say DNS is not connected. |
 | 8 | Errors | Read the local log or trace the user points at. | Say no error tracker is connected. |
 | 9 | Files | `workspace_create_file` for a new DOCX, PDF, XLSX, or PPTX. `document-extract` to read one. Reopen the file and check the contents. | Say that tool is absent. |
-| 10 | Images | `image_generate` on local ComfyUI with SDXL base 1.0. Flux only as a Q4 or Q5 GGUF. | Say `comfy` is not connected. |
+| 10 | Images | Unload Ollama first. `image_generate` on local ComfyUI: SDXL base 1.0 fp16, 1024×1024, batch 1, 20–30 steps, `--normalvram`. Flux only as a GGUF Q4 or Q5. Chat during the job is `qwen3.5:4b` with `num_gpu` 0. | Say `comfy` is not connected. |
 | 11 | Social | `web_search` for public posts. Send a post or DM only after a tier-3 yes that includes the exact text. | Say search is unavailable. |
 | 12 | Secrets | Tell the user to type the secret into the provider page. Keep it out of chat, screenshots, and logs. | `vault` stays disabled. |
 | 13 | Desktop | Follow [WINDOWS_COMPUTER_CONTROL.md](WINDOWS_COMPUTER_CONTROL.md). Playwright for DOM. `computer` for windows. | Name which of the two is absent. |
 | 14 | Research | `web_search`, then `web-readability` on the page. Record the source and the time. A purchase waits for a tier-3 yes. | Say SearXNG is unavailable. |
 | 15 | Messages | Draft in the chat. Send only after a tier-3 yes. | Say no delivery channel is connected. |
-| 16 | Meetings | Join only a meeting the user opened. Transcribe with `whisper-cli`. | Say transcription or the meeting tool is absent. |
+| 16 | Meetings | Join only a meeting the user opened. Transcribe with `whisper-cli`, `ggml-small` (466 MiB), and `--threads 8`. Use the GPU only beside `qwen3.5:9b`. Otherwise add `--no-gpu`. | Say transcription or the meeting tool is absent. |
 | 17 | Cron | Create a job only when `commands.ownerAllowFrom` or a channel owner exists. Confirm the timezone and the destination. | Say the owner route is unset. |
 | 18 | Memory | Save the rule and its scope with `memory-core`. Read it back in a later turn. A revoked rule stays revoked. | Say `memory-core` is disabled. |
 | 19 | Tasks | Track work on `workboard` under the main agent. Coding spawn is `opencode` only. | Say `workboard` or `acpx` is disabled. |

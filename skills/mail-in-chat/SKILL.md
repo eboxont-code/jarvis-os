@@ -3,6 +3,8 @@ name: mail-in-chat
 description: Open Gmail, Outlook, or iCloud in the browser tool for sign-in. Use when the user asks to connect mail or a calendar page.
 ---
 
+This PC is Windows 11 Pro, an Intel Core i9-14900F (24 cores, 32 threads), 64 GB DDR5-5600, and an RTX 4070 with 12 GB (driver 610.60). About 1.5 TB is free on the fast NVMe. This skill uses the `browser` tool and does not load a model onto the GPU.
+
 Enable `browser` first. If that tool is absent, say the browser tool is unavailable.
 
 In the main session Dashboard, create a widget only for the provider the user named. Use dashboard action `widget_put`, pluginKind `browser:dashboard`, size `full`, and one of these URLs.
